@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            background-color: #f3f4f6;
+        }
+
+        .cao_color-box {
+            width: 180px;
+            height: 180px;
+            border-radius: 16px;
+            animation:
+                color-cycle 4s infinite,
+                float-spin 5s ease-in-out infinite,
+                shape-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes color-cycle {
+            0%, 100% { background-color: #ef476f; }
+            25% { background-color: #ffd166; }
+            50% { background-color: #06d6a0; }
+            75% { background-color: #118ab2; }
+        }
+
+        @keyframes float-spin {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-18px) rotate(8deg) scale(1.05); }
+            50% { transform: translateY(0) rotate(0deg) scale(1); }
+            75% { transform: translateY(18px) rotate(-8deg) scale(0.95); }
+        }
+
+        @keyframes shape-pulse {
+            0%, 100% { border-radius: 16px; }
+            50% { border-radius: 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cao_color-box"></div>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-2 CSS3 3D 动画</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 30px 20px 60px;
+            background-color: #f3f4f6;
+            font-family: "Microsoft YaHei", sans-serif;
+            color: #1f2937;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            color: #103d61;
+        }
+        .cao_subtitle {
+            text-align: center;
+            margin: 0 0 30px;
+            color: #657080;
+            font-size: 14px;
+        }
+        h2 {
+            width: min(1000px, 100%);
+            margin: 40px auto 15px;
+            font-size: 20px;
+            color: #175b8c;
+            border-left: 5px solid #d96c3d;
+            padding-left: 12px;
+        }
+        .cao_grid {
+            width: min(1000px, 100%);
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .cao_card {
+            flex: 1 1 300px;
+            background-color: #fff;
+            border: 1px solid #d9d4c8;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 4px 0 rgba(23, 91, 140, 0.08);
+        }
+        .cao_card h3 {
+            margin: 0 0 6px;
+            font-size: 17px;
+            color: #103d61;
+        }
+        .cao_card h3 code {
+            color: #d96c3d;
+        }
+        .cao_card p {
+            margin: 0 0 12px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #657080;
+        }
+        .cao_card_wide {
+            flex: 1 1 100%;
+        }
+        .cao_demo {
+            padding: 20px 12px;
+            background-color: #f7f4ed;
+            border: 1px dashed #b9c4d0;
+            border-radius: 6px;
+            /* overflow: hidden 裁掉超出卡片的 3D 元素 */
+            overflow: hidden;
+        }
+
+        /* ============ 一、3D 转换基础 ============ */
+        /* 两个盒子都沿 Y 轴旋转 60°，区别只在于外层有没有 perspective */
+        .cao_persp_box {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+        .cao_no_persp {
+            /* 没有透视：立体旋转被"拍扁"，看起来像水平压扁的图片 */
+            transform-style: flat;
+        }
+        .cao_has_persp {
+            /* perspective 创建 3D 视距，越近的边越大，才有立体感 */
+            perspective: 500px;
+            perspective-origin: 50% 50%;
+        }
+        .cao_cube_demo {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #175b8c, #06d6a0);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 15px;
+            letter-spacing: 2px;
+            transform: rotateX(15deg) rotateY(60deg);
+            animation: cao_rock 5s ease-in-out infinite;
+        }
+        @keyframes cao_rock {
+            0%, 100% { transform: rotateX(15deg) rotateY(60deg); }
+            50% { transform: rotateX(15deg) rotateY(-60deg); }
+        }
+
+        /* 透视距离对比：perspective 值越小，透视变形越夸张 */
+        .cao_distance_row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .cao_distance_item {
+            text-align: center;
+            font-size: 12px;
+            color: #657080;
+        }
+        .cao_distance_item b {
+            display: block;
+            color: #103d61;
+            margin-top: 8px;
+        }
+        .cao_distance_box {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #d96c3d, #ffd166);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotateY(55deg);
+        }
+        .cao_d1 { perspective: 150px; }
+        .cao_d2 { perspective: 400px; }
+        .cao_d3 { perspective: 900px; }
+
+        /* ============ 二、立方体 ============ */
+        .cao_cube_stage {
+            height: 230px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 给整个舞台加透视，立方体才有立体感 */
+            perspective: 700px;
+        }
+        .cao_cube {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            /* preserve-3d：让 6 个面保持在真实的 3D 空间里，不会被压平 */
+            transform-style: preserve-3d;
+            animation: cao_cube_spin 12s linear infinite;
+        }
+        .cao_face {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            /* 半透明，方便看到背后的面 */
+            background-color: rgba(23, 91, 140, 0.75);
+            border: 2px solid rgba(255, 255, 255, 0.55);
+            border-radius: 6px;
+        }
+        /* 6 个面各自沿 Z 轴推出半个边长，围成一个正方体
+           （边长的一半 = 120 / 2 = 60px） */
+        .cao_face_front  { transform: translateZ(60px); }
+        .cao_face_back   { transform: rotateY(180deg) translateZ(60px); }
+        .cao_face_right  { transform: rotateY(90deg) translateZ(60px); }
+        .cao_face_left   { transform: rotateY(-90deg) translateZ(60px); }
+        .cao_face_top    { transform: rotateX(90deg) translateZ(60px); }
+        .cao_face_bottom { transform: rotateX(-90deg) translateZ(60px); }
+        @keyframes cao_cube_spin {
+            0%   { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* ============ 三、翻转卡片（鼠标悬停触发） ============ */
+        .cao_flip {
+            width: 220px;
+            height: 140px;
+            margin: 0 auto;
+            /* 每张卡片各自创建透视 */
+            perspective: 900px;
+            cursor: pointer;
+        }
+        .cao_flip_inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+        }
+        /* 鼠标悬停时沿 Y 轴翻转 180° */
+        .cao_flip:hover .cao_flip_inner {
+            transform: rotateY(180deg);
+        }
+        .cao_flip_face {
+            position: absolute;
+            inset: 0;
+            /* 背面隐藏：否则翻转时会看到"镜像穿透" */
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+        }
+        .cao_flip_front {
+            background: linear-gradient(135deg, #175b8c, #118ab2);
+        }
+        .cao_flip_back {
+            /* 背面先转 180°，翻转后正好正对观众 */
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #d96c3d, #ef476f);
+        }
+        .cao_flip_face small {
+            margin-top: 8px;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* ============ 四、3D 旋转木马 ============ */
+        .cao_carousel {
+            height: 230px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 800px;
+        }
+        .cao_ring {
+            position: relative;
+            width: 140px;
+            height: 90px;
+            transform-style: preserve-3d;
+            animation: cao_ring_spin 14s linear infinite;
+        }
+        .cao_panel {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        /* 6 张面板围成一圈：每张先绕 Y 轴旋转 60° 的倍数，再沿 Z 轴推出半径
+           半径 = 140px（面板宽）刚好合适 */
+        .cao_p1 { background-color: rgba(239, 71, 111, 0.85); transform: rotateY(0deg)   translateZ(140px); }
+        .cao_p2 { background-color: rgba(247, 160, 96, 0.85); transform: rotateY(60deg)  translateZ(140px); }
+        .cao_p3 { background-color: rgba(255, 209, 102, 0.85); transform: rotateY(120deg) translateZ(140px); }
+        .cao_p4 { background-color: rgba(6, 214, 160, 0.85);  transform: rotateY(180deg) translateZ(140px); }
+        .cao_p5 { background-color: rgba(0, 191, 249, 0.85);  transform: rotateY(240deg) translateZ(140px); }
+        .cao_p6 { background-color: rgba(155, 93, 229, 0.85); transform: rotateY(300deg) translateZ(140px); }
+        @keyframes cao_ring_spin {
+            0%   { transform: rotateX(-12deg) rotateY(0deg); }
+            100% { transform: rotateX(-12deg) rotateY(360deg); }
+        }
+
+        /* ============ 五、3D 阶梯（translateZ 纵向堆叠） ============ */
+        .cao_steps {
+            height: 190px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 600px;
+        }
+        .cao_steps_inner {
+            position: relative;
+            width: 150px;
+            height: 60px;
+            transform-style: preserve-3d;
+            animation: cao_steps_wave 6s ease-in-out infinite;
+        }
+        .cao_step {
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 15px;
+            /* 越靠前的层 translateZ 越大，配合透视近大远小 */
+            transition: transform 0.4s ease;
+        }
+        .cao_s1 { background-color: rgba(16, 61, 97, 0.9);  transform: translateZ(-60px) translateY(48px); }
+        .cao_s2 { background-color: rgba(23, 91, 140, 0.9); transform: translateZ(-30px) translateY(24px); }
+        .cao_s3 { background-color: rgba(0, 191, 249, 0.9); transform: translateZ(0); }
+        .cao_s4 { background-color: rgba(6, 214, 160, 0.9); transform: translateZ(30px) translateY(-24px); }
+        .cao_s5 { background-color: rgba(255, 209, 102, 0.9); transform: translateZ(60px) translateY(-48px); color: #47311c; }
+        /* 悬停时暂停动画，并把各层拉开更大的纵深距离 */
+        .cao_steps:hover .cao_steps_inner {
+            animation-play-state: paused;
+        }
+        .cao_steps:hover .cao_s1 { transform: translateZ(-100px) translateY(48px); }
+        .cao_steps:hover .cao_s2 { transform: translateZ(-50px) translateY(24px); }
+        .cao_steps:hover .cao_s4 { transform: translateZ(50px) translateY(-24px); }
+        .cao_steps:hover .cao_s5 { transform: translateZ(100px) translateY(-48px); }
+        @keyframes cao_steps_wave {
+            0%, 100% { transform: rotateX(20deg) rotateY(-30deg); }
+            50%      { transform: rotateX(20deg) rotateY(30deg); }
+        }
+
+        /* ============ 六、3D 地球 / 星环（综合） ============ */
+        .cao_globe_stage {
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 800px;
+        }
+        .cao_globe {
+            position: relative;
+            width: 6px;
+            height: 6px;
+            transform-style: preserve-3d;
+            animation: cao_globe_spin 10s linear infinite;
+        }
+        /* 用 8 个绕 X 轴旋转的圆环拼出一个"线框球" */
+        .cao_orbit {
+            position: absolute;
+            top: -60px;
+            left: -60px;
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(23, 91, 140, 0.55);
+            border-radius: 50%;
+        }
+        .cao_o1 { transform: rotateY(0deg); }
+        .cao_o2 { transform: rotateY(22.5deg); }
+        .cao_o3 { transform: rotateY(45deg); }
+        .cao_o4 { transform: rotateY(67.5deg); }
+        .cao_o5 { transform: rotateY(90deg); }
+        .cao_o6 { transform: rotateX(90deg); border-color: rgba(217, 108, 61, 0.6); }
+        .cao_o7 { transform: rotateX(90deg) rotateY(45deg); border-color: rgba(217, 108, 61, 0.6); }
+        .cao_o8 { transform: rotateX(90deg) rotateY(90deg); border-color: rgba(217, 108, 61, 0.6); }
+        @keyframes cao_globe_spin {
+            0%   { transform: rotateX(-20deg) rotateY(0deg); }
+            100% { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+
+        /* ============ 属性速查表 ============ */
+        table {
+            width: min(1000px, 100%);
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #d9d4c8;
+            padding: 9px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #103d61;
+            color: #fff;
+            font-weight: normal;
+        }
+        tr:nth-child(even) {
+            background-color: #f7f4ed;
+        }
+        .cao_tip {
+            width: min(1000px, 100%);
+            margin: 18px auto 0;
+            padding: 12px 16px;
+            background-color: #fff7e8;
+            border: 1px dashed #e0a44a;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #8a5a1d;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS3 3D 动画</h1>
+    <p class="cao_subtitle">曹润贤 · 高级网页设计课堂实践 11-2 · 核心三件套：perspective（透视）、transform-style: preserve-3d（保留 3D 空间）、transform（3D 变换）</p>
+
+    <h2>一、3D 转换基础：透视决定立体感</h2>
+    <div class="cao_grid">
+        <div class="cao_card">
+            <h3>有没有 <code>perspective</code> 的区别</h3>
+            <p>两个盒子都在沿 Y 轴旋转。左边没有透视，立体旋转被"拍扁"，像一张被压扁的图片；右边外层加了 <code>perspective: 500px</code>，近边大、远边小，才有真实的立体感。</p>
+            <div class="cao_demo cao_persp_box">
+                <div class="cao_no_persp">
+                    <div class="cao_cube_demo">无透视</div>
+                </div>
+                <div class="cao_has_persp">
+                    <div class="cao_cube_demo">有透视</div>
+                </div>
+            </div>
+        </div>
+        <div class="cao_card">
+            <h3>透视距离：<code>perspective</code> 的值</h3>
+            <p>值是观察者到 <code>z=0</code> 平面的距离（单位 px）。值越小离得越近，透视变形越夸张；值越大越接近正投影（看起来越"平"）。</p>
+            <div class="cao_demo cao_distance_row">
+                <div class="cao_distance_item">
+                    <div class="cao_d1"><div class="cao_distance_box">150px</div></div>
+                    <b>很近 · 变形强</b>
+                </div>
+                <div class="cao_distance_item">
+                    <div class="cao_d2"><div class="cao_distance_box">400px</div></div>
+                    <b>适中</b>
+                </div>
+                <div class="cao_distance_item">
+                    <div class="cao_d3"><div class="cao_distance_box">900px</div></div>
+                    <b>很远 · 较平</b>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>二、正方体：<code>transform-style: preserve-3d</code></h2>
+    <div class="cao_grid">
+        <div class="cao_card">
+            <h3>旋转的立方体</h3>
+            <p>6 个面各自用 <code>rotateX / rotateY</code> 转到对应方向，再用 <code>translateZ(60px)</code>（边长的一半）推出去，围成一个正方体。父元素必须设置 <code>transform-style: preserve-3d</code>，否则 6 个面会被压平在同一层，立方体就"塌"成一个方块。</p>
+            <div class="cao_demo cao_cube_stage">
+                <div class="cao_cube">
+                    <div class="cao_face cao_face_front">前</div>
+                    <div class="cao_face cao_face_back">后</div>
+                    <div class="cao_face cao_face_right">右</div>
+                    <div class="cao_face cao_face_left">左</div>
+                    <div class="cao_face cao_face_top">上</div>
+                    <div class="cao_face cao_face_bottom">下</div>
+                </div>
+            </div>
+        </div>
+        <div class="cao_card">
+            <h3>3D 阶梯：<code>translateZ</code> 纵深堆叠</h3>
+            <p>5 层色块用不同的 <code>translateZ</code>（-60px ~ +60px）拉开前后距离，配合透视就形成了一组悬浮的阶梯。把鼠标放上去，阶梯会停住并翻起，可以清楚看到每一层的纵深。</p>
+            <div class="cao_demo cao_steps">
+                <div class="cao_steps_inner">
+                    <div class="cao_step cao_s1">第 1 层</div>
+                    <div class="cao_step cao_s2">第 2 层</div>
+                    <div class="cao_step cao_s3">第 3 层</div>
+                    <div class="cao_step cao_s4">第 4 层</div>
+                    <div class="cao_step cao_s5">第 5 层</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>三、交互动画：翻转卡片</h2>
+    <div class="cao_grid">
+        <div class="cao_card">
+            <h3><code>backface-visibility: hidden</code> 防止"穿透"</h3>
+            <p>把鼠标移到卡片上，它会沿 Y 轴翻转 180° 露出背面。关键是：正反两面都设置 <code>backface-visibility: hidden</code>，背面再预先 <code>rotateY(180deg)</code>，否则翻转过程中会看到背面文字的镜像"穿透"过来。</p>
+            <div class="cao_demo">
+                <div class="cao_flip">
+                    <div class="cao_flip_inner">
+                        <div class="cao_flip_face cao_flip_front">
+                            正面
+                            <small>鼠标悬停翻转 →</small>
+                        </div>
+                        <div class="cao_flip_face cao_flip_back">
+                            背面
+                            <small>← 再移开翻回来</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cao_card">
+            <h3>线框地球：多个圆环合成球体</h3>
+            <p>8 个圆环用不同的 <code>rotateY</code> / <code>rotateX</code> 摆放成经纬线，父容器 <code>preserve-3d</code> + <code>animation</code> 让整颗球旋转起来。这是"多个 2D 元素拼 3D 造型"的典型思路。</p>
+            <div class="cao_demo cao_globe_stage">
+                <div class="cao_globe">
+                    <div class="cao_orbit cao_o1"></div>
+                    <div class="cao_orbit cao_o2"></div>
+                    <div class="cao_orbit cao_o3"></div>
+                    <div class="cao_orbit cao_o4"></div>
+                    <div class="cao_orbit cao_o5"></div>
+                    <div class="cao_orbit cao_o6"></div>
+                    <div class="cao_orbit cao_o7"></div>
+                    <div class="cao_orbit cao_o8"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>四、旋转木马：一圈 3D 面板</h2>
+    <div class="cao_grid">
+        <div class="cao_card cao_card_wide">
+            <h3><code>rotateY(n × 60°) + translateZ(半径)</code></h3>
+            <p>6 张面板：第 n 张先绕 Y 轴旋转 n×60°，再沿 Z 轴推出 140px，正好围成一圈。父容器只动 <code>rotateY</code>，整圈就匀速转起来了 —— 这是 3D 轮播、封面流的常用做法。</p>
+            <div class="cao_demo cao_carousel">
+                <div class="cao_ring">
+                    <div class="cao_panel cao_p1">1</div>
+                    <div class="cao_panel cao_p2">2</div>
+                    <div class="cao_panel cao_p3">3</div>
+                    <div class="cao_panel cao_p4">4</div>
+                    <div class="cao_panel cao_p5">5</div>
+                    <div class="cao_panel cao_p6">6</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2>五、3D 属性速查表</h2>
+    <table>
+        <tr>
+            <th>属性 / 函数</th>
+            <th>作用</th>
+            <th>常用值</th>
+        </tr>
+        <tr>
+            <td>perspective</td>
+            <td>给子元素创建 3D 透视（近大远小）</td>
+            <td>500px、800px</td>
+        </tr>
+        <tr>
+            <td>perspective-origin</td>
+            <td>设定观察者的视点位置</td>
+            <td>50% 50%（默认居中）</td>
+        </tr>
+        <tr>
+            <td>transform-style</td>
+            <td>子元素是否保留 3D 空间（不被压平）</td>
+            <td>flat（默认）/ preserve-3d</td>
+        </tr>
+        <tr>
+            <td>backface-visibility</td>
+            <td>元素背面是否可见</td>
+            <td>visible / hidden</td>
+        </tr>
+        <tr>
+            <td>rotateX() / rotateY() / rotateZ()</td>
+            <td>绕 X（上下）、Y（左右）、Z（平面内）轴旋转</td>
+            <td>45deg、360deg</td>
+        </tr>
+        <tr>
+            <td>translateZ()</td>
+            <td>沿 Z 轴前后移动，值越大越靠近观众</td>
+            <td>60px、-100px</td>
+        </tr>
+        <tr>
+            <td>translate3d(x, y, z)</td>
+            <td>同时在三个方向位移</td>
+            <td>translate3d(0, 0, 100px)</td>
+        </tr>
+        <tr>
+            <td>scale3d(x, y, z)</td>
+            <td>在三个方向缩放</td>
+            <td>scale3d(1, 1, 2)</td>
+        </tr>
+    </table>
+
+    <div class="cao_tip">
+        <b>避坑提示：</b>
+        ① 3D 效果的"立体感"来自父容器的 <code>perspective</code>，子元素的 3D 变换才会透视变形；
+        ② 只要某一层设置了 <code>transform-style: flat</code>（默认值）或 <code>overflow: hidden</code>，它内部的 3D 空间就会被压平，立方体之类的多面体将无法成形；
+        ③ 动画里只改变 <code>transform</code>，浏览器可交给 GPU 合成，滚动和动画会更流畅。
+    </div>
+</body>
+</html>

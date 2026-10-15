@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11.1 长度单位</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 30px 20px 60px;
+            background-color: #f3f4f6;
+            font-family: "Microsoft YaHei", sans-serif;
+            color: #1f2937;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            color: #103d61;
+        }
+        .cao_subtitle {
+            text-align: center;
+            margin: 0 0 30px;
+            color: #657080;
+            font-size: 14px;
+        }
+        h2 {
+            width: min(1000px, 100%);
+            margin: 40px auto 15px;
+            font-size: 20px;
+            color: #175b8c;
+            border-left: 5px solid #d96c3d;
+            padding-left: 12px;
+        }
+        .cao_grid {
+            width: min(1000px, 100%);
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .cao_card {
+            flex: 1 1 300px;
+            background-color: #fff;
+            border: 1px solid #d9d4c8;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 4px 0 rgba(23, 91, 140, 0.08);
+        }
+        .cao_card h3 {
+            margin: 0 0 6px;
+            font-size: 17px;
+            color: #103d61;
+        }
+        .cao_card h3 code {
+            color: #d96c3d;
+        }
+        .cao_card p {
+            margin: 0 0 12px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #657080;
+        }
+        .cao_demo {
+            padding: 12px;
+            background-color: #f7f4ed;
+            border: 1px dashed #b9c4d0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        /* px 像素：最常用的绝对单位 */
+        .cao_px-demo {
+            width: 200px;
+            height: 40px;
+            background-color: #175b8c;
+            color: #fff;
+            font-size: 14px;
+            line-height: 40px;
+            text-align: center;
+        }
+        /* in 厘米 毫米 英寸 磅 派卡：物理长度单位，屏幕默认 1in = 96px */
+        .cao_abs-demo {
+            display: flex;
+            align-items: end;
+            gap: 18px;
+            background-color: transparent;
+            border: none;
+        }
+        .cao_abs-demo div {
+            background-color: #06d6a0;
+            text-align: center;
+            font-size: 12px;
+            color: #04312a;
+            padding-top: 4px;
+        }
+        .cao_abs-cm { width: 1cm;  height: 20px; }
+        .cao_abs-mm { width: 10mm; height: 28px; }
+        .cao_abs-in { width: 1in;  height: 36px; }
+        .cao_abs-pt { width: 72pt; height: 44px; }
+        .cao_abs-pc { width: 12pc; height: 52px; }
+        /* em 相对父元素字体大小 */
+        .cao_em-demo {
+            font-size: 16px;
+        }
+        .cao_em-demo .cao_parent {
+            background-color: #ffd166;
+            padding: 10px;
+            font-size: 20px;
+        }
+        .cao_em-demo .cao_child {
+            background-color: #ef476f;
+            color: #fff;
+            margin-top: 6px;
+            padding: 6px;
+            /* 2em = 父元素 20px × 2 = 40px */
+            font-size: 2em;
+        }
+        /* rem 相对根元素(html)字体大小，不受父元素影响 */
+        .cao_rem-demo {
+            font-size: 16px;
+        }
+        .cao_rem-demo .cao_parent {
+            background-color: #ffd166;
+            padding: 10px;
+            font-size: 32px;
+        }
+        .cao_rem-demo .cao_child {
+            background-color: #118ab2;
+            color: #fff;
+            margin-top: 6px;
+            padding: 6px;
+            /* 2rem = html 的 16px × 2 = 32px，父元素再大也不影响 */
+            font-size: 2rem;
+        }
+        /* % 相对父容器的宽度或高度 */
+        .cao_pct-demo {
+            width: 60%;
+            background-color: #9b5de5;
+            color: #fff;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+        /* vw / vh 相对视口：1vw = 视口宽度的 1%，1vh = 视口高度的 1% */
+        .cao_vh-demo {
+            height: 8vh;
+            background-color: #00bbf9;
+            color: #03354a;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+        }
+        .cao_vw-demo {
+            width: 25vw;
+            height: 30px;
+            background-color: #f15bb5;
+            color: #4a044e;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            margin-top: 6px;
+        }
+        /* vmin / vmax：vmin 取宽高中较小的 1%，vmax 取较大的 1% */
+        .cao_vmin-demo {
+            width: 15vmin;
+            height: 15vmin;
+            background-color: #fee440;
+            color: #47311c;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* ex 相对字符 x 高度，ch 相对字符 "0" 的宽度 ——【已修复文字重叠问题】 */
+        .cao_font-demo {
+            background-color: transparent;
+            border: none;
+            font-size: 16px;
+        }
+        .cao_ex-bar {
+            width: 10ex;
+            height: 16px;
+            background-color: #00f4b6;
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+        }
+        .cao_ch-bar {
+            width: 10ch;
+            height: 16px;
+            background-color: #ff7b00;
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+        }
+        table {
+            width: min(1000px, 100%);
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #d9d4c8;
+            padding: 9px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #103d61;
+            color: #fff;
+            font-weight: normal;
+        }
+        tr:nth-child(even) {
+            background-color: #f7f4ed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Web 前端的长度单位</h1>
+    <p class="cao_subtitle">曹润贤 · 高级网页设计课堂实践 11.1 · 拖动浏览器窗口大小可观察相对单位的变化</p>
+    <h2>一、绝对单位</h2>
+    <div class="cao_grid">
+        <div class="cao_card">
+            <h3>px（像素）<code>200px</code></h3>
+            <p>网页中最常用的长度单位，不随屏幕大小变化。</p>
+            <div class="cao_demo">
+                <div class="cao_px-demo">width: 200px</div>
+            </div>
+        </div>
+        <div class="cao_card">
+            <h3>cm / mm / in / pt / pc</h3>
+            <p>物理长度单位。屏幕上默认 1in = 96px，1in = 72pt = 6pc，1cm ≈ 37.8px，主要用于打印样式。</p>
+            <div class="cao_demo cao_abs-demo">
+                <div class="cao_abs-cm">1cm</div>
+                <div class="cao_abs-mm">10mm</div>
+                <div class="cao_abs-in">1in</div>
+                <div class="cao_abs-pt">72pt</div>
+                <div class="cao_abs-pc">12pc</div>
+            </div>
+        </div>
+    </div>
+    <h2>二、相对字体单位</h2>
+    <div class="cao_grid">
+        <div class="cao_card">
+            <h3>em</h3>
+            <p>相对<b>父元素</b>的 font-size。子元素里嵌套 em 会成倍放大（20px × 2 = 40px）。</p>
+            <div class="cao_demo cao_em-demo">
+                <div class="cao_parent">父元素 font-size: 20px
+                    <div class="cao_child">子元素 2em = 40px</div>
+                </div>
+            </div>
+        </div>
+        <div class="cao_card">
+            <h3>rem</h3>
+            <p>相对<b>根元素 html</b> 的 font-size（默认 16px），不受父元素影响，适合做整体缩放。</p>
+            <div class="cao_demo cao_rem-demo">
+                <div class="cao_parent">父元素 font-size: 32px
+                    <div class="cao_child">子元素 2rem = 32px</div>
+                </div>
+            </div>
+        </div>
+        <div class="cao_card">
+            <h3>ex / ch</h3>
+            <p>ex 相对字符 "x" 的高度，ch 相对字符 "0" 的宽度（各 10 个单位）。</p>
+            <div class="cao_demo cao_font-demo">
+                <div class="cao_ex-bar">width: 10ex</div>
+                <div class="cao_ch-bar">width: 10ch</div>
+            </div>
+        </div>
+    </div>
+    <h2>三、相对视口与父容器单位</h2>
+    <div class="cao_grid">
+        <div class="cao_card">
+            <h3>%（百分比）</h3>
+            <p>相对父容器的尺寸，常用于流式布局。下例为父容器宽度的 60%。</p>
+            <div class="cao_demo">
+                <div class="cao_pct-demo">width: 60%</div>
+            </div>
+        </div>
+        <div class="cao_card">
+            <h3>vw / vh</h3>
+            <p>相对浏览器视口：1vw = 视口宽度的 1%，1vh = 视口高度的 1%。调整窗口大小试试！</p>
+            <div class="cao_demo">
+                <div class="cao_vh-demo">height: 8vh（视口高度的 8%）</div>
+                <div class="cao_vw-demo">width: 25vw</div>
+            </div>
+        </div>
+        <div class="cao_card">
+            <h3>vmin / vmax</h3>
+            <p>vmin 取视口宽高中<b>较小</b>值的百分比，vmax 取<b>较大</b>值的百分比。</p>
+            <div class="cao_demo">
+                <div class="cao_vmin-demo">15vmin</div>
+            </div>
+        </div>
+    </div>
+    <h2>四、单位速查表</h2>
+    <table>
+        <tr>
+            <th>单位</th>
+            <th>类型</th>
+            <th>参照</th>
+            <th>常见用途</th>
+        </tr>
+        <tr>
+            <td>px</td>
+            <td>绝对</td>
+            <td>设备像素</td>
+            <td>边框、阴影等固定尺寸</td>
+        </tr>
+        <tr>
+            <td>cm / mm / in / pt / pc</td>
+            <td>绝对</td>
+            <td>物理长度（1in = 96px）</td>
+            <td>打印样式</td>
+        </tr>
+        <tr>
+            <td>em</td>
+            <td>相对</td>
+            <td>父元素 font-size</td>
+            <td>段落内局部缩放</td>
+        </tr>
+        <tr>
+            <td>rem</td>
+            <td>相对</td>
+            <td>根元素 html 的 font-size</td>
+            <td>整体布局与响应式缩放</td>
+        </tr>
+        <tr>
+            <td>%</td>
+            <td>相对</td>
+            <td>父容器宽高</td>
+            <td>流式布局</td>
+        </tr>
+        <tr>
+            <td>vw / vh</td>
+            <td>相对</td>
+            <td>视口宽度 / 高度的 1%</td>
+            <td>整屏布局、滚动区域</td>
+        </tr>
+        <tr>
+            <td>vmin / vmax</td>
+            <td>相对</td>
+            <td>视口宽高较小 / 较大值</td>
+            <td>横竖屏自适应</td>
+        </tr>
+        <tr>
+            <td>ex / ch</td>
+            <td>相对</td>
+            <td>字符 x 高度 / 字符 0 宽度</td>
+            <td>与文字排版对齐</td>
+        </tr>
+    </table>
+</body>
+</html>

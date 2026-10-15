@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        ul{
+            list-style: none;
+        }
+        img{
+            display: block;
+        }
+        .cao_ilist{
+            display: flex;
+            margin: 8px;
+        }
+        .cao_ilist li{
+            width:30%;
+            margin-right: 1px;
+            flex-grow: 1;
+            position: relative;
+        }
+        .cao_ilist li img{
+            width: 100%;
+        }
+        .cao_ilist li p{
+            text-align:center;
+            font-size: 14px;
+            line-height: 33px;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            
+        }
+    </style>
+</head>
+<body>
+    <ul class="cao_ilist">
+        <li>
+            <img src="./1.png">
+            <p>曹润贤的上图下文</p>
+        </li>
+        <li>
+            <img src="./2.jpg">
+            <p>图片2</p>
+        </li>
+        <li>
+            <img src="./3.jpg">
+            <p>图片3</p>
+        </li>
+    </ul>
+</body>
+</html>

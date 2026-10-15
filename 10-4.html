@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>媒体查询响应式布局</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-width: 320px;
+            min-height: 100%;
+            margin: 0;
+        }
+
+        body {
+            padding: 32px 20px;
+            background: #f1f5f4;
+            color: #173b3a;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        h1 {
+            margin: 0 0 28px;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .cao_box-grid {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+        }
+
+        .cao_box {
+            min-height: 130px;
+            display: grid;
+            place-items: center;
+            background: #177e78;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .cao_box:nth-child(even) {
+            background: #e07a45;
+        }
+
+        @media (min-width: 600px) {
+            .cao_box-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 900px) {
+            .cao_box-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .cao_box-grid {
+                grid-template-columns: repeat(8, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>曹润贤213</h1>
+        <section class="cao_box-grid" aria-label="响应式盒子布局">
+            <div class="cao_box">盒子 1</div>
+            <div class="cao_box">盒子 2</div>
+            <div class="cao_box">盒子 3</div>
+            <div class="cao_box">盒子 4</div>
+            <div class="cao_box">盒子 5</div>
+            <div class="cao_box">盒子 6</div>
+            <div class="cao_box">盒子 7</div>
+            <div class="cao_box">盒子 8</div>
+        </section>
+    </main>
+</body>
+</html>
