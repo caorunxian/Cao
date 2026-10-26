@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15-1 数七游戏</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            padding: 30px 20px 60px;
+            background-color: #f3f4f6;
+            font-family: "Microsoft YaHei", sans-serif;
+            color: #1f2937;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            color: #103d61;
+        }
+        .crx_subtitle {
+            text-align: center;
+            margin: 10px 0 20px;
+            color: #657080;
+            font-size: 14px;
+        }
+        .crx_rule-bar {
+            width: min(1100px, 100%);
+            margin: 0 auto 24px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .crx_rule-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background-color: #fff;
+            border: 1px solid #d9d4c8;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #103d61;
+            box-shadow: 0 2px 0 rgba(23, 91, 140, 0.08);
+        }
+        .crx_rule-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        .crx_dot-num  { background-color: #175b8c; }
+        .crx_dot-skip { background-color: #e5e7eb; border: 2px dashed #9ca3af; }
+        .crx_dot-hit7 { background-color: #d96c3d; }
+        .crx_dot-hit7 + span { color: #d96c3d; font-weight: bold; }
+
+        .crx_grid {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+            gap: 10px;
+        }
+        .crx_box {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #175b8c;
+            color: #fff;
+            box-shadow: 0 3px 0 rgba(16, 61, 97, 0.35);
+            transition: transform 0.15s, box-shadow 0.15s;
+            cursor: default;
+        }
+        .crx_box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(16, 61, 97, 0.35);
+        }
+        .crx_box.crx_skip {
+            background-color: #e5e7eb;
+            color: transparent;
+            border: 2px dashed #9ca3af;
+            box-shadow: none;
+            position: relative;
+        }
+        .crx_box.crx_skip::after {
+            content: "?";
+            position: absolute;
+            font-size: 16px;
+            color: #9ca3af;
+        }
+        .crx_box.crx_skip:hover::after {
+            content: attr(data-crx-num);
+            color: #d96c3d;
+            font-size: 20px;
+        }
+        .crx_box.crx_has7 {
+            background-color: #d96c3d;
+            box-shadow: 0 3px 0 rgba(150, 70, 30, 0.35);
+        }
+        .crx_summary {
+            width: min(1100px, 100%);
+            margin: 24px auto 0;
+            text-align: center;
+            font-size: 14px;
+            color: #657080;
+        }
+        .crx_summary strong {
+            color: #d96c3d;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-10-26，使用大模型：GLM-5.3-Flash，功能名称：15-1 数七游戏 -->
+
+    <h1>数七游戏 · 100 个盒子</h1>
+    <p class="crx_subtitle">数字 1 ~ 100 依次放入盒子，遇到"七"就只留下空盒子（悬停空盒子可查看答案）</p>
+
+    <div class="crx_rule-bar">
+        <span class="crx_rule-item"><span class="crx_rule-dot crx_dot-num"></span>普通数字正常显示</span>
+        <span class="crx_rule-item"><span class="crx_rule-dot crx_dot-skip"></span>数七规则命中 → 空盒子</span>
+        <span class="crx_rule-item"><span class="crx_rule-dot crx_dot-hit7"></span>橙色 = 含数字 7（悬停揭示）</span>
+        <span class="crx_rule-item">规则：7 的倍数 或 含数字 7 的数</span>
+    </div>
+
+    <div class="crx_grid" id="crx_grid"></div>
+
+    <p class="crx_summary" id="crx_summary"></p>
+
+    <script>
+        var crx_skipCount = 0;
+
+        // 判断是否命中"数七"规则：7 的倍数 或 个位/十位含 7
+        function crx_isSkip(crx_num) {
+            return crx_num % 7 === 0 ||
+                   String(crx_num).indexOf('7') !== -1;
+        }
+
+        (function crx_init() {
+            var crx_grid = document.getElementById('crx_grid');
+            var crx_fragment = document.createDocumentFragment();
+
+            for (var crx_i = 1; crx_i <= 100; crx_i++) {
+                var crx_box = document.createElement('div');
+                crx_box.className = 'crx_box';
+                crx_box.dataset.crxNum = crx_i;
+
+                if (crx_isSkip(crx_i)) {
+                    crx_box.classList.add('crx_skip');
+                    if (String(crx_i).indexOf('7') !== -1) {
+                        crx_box.classList.add('crx_has7');
+                    }
+                    crx_skipCount++;
+                } else {
+                    crx_box.textContent = crx_i;
+                }
+                crx_fragment.appendChild(crx_box);
+            }
+            crx_grid.appendChild(crx_fragment);
+
+            document.getElementById('crx_summary').innerHTML =
+                '共 <strong>' + crx_skipCount + '</strong> 个空盒子（需喊"过"），普通数字 <strong>' +
+                (100 - crx_skipCount) + '</strong> 个';
+        })();
+    </script>
+</body>
+</html>

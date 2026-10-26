@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Awesome 字体图标</title>
+    <link rel="stylesheet" href="../cdn/fontawesome/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .crx_container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .crx_subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        .crx_card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .crx_card h2 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .crx_card h2 i {
+            color: #667eea;
+        }
+        .crx_icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+        .crx_icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        .crx_icon-item:hover {
+            background: #e9ecef;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .crx_icon-item i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .crx_icon-item span {
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+        }
+        .crx_size-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .crx_size-item {
+            text-align: center;
+        }
+        .crx_size-item i {
+            display: block;
+            color: #764ba2;
+            margin-bottom: 8px;
+        }
+        .crx_size-item span {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .crx_color-demo {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .crx_color-item {
+            text-align: center;
+        }
+        .crx_color-item i {
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+        .crx_color-item span {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .crx_red { color: #e74c3c !important; }
+        .crx_green { color: #27ae60 !important; }
+        .crx_blue { color: #3498db !important; }
+        .crx_orange { color: #f39c12 !important; }
+        .crx_purple { color: #9b59b6 !important; }
+        .crx_pink { color: #e91e63 !important; }
+        .crx_teal { color: #1abc9c !important; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，日期：2026-10-22，功能名称：13-1 -->
+    <div class="crx_container">
+        <h1><i class="fas fa-icons"></i> Font Awesome 字体图标</h1>
+        <p class="crx_subtitle">使用 Web Font + CSS 方式渲染图标 | Font Awesome 6.5.1 Free</p>
+
+        <!-- Solid 图标 -->
+        <div class="crx_card">
+            <h2><i class="fas fa-square"></i> Solid 实心图标</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i class="fas fa-home"></i><span>home</span></div>
+                <div class="crx_icon-item"><i class="fas fa-user"></i><span>user</span></div>
+                <div class="crx_icon-item"><i class="fas fa-heart"></i><span>heart</span></div>
+                <div class="crx_icon-item"><i class="fas fa-star"></i><span>star</span></div>
+                <div class="crx_icon-item"><i class="fas fa-cog"></i><span>cog</span></div>
+                <div class="crx_icon-item"><i class="fas fa-search"></i><span>search</span></div>
+                <div class="crx_icon-item"><i class="fas fa-envelope"></i><span>envelope</span></div>
+                <div class="crx_icon-item"><i class="fas fa-camera"></i><span>camera</span></div>
+                <div class="crx_icon-item"><i class="fas fa-music"></i><span>music</span></div>
+                <div class="crx_icon-item"><i class="fas fa-gamepad"></i><span>gamepad</span></div>
+                <div class="crx_icon-item"><i class="fas fa-rocket"></i><span>rocket</span></div>
+                <div class="crx_icon-item"><i class="fas fa-gift"></i><span>gift</span></div>
+                <div class="crx_icon-item"><i class="fas fa-book"></i><span>book</span></div>
+                <div class="crx_icon-item"><i class="fas fa-car"></i><span>car</span></div>
+                <div class="crx_icon-item"><i class="fas fa-plane"></i><span>plane</span></div>
+                <div class="crx_icon-item"><i class="fas fa-utensils"></i><span>utensils</span></div>
+                <div class="crx_icon-item"><i class="fas fa-phone"></i><span>phone</span></div>
+                <div class="crx_icon-item"><i class="fas fa-cloud"></i><span>cloud</span></div>
+                <div class="crx_icon-item"><i class="fas fa-fire"></i><span>fire</span></div>
+                <div class="crx_icon-item"><i class="fas fa-globe"></i><span>globe</span></div>
+            </div>
+        </div>
+
+        <!-- Regular 图标 -->
+        <div class="crx_card">
+            <h2><i class="far fa-square"></i> Regular 线性图标</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i class="far fa-heart"></i><span>heart</span></div>
+                <div class="crx_icon-item"><i class="far fa-star"></i><span>star</span></div>
+                <div class="crx_icon-item"><i class="far fa-user"></i><span>user</span></div>
+                <div class="crx_icon-item"><i class="far fa-envelope"></i><span>envelope</span></div>
+                <div class="crx_icon-item"><i class="far fa-bell"></i><span>bell</span></div>
+                <div class="crx_icon-item"><i class="far fa-bookmark"></i><span>bookmark</span></div>
+                <div class="crx_icon-item"><i class="far fa-calendar"></i><span>calendar</span></div>
+                <div class="crx_icon-item"><i class="far fa-clock"></i><span>clock</span></div>
+                <div class="crx_icon-item"><i class="far fa-flag"></i><span>flag</span></div>
+                <div class="crx_icon-item"><i class="far fa-comments"></i><span>comments</span></div>
+                <div class="crx_icon-item"><i class="far fa-eye"></i><span>eye</span></div>
+                <div class="crx_icon-item"><i class="far fa-file"></i><span>file</span></div>
+                <div class="crx_icon-item"><i class="far fa-folder"></i><span>folder</span></div>
+                <div class="crx_icon-item"><i class="far fa-image"></i><span>image</span></div>
+                <div class="crx_icon-item"><i class="far fa-lightbulb"></i><span>lightbulb</span></div>
+                <div class="crx_icon-item"><i class="far fa-moon"></i><span>moon</span></div>
+                <div class="crx_icon-item"><i class="far fa-sun"></i><span>sun</span></div>
+                <div class="crx_icon-item"><i class="far fa-thumbs-up"></i><span>thumbs-up</span></div>
+                <div class="crx_icon-item"><i class="far fa-paper-plane"></i><span>paper-plane</span></div>
+                <div class="crx_icon-item"><i class="far fa-grin"></i><span>grin</span></div>
+            </div>
+        </div>
+
+        <!-- Brands 图标 -->
+        <div class="crx_card">
+            <h2><i class="fab fa-github"></i> Brands 品牌图标</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i class="fab fa-github"></i><span>GitHub</span></div>
+                <div class="crx_icon-item"><i class="fab fa-twitter"></i><span>Twitter</span></div>
+                <div class="crx_icon-item"><i class="fab fa-facebook"></i><span>Facebook</span></div>
+                <div class="crx_icon-item"><i class="fab fa-instagram"></i><span>Instagram</span></div>
+                <div class="crx_icon-item"><i class="fab fa-linkedin"></i><span>LinkedIn</span></div>
+                <div class="crx_icon-item"><i class="fab fa-youtube"></i><span>YouTube</span></div>
+                <div class="crx_icon-item"><i class="fab fa-weibo"></i><span>微博</span></div>
+                <div class="crx_icon-item"><i class="fab fa-weixin"></i><span>微信</span></div>
+                <div class="crx_icon-item"><i class="fab fa-qq"></i><span>QQ</span></div>
+                <div class="crx_icon-item"><i class="fab fa-tiktok"></i><span>TikTok</span></div>
+                <div class="crx_icon-item"><i class="fab fa-bilibili"></i><span>哔哩哔哩</span></div>
+                <div class="crx_icon-item"><i class="fab fa-apple"></i><span>Apple</span></div>
+                <div class="crx_icon-item"><i class="fab fa-android"></i><span>Android</span></div>
+                <div class="crx_icon-item"><i class="fab fa-windows"></i><span>Windows</span></div>
+                <div class="crx_icon-item"><i class="fab fa-linux"></i><span>Linux</span></div>
+                <div class="crx_icon-item"><i class="fab fa-docker"></i><span>Docker</span></div>
+                <div class="crx_icon-item"><i class="fab fa-chrome"></i><span>Chrome</span></div>
+                <div class="crx_icon-item"><i class="fab fa-edge"></i><span>Edge</span></div>
+                <div class="crx_icon-item"><i class="fab fa-firefox"></i><span>Firefox</span></div>
+            </div>
+        </div>
+
+        <!-- 尺寸演示 -->
+        <div class="crx_card">
+            <h2><i class="fas fa-expand-arrows-alt"></i> 尺寸缩放</h2>
+            <div class="crx_size-demo">
+                <div class="crx_size-item"><i class="fas fa-cat fa-2xs"></i><span>fa-2xs</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-xs"></i><span>fa-xs</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-sm"></i><span>fa-sm</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-lg"></i><span>fa-lg</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-xl"></i><span>fa-xl</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-2xl"></i><span>fa-2xl</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-3x"></i><span>fa-3x</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-5x"></i><span>fa-5x</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-7x"></i><span>fa-7x</span></div>
+                <div class="crx_size-item"><i class="fas fa-cat fa-10x"></i><span>fa-10x</span></div>
+            </div>
+        </div>
+
+        <!-- 颜色演示 -->
+        <div class="crx_card">
+            <h2><i class="fas fa-palette"></i> 颜色自定义</h2>
+            <div class="crx_color-demo">
+                <div class="crx_color-item"><i class="fas fa-heart crx_red"></i><span>红色</span></div>
+                <div class="crx_color-item"><i class="fas fa-heart crx_green"></i><span>绿色</span></div>
+                <div class="crx_color-item"><i class="fas fa-heart crx_blue"></i><span>蓝色</span></div>
+                <div class="crx_color-item"><i class="fas fa-heart crx_orange"></i><span>橙色</span></div>
+                <div class="crx_color-item"><i class="fas fa-heart crx_purple"></i><span>紫色</span></div>
+                <div class="crx_color-item"><i class="fas fa-heart crx_pink"></i><span>粉色</span></div>
+                <div class="crx_color-item"><i class="fas fa-heart crx_teal"></i><span>青色</span></div>
+            </div>
+        </div>
+
+        <!-- 动画演示 -->
+        <div class="crx_card">
+            <h2><i class="fas fa-magic"></i> 动画效果</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i class="fas fa-spinner fa-spin"></i><span>fa-spin</span></div>
+                <div class="crx_icon-item"><i class="fas fa-circle-notch fa-spin"></i><span>circle-notch</span></div>
+                <div class="crx_icon-item"><i class="fas fa-sync fa-spin"></i><span>sync spin</span></div>
+                <div class="crx_icon-item"><i class="fas fa-cog fa-spin"></i><span>cog spin</span></div>
+                <div class="crx_icon-item"><i class="fas fa-spinner fa-pulse"></i><span>fa-pulse</span></div>
+                <div class="crx_icon-item"><i class="fas fa-heart fa-beat"></i><span>fa-beat</span></div>
+                <div class="crx_icon-item"><i class="fas fa-bell fa-shake"></i><span>fa-shake</span></div>
+                <div class="crx_icon-item"><i class="fas fa-heart fa-bounce"></i><span>fa-bounce</span></div>
+                <div class="crx_icon-item"><i class="fas fa-star fa-fade"></i><span>fa-fade</span></div>
+                <div class="crx_icon-item"><i class="fas fa-sync fa-flip"></i><span>fa-flip</span></div>
+            </div>
+        </div>
+
+        <!-- 旋转和翻转 -->
+        <div class="crx_card">
+            <h2><i class="fas fa-sync-alt"></i> 旋转与翻转</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i class="fas fa-anchor fa-rotate-90"></i><span>rotate-90</span></div>
+                <div class="crx_icon-item"><i class="fas fa-anchor fa-rotate-180"></i><span>rotate-180</span></div>
+                <div class="crx_icon-item"><i class="fas fa-anchor fa-rotate-270"></i><span>rotate-270</span></div>
+                <div class="crx_icon-item"><i class="fas fa-music fa-flip-horizontal"></i><span>flip-h</span></div>
+                <div class="crx_icon-item"><i class="fas fa-music fa-flip-vertical"></i><span>flip-v</span></div>
+                <div class="crx_icon-item"><i class="fas fa-music fa-flip-both"></i><span>flip-both</span></div>
+            </div>
+        </div>
+
+        <!-- 堆叠图标 -->
+        <div class="crx_card">
+            <h2><i class="fas fa-layer-group"></i> 堆叠图标</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item">
+                    <span class="fa-stack fa-2x">
+                        <i class="fas fa-square fa-stack-2x" style="color: #667eea;"></i>
+                        <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <span>Twitter on square</span>
+                </div>
+                <div class="crx_icon-item">
+                    <span class="fa-stack fa-2x">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fas fa-flag fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <span>Flag on circle</span>
+                </div>
+                <div class="crx_icon-item">
+                    <span class="fa-stack fa-2x">
+                        <i class="fas fa-camera fa-stack-1x"></i>
+                        <i class="fas fa-ban fa-stack-2x" style="color: #e74c3c;"></i>
+                    </span>
+                    <span>No camera</span>
+                </div>
+                <div class="crx_icon-item">
+                    <span class="fa-stack fa-2x">
+                        <i class="fas fa-user fa-stack-1x"></i>
+                        <i class="fas fa-ban fa-stack-2x" style="color: #e74c3c;"></i>
+                    </span>
+                    <span>No user</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

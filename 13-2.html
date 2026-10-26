@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucide SVG 图标</title>
+    <script src="../cdn/lucide/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .crx_container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .crx_subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        .crx_card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .crx_card h2 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #302b63;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .crx_card h2 svg {
+            color: #302b63;
+            width: 24px;
+            height: 24px;
+        }
+        .crx_icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+        .crx_icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            border-radius: 12px;
+            background: #f0f0f5;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        .crx_icon-item:hover {
+            background: #e4e4ef;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .crx_icon-item svg {
+            width: 32px;
+            height: 32px;
+            color: #302b63;
+            margin-bottom: 10px;
+        }
+        .crx_icon-item span {
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+        }
+        .crx_size-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: #f0f0f5;
+            border-radius: 12px;
+        }
+        .crx_size-item {
+            text-align: center;
+        }
+        .crx_size-item svg {
+            display: block;
+            color: #7c3aed;
+            margin: 0 auto 8px;
+        }
+        .crx_size-item span {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .crx_color-demo {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: #f0f0f5;
+            border-radius: 12px;
+        }
+        .crx_color-item {
+            text-align: center;
+        }
+        .crx_color-item svg {
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 8px;
+        }
+        .crx_color-item span {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .crx_stroke-demo {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: #f0f0f5;
+            border-radius: 12px;
+        }
+        .crx_stroke-item {
+            text-align: center;
+        }
+        .crx_stroke-item svg {
+            display: block;
+            color: #302b63;
+            margin: 0 auto 8px;
+        }
+        .crx_stroke-item span {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .crx_red { color: #e74c3c !important; }
+        .crx_green { color: #27ae60 !important; }
+        .crx_blue { color: #3498db !important; }
+        .crx_orange { color: #f39c12 !important; }
+        .crx_purple { color: #9b59b6 !important; }
+        .crx_pink { color: #e91e63 !important; }
+        .crx_teal { color: #1abc9c !important; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，日期：2026-10-22，功能名称：13-2 -->
+    <div class="crx_container">
+        <h1><i data-lucide="sparkles"></i> Lucide SVG 图标</h1>
+        <p class="crx_subtitle">使用 SVG Sprites + JavaScript 方式渲染图标 | Lucide v0.462.0</p>
+
+        <!-- 基础图标 -->
+        <div class="crx_card">
+            <h2><i data-lucide="square"></i> 基础图标</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i data-lucide="home"></i><span>home</span></div>
+                <div class="crx_icon-item"><i data-lucide="user"></i><span>user</span></div>
+                <div class="crx_icon-item"><i data-lucide="heart"></i><span>heart</span></div>
+                <div class="crx_icon-item"><i data-lucide="star"></i><span>star</span></div>
+                <div class="crx_icon-item"><i data-lucide="settings"></i><span>settings</span></div>
+                <div class="crx_icon-item"><i data-lucide="search"></i><span>search</span></div>
+                <div class="crx_icon-item"><i data-lucide="mail"></i><span>mail</span></div>
+                <div class="crx_icon-item"><i data-lucide="camera"></i><span>camera</span></div>
+                <div class="crx_icon-item"><i data-lucide="music"></i><span>music</span></div>
+                <div class="crx_icon-item"><i data-lucide="gamepad-2"></i><span>gamepad-2</span></div>
+                <div class="crx_icon-item"><i data-lucide="rocket"></i><span>rocket</span></div>
+                <div class="crx_icon-item"><i data-lucide="gift"></i><span>gift</span></div>
+                <div class="crx_icon-item"><i data-lucide="book"></i><span>book</span></div>
+                <div class="crx_icon-item"><i data-lucide="car"></i><span>car</span></div>
+                <div class="crx_icon-item"><i data-lucide="plane"></i><span>plane</span></div>
+                <div class="crx_icon-item"><i data-lucide="utensils"></i><span>utensils</span></div>
+                <div class="crx_icon-item"><i data-lucide="phone"></i><span>phone</span></div>
+                <div class="crx_icon-item"><i data-lucide="cloud"></i><span>cloud</span></div>
+                <div class="crx_icon-item"><i data-lucide="flame"></i><span>flame</span></div>
+                <div class="crx_icon-item"><i data-lucide="globe"></i><span>globe</span></div>
+            </div>
+        </div>
+
+        <!-- 界面图标 -->
+        <div class="crx_card">
+            <h2><i data-lucide="layout"></i> 界面图标</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i data-lucide="bell"></i><span>bell</span></div>
+                <div class="crx_icon-item"><i data-lucide="calendar"></i><span>calendar</span></div>
+                <div class="crx_icon-item"><i data-lucide="clock"></i><span>clock</span></div>
+                <div class="crx_icon-item"><i data-lucide="bookmark"></i><span>bookmark</span></div>
+                <div class="crx_icon-item"><i data-lucide="flag"></i><span>flag</span></div>
+                <div class="crx_icon-item"><i data-lucide="message-circle"></i><span>message-circle</span></div>
+                <div class="crx_icon-item"><i data-lucide="eye"></i><span>eye</span></div>
+                <div class="crx_icon-item"><i data-lucide="file"></i><span>file</span></div>
+                <div class="crx_icon-item"><i data-lucide="folder"></i><span>folder</span></div>
+                <div class="crx_icon-item"><i data-lucide="image"></i><span>image</span></div>
+                <div class="crx_icon-item"><i data-lucide="lightbulb"></i><span>lightbulb</span></div>
+                <div class="crx_icon-item"><i data-lucide="moon"></i><span>moon</span></div>
+                <div class="crx_icon-item"><i data-lucide="sun"></i><span>sun</span></div>
+                <div class="crx_icon-item"><i data-lucide="thumbs-up"></i><span>thumbs-up</span></div>
+                <div class="crx_icon-item"><i data-lucide="send"></i><span>send</span></div>
+                <div class="crx_icon-item"><i data-lucide="map-pin"></i><span>map-pin</span></div>
+                <div class="crx_icon-item"><i data-lucide="map"></i><span>map</span></div>
+                <div class="crx_icon-item"><i data-lucide="compass"></i><span>compass</span></div>
+                <div class="crx_icon-item"><i data-lucide="navigation"></i><span>navigation</span></div>
+                <div class="crx_icon-item"><i data-lucide="wifi"></i><span>wifi</span></div>
+            </div>
+        </div>
+
+        <!-- 箭头图标 -->
+        <div class="crx_card">
+            <h2><i data-lucide="move"></i> 箭头与方向</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i data-lucide="arrow-right"></i><span>arrow-right</span></div>
+                <div class="crx_icon-item"><i data-lucide="arrow-left"></i><span>arrow-left</span></div>
+                <div class="crx_icon-item"><i data-lucide="arrow-up"></i><span>arrow-up</span></div>
+                <div class="crx_icon-item"><i data-lucide="arrow-down"></i><span>arrow-down</span></div>
+                <div class="crx_icon-item"><i data-lucide="chevron-right"></i><span>chevron-right</span></div>
+                <div class="crx_icon-item"><i data-lucide="chevron-left"></i><span>chevron-left</span></div>
+                <div class="crx_icon-item"><i data-lucide="chevron-up"></i><span>chevron-up</span></div>
+                <div class="crx_icon-item"><i data-lucide="chevron-down"></i><span>chevron-down</span></div>
+                <div class="crx_icon-item"><i data-lucide="arrow-up-right"></i><span>arrow-up-right</span></div>
+                <div class="crx_icon-item"><i data-lucide="arrow-down-left"></i><span>arrow-down-left</span></div>
+                <div class="crx_icon-item"><i data-lucide="corner-up-right"></i><span>corner-up-right</span></div>
+                <div class="crx_icon-item"><i data-lucide="undo-2"></i><span>undo-2</span></div>
+                <div class="crx_icon-item"><i data-lucide="redo-2"></i><span>redo-2</span></div>
+                <div class="crx_icon-item"><i data-lucide="rotate-cw"></i><span>rotate-cw</span></div>
+                <div class="crx_icon-item"><i data-lucide="rotate-ccw"></i><span>rotate-ccw</span></div>
+                <div class="crx_icon-item"><i data-lucide="refresh-cw"></i><span>refresh-cw</span></div>
+                <div class="crx_icon-item"><i data-lucide="refresh-ccw"></i><span>refresh-ccw</span></div>
+                <div class="crx_icon-item"><i data-lucide="maximize"></i><span>maximize</span></div>
+                <div class="crx_icon-item"><i data-lucide="minimize"></i><span>minimize</span></div>
+            </div>
+        </div>
+
+        <!-- 尺寸演示 -->
+        <div class="crx_card">
+            <h2><i data-lucide="expand"></i> 尺寸缩放</h2>
+            <div class="crx_size-demo">
+                <div class="crx_size-item"><i data-lucide="cat" width="16" height="16"></i><span>16px</span></div>
+                <div class="crx_size-item"><i data-lucide="cat" width="24" height="24"></i><span>24px</span></div>
+                <div class="crx_size-item"><i data-lucide="cat" width="32" height="32"></i><span>32px</span></div>
+                <div class="crx_size-item"><i data-lucide="cat" width="48" height="48"></i><span>48px</span></div>
+                <div class="crx_size-item"><i data-lucide="cat" width="64" height="64"></i><span>64px</span></div>
+                <div class="crx_size-item"><i data-lucide="cat" width="96" height="96"></i><span>96px</span></div>
+                <div class="crx_size-item"><i data-lucide="cat" width="128" height="128"></i><span>128px</span></div>
+            </div>
+        </div>
+
+        <!-- 颜色演示 -->
+        <div class="crx_card">
+            <h2><i data-lucide="palette"></i> 颜色自定义</h2>
+            <div class="crx_color-demo">
+                <div class="crx_color-item"><i data-lucide="heart" class="crx_red"></i><span>红色</span></div>
+                <div class="crx_color-item"><i data-lucide="heart" class="crx_green"></i><span>绿色</span></div>
+                <div class="crx_color-item"><i data-lucide="heart" class="crx_blue"></i><span>蓝色</span></div>
+                <div class="crx_color-item"><i data-lucide="heart" class="crx_orange"></i><span>橙色</span></div>
+                <div class="crx_color-item"><i data-lucide="heart" class="crx_purple"></i><span>紫色</span></div>
+                <div class="crx_color-item"><i data-lucide="heart" class="crx_pink"></i><span>粉色</span></div>
+                <div class="crx_color-item"><i data-lucide="heart" class="crx_teal"></i><span>青色</span></div>
+            </div>
+        </div>
+
+        <!-- 描边宽度演示 -->
+        <div class="crx_card">
+            <h2><i data-lucide="pen-tool"></i> 描边宽度</h2>
+            <div class="crx_stroke-demo">
+                <div class="crx_stroke-item"><i data-lucide="star" stroke-width="1"></i><span>stroke 1</span></div>
+                <div class="crx_stroke-item"><i data-lucide="star" stroke-width="1.5"></i><span>stroke 1.5</span></div>
+                <div class="crx_stroke-item"><i data-lucide="star" stroke-width="2"></i><span>stroke 2</span></div>
+                <div class="crx_stroke-item"><i data-lucide="star" stroke-width="2.5"></i><span>stroke 2.5</span></div>
+                <div class="crx_stroke-item"><i data-lucide="star" stroke-width="3"></i><span>stroke 3</span></div>
+                <div class="crx_stroke-item"><i data-lucide="star" stroke-width="4"></i><span>stroke 4</span></div>
+            </div>
+        </div>
+
+        <!-- 自然与天气 -->
+        <div class="crx_card">
+            <h2><i data-lucide="cloud-sun"></i> 自然与天气</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i data-lucide="sun"></i><span>sun</span></div>
+                <div class="crx_icon-item"><i data-lucide="moon"></i><span>moon</span></div>
+                <div class="crx_icon-item"><i data-lucide="cloud"></i><span>cloud</span></div>
+                <div class="crx_icon-item"><i data-lucide="cloud-rain"></i><span>cloud-rain</span></div>
+                <div class="crx_icon-item"><i data-lucide="cloud-snow"></i><span>cloud-snow</span></div>
+                <div class="crx_icon-item"><i data-lucide="cloud-lightning"></i><span>cloud-lightning</span></div>
+                <div class="crx_icon-item"><i data-lucide="snowflake"></i><span>snowflake</span></div>
+                <div class="crx_icon-item"><i data-lucide="droplets"></i><span>droplets</span></div>
+                <div class="crx_icon-item"><i data-lucide="umbrella"></i><span>umbrella</span></div>
+                <div class="crx_icon-item"><i data-lucide="rainbow"></i><span>rainbow</span></div>
+                <div class="crx_icon-item"><i data-lucide="tornado"></i><span>tornado</span></div>
+                <div class="crx_icon-item"><i data-lucide="waves"></i><span>waves</span></div>
+            </div>
+        </div>
+
+        <!-- 动物与自然 -->
+        <div class="crx_card">
+            <h2><i data-lucide="leaf"></i> 动物与自然</h2>
+            <div class="crx_icon-grid">
+                <div class="crx_icon-item"><i data-lucide="cat"></i><span>cat</span></div>
+                <div class="crx_icon-item"><i data-lucide="dog"></i><span>dog</span></div>
+                <div class="crx_icon-item"><i data-lucide="bird"></i><span>bird</span></div>
+                <div class="crx_icon-item"><i data-lucide="fish"></i><span>fish</span></div>
+                <div class="crx_icon-item"><i data-lucide="rabbit"></i><span>rabbit</span></div>
+                <div class="crx_icon-item"><i data-lucide="turtle"></i><span>turtle</span></div>
+                <div class="crx_icon-item"><i data-lucide="bug"></i><span>bug</span></div>
+                <div class="crx_icon-item"><i data-lucide="flower-2"></i><span>flower-2</span></div>
+                <div class="crx_icon-item"><i data-lucide="leaf"></i><span>leaf</span></div>
+                <div class="crx_icon-item"><i data-lucide="tree-pine"></i><span>tree-pine</span></div>
+                <div class="crx_icon-item"><i data-lucide="mountain"></i><span>mountain</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

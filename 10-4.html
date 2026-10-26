@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -29,7 +29,7 @@
             font-size: 2rem;
         }
 
-        .cao_box-grid {
+        .crx_box-grid {
             width: min(1100px, 100%);
             margin: 0 auto;
             display: grid;
@@ -37,7 +37,7 @@
             gap: 16px;
         }
 
-        .cao_box {
+        .crx_box {
             min-height: 130px;
             display: grid;
             place-items: center;
@@ -47,41 +47,42 @@
             font-weight: 700;
         }
 
-        .cao_box:nth-child(even) {
+        .crx_box:nth-child(even) {
             background: #e07a45;
         }
 
         @media (min-width: 600px) {
-            .cao_box-grid {
+            .crx_box-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
         @media (min-width: 900px) {
-            .cao_box-grid {
+            .crx_box-grid {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
         }
 
         @media (min-width: 1200px) {
-            .cao_box-grid {
+            .crx_box-grid {
                 grid-template-columns: repeat(8, minmax(0, 1fr));
             }
         }
     </style>
 </head>
 <body>
+    <!-- 姓名：曹润贤，日期：2026-10-22，功能名称：10-4 -->
     <main>
         <h1>曹润贤213</h1>
-        <section class="cao_box-grid" aria-label="响应式盒子布局">
-            <div class="cao_box">盒子 1</div>
-            <div class="cao_box">盒子 2</div>
-            <div class="cao_box">盒子 3</div>
-            <div class="cao_box">盒子 4</div>
-            <div class="cao_box">盒子 5</div>
-            <div class="cao_box">盒子 6</div>
-            <div class="cao_box">盒子 7</div>
-            <div class="cao_box">盒子 8</div>
+        <section class="crx_box-grid" aria-label="响应式盒子布局">
+            <div class="crx_box">盒子 1</div>
+            <div class="crx_box">盒子 2</div>
+            <div class="crx_box">盒子 3</div>
+            <div class="crx_box">盒子 4</div>
+            <div class="crx_box">盒子 5</div>
+            <div class="crx_box">盒子 6</div>
+            <div class="crx_box">盒子 7</div>
+            <div class="crx_box">盒子 8</div>
         </section>
     </main>
 </body>

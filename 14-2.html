@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14-2 JavaScript 基本数据类型</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            padding: 30px 20px 60px;
+            background-color: #f3f4f6;
+            font-family: "Microsoft YaHei", sans-serif;
+            color: #1f2937;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            color: #103d61;
+        }
+        .crx_subtitle {
+            text-align: center;
+            margin: 10px 0 30px;
+            color: #657080;
+            font-size: 14px;
+        }
+        .crx_container {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .crx_card {
+            background-color: #fff;
+            border: 1px solid #d9d4c8;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 4px 0 rgba(23, 91, 140, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .crx_card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(23, 91, 140, 0.15);
+        }
+        .crx_card-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .crx_type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .crx_badge-string  { background-color: #e74c3c; }
+        .crx_badge-number  { background-color: #3498db; }
+        .crx_badge-boolean { background-color: #2ecc71; }
+        .crx_badge-undef   { background-color: #9b59b6; }
+        .crx_badge-null    { background-color: #34495e; }
+        .crx_badge-symbol  { background-color: #f39c12; }
+
+        .crx_type-cn {
+            font-size: 18px;
+            font-weight: bold;
+            color: #103d61;
+        }
+        .crx_desc {
+            font-size: 13px;
+            color: #657080;
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+        .crx_code-block {
+            background-color: #18202b;
+            color: #f7f4ed;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            overflow-x: auto;
+            margin-bottom: 12px;
+        }
+        .crx_code-block .crx_comment { color: #7f8c8d; font-style: italic; }
+        .crx_code-block .crx_keyword { color: #ffd166; }
+        .crx_code-block .crx_str    { color: #06d6a0; }
+        .crx_code-block .crx_num    { color: #ef476f; }
+        .crx_code-block .crx_bool   { color: #118ab2; }
+
+        .crx_run-btn {
+            display: inline-block;
+            padding: 7px 18px;
+            background-color: #175b8c;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .crx_run-btn:hover {
+            background-color: #103d61;
+        }
+        .crx_result {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background-color: #f0f7ff;
+            border-left: 4px solid #175b8c;
+            border-radius: 4px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #103d61;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 20px;
+        }
+        .crx_result-empty {
+            color: #9ca3af;
+            font-style: italic;
+        }
+        .crx_extra {
+            width: min(1100px, 100%);
+            margin: 30px auto 0;
+            background-color: #fff;
+            border: 1px solid #d9d4c8;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 4px 0 rgba(23, 91, 140, 0.08);
+        }
+        .crx_extra h2 {
+            color: #175b8c;
+            border-left: 5px solid #d96c3d;
+            padding-left: 12px;
+            margin-bottom: 14px;
+            font-size: 18px;
+        }
+        .crx_table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .crx_table th,
+        .crx_table td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .crx_table th {
+            background-color: #f7f4ed;
+            color: #103d61;
+            font-weight: bold;
+        }
+        .crx_table tr:hover {
+            background-color: #fafbfc;
+        }
+        .crx_table code {
+            background-color: #f0f7ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #175b8c;
+            font-family: Consolas, "Courier New", monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，日期：2026-10-22，功能名称：14-2 JavaScript 基本数据类型 -->
+
+    <h1>JavaScript 6 种基本数据类型</h1>
+    <p class="crx_subtitle">点击每张卡片的"运行示例"按钮，查看实际输出结果</p>
+
+    <div class="crx_container">
+
+        <!-- String -->
+        <div class="crx_card">
+            <div class="crx_card-head">
+                <span class="crx_type-badge crx_badge-string">String</span>
+                <span class="crx_type-cn">字符串</span>
+            </div>
+            <p class="crx_desc">由零个或多个字符组成的文本，用单引号、双引号或反引号包裹。</p>
+            <div class="crx_code-block">
+<span class="crx_comment">// 三种写法</span>
+<span class="crx_keyword">let</span> crx_str1 = <span class="crx_str">'hello'</span>;
+<span class="crx_keyword">let</span> crx_str2 = <span class="crx_str">"world"</span>;
+<span class="crx_keyword">let</span> crx_str3 = <span class="crx_str">`模板字符串`</span>;
+<span class="crx_keyword">let</span> crx_empty = <span class="crx_str">''</span>;
+<span class="crx_keyword">console</span>.log(<span class="crx_keyword">typeof</span> crx_str1);
+            </div>
+            <button class="crx_run-btn" onclick="crx_runString()">运行示例</button>
+            <div class="crx_result crx_result-empty" id="crx_res_string">等待运行...</div>
+        </div>
+
+        <!-- Number -->
+        <div class="crx_card">
+            <div class="crx_card-head">
+                <span class="crx_type-badge crx_badge-number">Number</span>
+                <span class="crx_type-cn">数字</span>
+            </div>
+            <p class="crx_desc">整数和浮点数，还包括特殊值 <code style="background:#f0f7ff;padding:1px 5px;border-radius:3px;">NaN</code>、<code style="background:#f0f7ff;padding:1px 5px;border-radius:3px;">Infinity</code>。</p>
+            <div class="crx_code-block">
+<span class="crx_keyword">let</span> crx_int = <span class="crx_num">42</span>;
+<span class="crx_keyword">let</span> crx_float = <span class="crx_num">3.14</span>;
+<span class="crx_keyword">let</span> crx_hex = <span class="crx_num">0xff</span>;
+<span class="crx_keyword">let</span> crx_nan = <span class="crx_keyword">NaN</span>;
+<span class="crx_keyword">let</span> crx_inf = <span class="crx_keyword">Infinity</span>;
+<span class="crx_keyword">console</span>.log(<span class="crx_keyword">typeof</span> crx_int);
+            </div>
+            <button class="crx_run-btn" onclick="crx_runNumber()">运行示例</button>
+            <div class="crx_result crx_result-empty" id="crx_res_number">等待运行...</div>
+        </div>
+
+        <!-- Boolean -->
+        <div class="crx_card">
+            <div class="crx_card-head">
+                <span class="crx_type-badge crx_badge-boolean">Boolean</span>
+                <span class="crx_type-cn">布尔值</span>
+            </div>
+            <p class="crx_desc">只有两个取值：<code style="background:#f0f7ff;padding:1px 5px;border-radius:3px;">true</code> 或 <code style="background:#f0f7ff;padding:1px 5px;border-radius:3px;">false</code>，常用于条件判断。</p>
+            <div class="crx_code-block">
+<span class="crx_keyword">let</span> crx_yes = <span class="crx_bool">true</span>;
+<span class="crx_keyword">let</span> crx_no = <span class="crx_bool">false</span>;
+<span class="crx_keyword">let</span> crx_cmp = <span class="crx_num">10</span> > <span class="crx_num">5</span>;
+<span class="crx_keyword">console</span>.log(crx_cmp);
+<span class="crx_keyword">console</span>.log(<span class="crx_keyword">typeof</span> crx_yes);
+            </div>
+            <button class="crx_run-btn" onclick="crx_runBoolean()">运行示例</button>
+            <div class="crx_result crx_result-empty" id="crx_res_boolean">等待运行...</div>
+        </div>
+
+        <!-- Undefined -->
+        <div class="crx_card">
+            <div class="crx_card-head">
+                <span class="crx_type-badge crx_badge-undef">Undefined</span>
+                <span class="crx_type-cn">未定义</span>
+            </div>
+            <p class="crx_desc">变量已声明但未赋值时的默认值。函数没有返回值时也返回 <code style="background:#f0f7ff;padding:1px 5px;border-radius:3px;">undefined</code>。</p>
+            <div class="crx_code-block">
+<span class="crx_keyword">let</span> crx_declared;
+<span class="crx_keyword">console</span>.log(crx_declared);
+<span class="crx_keyword">console</span>.log(<span class="crx_keyword">typeof</span> crx_declared);
+
+<span class="crx_comment">// 使用未声明的变量会报错</span>
+<span class="crx_comment">// console.log(crx_notExist);</span>
+            </div>
+            <button class="crx_run-btn" onclick="crx_runUndefined()">运行示例</button>
+            <div class="crx_result crx_result-empty" id="crx_res_undef">等待运行...</div>
+        </div>
+
+        <!-- Null -->
+        <div class="crx_card">
+            <div class="crx_card-head">
+                <span class="crx_type-badge crx_badge-null">Null</span>
+                <span class="crx_type-cn">空值</span>
+            </div>
+            <p class="crx_desc">表示"没有值"或"空对象引用"。注意：<code style="background:#f0f7ff;padding:1px 5px;border-radius:3px;">typeof null</code> 返回 <code style="background:#f0f7ff;padding:1px 5px;border-radius:3px;">"object"</code>，这是 JS 的一个历史遗留 Bug。</p>
+            <div class="crx_code-block">
+<span class="crx_keyword">let</span> crx_emptyObj = <span class="crx_keyword">null</span>;
+<span class="crx_keyword">console</span>.log(crx_emptyObj);
+<span class="crx_keyword">console</span>.log(<span class="crx_keyword">typeof</span> crx_emptyObj);
+
+<span class="crx_comment">// null == undefined 为 true</span>
+<span class="crx_comment">// null === undefined 为 false</span>
+            </div>
+            <button class="crx_run-btn" onclick="crx_runNull()">运行示例</button>
+            <div class="crx_result crx_result-empty" id="crx_res_null">等待运行...</div>
+        </div>
+
+        <!-- Symbol -->
+        <div class="crx_card">
+            <div class="crx_card-head">
+                <span class="crx_type-badge crx_badge-symbol">Symbol</span>
+                <span class="crx_type-cn">符号</span>
+            </div>
+            <p class="crx_desc">ES6 新增的唯一标识符，每个 Symbol 都是独一无二的，常用于对象的私有属性键。</p>
+            <div class="crx_code-block">
+<span class="crx_keyword">let</span> crx_sym1 = <span class="crx_keyword">Symbol</span>(<span class="crx_str">'id'</span>);
+<span class="crx_keyword">let</span> crx_sym2 = <span class="crx_keyword">Symbol</span>(<span class="crx_str">'id'</span>);
+<span class="crx_keyword">console</span>.log(crx_sym1 === crx_sym2);
+<span class="crx_keyword">console</span>.log(<span class="crx_keyword">typeof</span> crx_sym1);
+<span class="crx_keyword">console</span>.log(crx_sym1.<span class="crx_keyword">description</span>);
+            </div>
+            <button class="crx_run-btn" onclick="crx_runSymbol()">运行示例</button>
+            <div class="crx_result crx_result-empty" id="crx_res_symbol">等待运行...</div>
+        </div>
+
+    </div>
+
+    <!-- typeof 对照表 -->
+    <div class="crx_extra">
+        <h2>typeof 运算符对照表</h2>
+        <table class="crx_table">
+            <thead>
+                <tr>
+                    <th>值</th>
+                    <th>typeof 返回值</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>'hello'</code></td><td><code>'string'</code></td><td>String</td></tr>
+                <tr><td><code>42</code></td><td><code>'number'</code></td><td>Number</td></tr>
+                <tr><td><code>true</code></td><td><code>'boolean'</code></td><td>Boolean</td></tr>
+                <tr><td><code>undefined</code></td><td><code>'undefined'</code></td><td>Undefined</td></tr>
+                <tr><td><code>null</code></td><td><code>'object'</code>（历史 Bug）</td><td>Null</td></tr>
+                <tr><td><code>Symbol('x')</code></td><td><code>'symbol'</code></td><td>Symbol</td></tr>
+                <tr><td><code>[1,2,3]</code></td><td><code>'object'</code></td><td>Object（引用类型）</td></tr>
+                <tr><td><code>{a:1}</code></td><td><code>'object'</code></td><td>Object（引用类型）</td></tr>
+                <tr><td><code>function(){}</code></td><td><code>'function'</code></td><td>Function（特殊引用类型）</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function crx_print(id, text) {
+            var el = document.getElementById(id);
+            el.classList.remove('crx_result-empty');
+            el.textContent = text;
+        }
+
+        function crx_runString() {
+            let crx_str1 = 'hello';
+            let crx_str2 = "world";
+            let crx_str3 = `模板字符串`;
+            let crx_empty = '';
+            let out =
+                "crx_str1 = '" + crx_str1 + "'\n" +
+                "crx_str2 = \"" + crx_str2 + "\"\n" +
+                "crx_str3 = `" + crx_str3 + "`\n" +
+                "crx_empty = '' (长度: " + crx_empty.length + ")\n" +
+                "typeof crx_str1 = " + typeof crx_str1 + "\n" +
+                "字符串拼接: " + crx_str1 + ' ' + crx_str2;
+            crx_print('crx_res_string', out);
+        }
+
+        function crx_runNumber() {
+            let crx_int = 42;
+            let crx_float = 3.14;
+            let crx_hex = 0xff;
+            let crx_nan = NaN;
+            let crx_inf = Infinity;
+            let out =
+                "crx_int = " + crx_int + "\n" +
+                "crx_float = " + crx_float + "\n" +
+                "crx_hex (0xff) = " + crx_hex + "\n" +
+                "crx_nan = " + crx_nan + " (isNaN: " + isNaN(crx_nan) + ")\n" +
+                "crx_inf = " + crx_inf + "\n" +
+                "typeof crx_int = " + typeof crx_int + "\n" +
+                "0.1 + 0.2 = " + (0.1 + 0.2) + "（浮点数精度问题）";
+            crx_print('crx_res_number', out);
+        }
+
+        function crx_runBoolean() {
+            let crx_yes = true;
+            let crx_no = false;
+            let crx_cmp = 10 > 5;
+            let out =
+                "crx_yes = " + crx_yes + "\n" +
+                "crx_no = " + crx_no + "\n" +
+                "10 > 5 = " + crx_cmp + "\n" +
+                "typeof crx_yes = " + typeof crx_yes + "\n" +
+                "真值表:\n" +
+                "  Boolean('') = " + Boolean('') + "\n" +
+                "  Boolean('hi') = " + Boolean('hi') + "\n" +
+                "  Boolean(0) = " + Boolean(0) + "\n" +
+                "  Boolean(1) = " + Boolean(1) + "\n" +
+                "  Boolean(null) = " + Boolean(null) + "\n" +
+                "  Boolean(undefined) = " + Boolean(undefined);
+            crx_print('crx_res_boolean', out);
+        }
+
+        function crx_runUndefined() {
+            let crx_declared;
+            function crx_noReturn() { }
+            let out =
+                "let crx_declared;  // 未赋值\n" +
+                "crx_declared = " + crx_declared + "\n" +
+                "typeof crx_declared = " + typeof crx_declared + "\n" +
+                "没有 return 的函数: " + crx_noReturn() + "\n" +
+                "undefined == null : " + (undefined == null) + "\n" +
+                "undefined === null: " + (undefined === null);
+            crx_print('crx_res_undef', out);
+        }
+
+        function crx_runNull() {
+            let crx_emptyObj = null;
+            let out =
+                "crx_emptyObj = " + crx_emptyObj + "\n" +
+                "typeof crx_emptyObj = " + typeof crx_emptyObj + "  ← 历史 Bug!\n" +
+                "正确判断 null: crx_emptyObj === null  → " + (crx_emptyObj === null) + "\n" +
+                "null == undefined  → " + (null == undefined) + "\n" +
+                "null === undefined → " + (null === null ? "..." : null === undefined);
+            crx_print('crx_res_null', out);
+        }
+
+        function crx_runSymbol() {
+            let crx_sym1 = Symbol('id');
+            let crx_sym2 = Symbol('id');
+            let crx_global = Symbol.for('shared');
+            let out =
+                "crx_sym1 = Symbol('id')\n" +
+                "crx_sym2 = Symbol('id')\n" +
+                "crx_sym1 === crx_sym2 → " + (crx_sym1 === crx_sym2) + "  (每个 Symbol 都唯一)\n" +
+                "typeof crx_sym1 = " + typeof crx_sym1 + "\n" +
+                "crx_sym1.description = '" + crx_sym1.description + "'\n" +
+                "Symbol.for('shared') 创建全局注册表 Symbol";
+            crx_print('crx_res_symbol', out);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>移动端底部导航 - 字体图标</title>
+    <link rel="stylesheet" href="font/iconfont.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        /* 模拟页面内容 */
+        .crx_page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 60px 20px 40px;
+            text-align: center;
+        }
+        .crx_page-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        .crx_page-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .crx_content {
+            padding: 20px;
+        }
+        .crx_content-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .crx_content-card h3 {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .crx_content-card p {
+            font-size: 0.85rem;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* 底部固定导航 */
+        .crx_tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #fff;
+            border-top: 1px solid #e8e8e8;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .crx_tabbar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0 6px;
+            text-decoration: none;
+            color: #999;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .crx_tabbar-item.crx_active {
+            color: #667eea;
+        }
+        .crx_tabbar-item .crx_iconfont {
+            font-size: 24px;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .crx_tabbar-item .crx_label {
+            font-size: 10px;
+            line-height: 1;
+        }
+
+        /* 数字徽章 */
+        .crx_badge {
+            position: absolute;
+            top: 2px;
+            right: calc(50% - 22px);
+            min-width: 16px;
+            height: 16px;
+            background: #ff4757;
+            color: #fff;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            line-height: 1;
+        }
+
+        /* 红点 */
+        .crx_dot {
+            position: absolute;
+            top: 6px;
+            right: calc(50% - 18px);
+            width: 8px;
+            height: 8px;
+            background: #ff4757;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，日期：2026-10-22，功能名称：13-3 -->
+    <!-- 页面头部 -->
+    <div class="crx_page-header">
+        <h1>移动端底部导航</h1>
+        <p>Font Awesome 字体图标方案</p>
+    </div>
+
+    <!-- 页面内容 -->
+    <div class="crx_content">
+        <div class="crx_content-card">
+            <h3>字体图标方案</h3>
+            <p>使用 iconfont 字体文件渲染图标，通过 CSS 类名调用，支持颜色、大小、动画等 CSS 特性。</p>
+        </div>
+        <div class="crx_content-card">
+            <h3>数字徽章</h3>
+            <p>首页和微信图标右上角显示数字徽章，用于提示未读消息数量。</p>
+        </div>
+        <div class="crx_content-card">
+            <h3>红点提示</h3>
+            <p>发现图标右上角显示红点，用于提示有新内容更新。</p>
+        </div>
+        <div class="crx_content-card">
+            <h3>自适应宽度</h3>
+            <p>导航项使用 flex 布局，自动平分屏幕宽度，适配各种移动设备。</p>
+        </div>
+    </div>
+
+    <!-- 底部固定导航 -->
+    <nav class="crx_tabbar">
+        <a href="#" class="crx_tabbar-item crx_active">
+            <i class="iconfont icon-shouye1"></i>
+            <span class="crx_label">首页</span>
+            <span class="crx_badge">3</span>
+        </a>
+        <a href="#" class="crx_tabbar-item">
+            <i class="iconfont icon-faxian"></i>
+            <span class="crx_label">发现</span>
+            <span class="crx_dot"></span>
+        </a>
+        <a href="#" class="crx_tabbar-item">
+            <i class="iconfont icon-weixin"></i>
+            <span class="crx_label">微信</span>
+            <span class="crx_badge">12</span>
+        </a>
+        <a href="#" class="crx_tabbar-item">
+            <i class="iconfont icon-wo"></i>
+            <span class="crx_label">我</span>
+        </a>
+    </nav>
+</body>
+</html>

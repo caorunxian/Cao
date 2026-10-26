@@ -38,7 +38,7 @@
             color: inherit;
         }
 
-        .cao_page {
+        .crx_page {
             width: min(1120px, calc(100% - 40px));
             margin: 0 auto;
         }
@@ -77,7 +77,7 @@
             border-radius: 50%;
         }
 
-        .cao_eyebrow {
+        .crx_eyebrow {
             margin: 0 0 18px;
             color: var(--orange);
             font: bold 13px/1.4 "Microsoft YaHei", sans-serif;
@@ -93,14 +93,14 @@
             letter-spacing: 1px;
         }
 
-        .cao_intro {
+        .crx_intro {
             max-width: 630px;
             margin: 25px 0 0;
             color: var(--muted);
             font: 17px/1.9 "Microsoft YaHei", sans-serif;
         }
 
-        .cao_rule {
+        .crx_rule {
             width: 78px;
             height: 5px;
             margin-top: 29px;
@@ -111,7 +111,7 @@
             padding-bottom: 80px;
         }
 
-        .cao_section-heading {
+        .crx_section-heading {
             display: flex;
             justify-content: space-between;
             align-items: end;
@@ -126,19 +126,19 @@
             font-weight: normal;
         }
 
-        .cao_section-heading p {
+        .crx_section-heading p {
             margin: 0;
             color: var(--muted);
             font: 14px "Microsoft YaHei", sans-serif;
         }
 
-        .cao_works {
+        .crx_works {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
         }
 
-        .cao_work {
+        .crx_work {
             min-height: 156px;
             display: flex;
             flex-direction: column;
@@ -151,20 +151,20 @@
             transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
         }
 
-        .cao_work:hover,
-        .cao_work:focus-visible {
+        .crx_work:hover,
+        .crx_work:focus-visible {
             border-color: var(--blue);
             box-shadow: var(--shadow);
             transform: translateY(-5px);
             outline: none;
         }
 
-        .cao_work-number {
+        .crx_work-number {
             color: var(--orange);
             font: bold 13px "Microsoft YaHei", sans-serif;
         }
 
-        .cao_work h3 {
+        .crx_work h3 {
             margin: 12px 0 0;
             color: var(--ink);
             font-size: 21px;
@@ -172,14 +172,14 @@
             line-height: 1.35;
         }
 
-        .cao_work-file {
+        .crx_work-file {
             margin-top: 13px;
             color: var(--muted);
             font: 12px "Microsoft YaHei", sans-serif;
             overflow-wrap: anywhere;
         }
 
-        .cao_brief {
+        .crx_brief {
             display: grid;
             grid-template-columns: 0.8fr 1.2fr;
             gap: 38px;
@@ -189,7 +189,7 @@
             border-top: 1px solid var(--line);
         }
 
-        .cao_brief h2 {
+        .crx_brief h2 {
             font-size: 25px;
         }
 
@@ -210,7 +210,7 @@
         }
 
         @media (max-width: 760px) {
-            .cao_page {
+            .crx_page {
                 width: min(100% - 28px, 560px);
             }
 
@@ -219,11 +219,11 @@
                 padding: 55px 0 65px;
             }
 
-            .cao_works {
+            .crx_works {
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            .cao_brief {
+            .crx_brief {
                 grid-template-columns: 1fr;
                 gap: 17px;
                 margin-top: 58px;
@@ -231,128 +231,168 @@
         }
 
         @media (max-width: 430px) {
-            .cao_works {
+            .crx_works {
                 grid-template-columns: 1fr;
             }
 
-            .cao_section-heading {
+            .crx_section-heading {
                 display: block;
             }
 
-            .cao_section-heading p {
+            .crx_section-heading p {
                 margin-top: 8px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- 姓名：曹润贤，日期：2026-10-22，功能名称：index -->
     <header>
-        <div class="cao_page">
-            <p class="cao_eyebrow">CLASSROOM PRACTICE · 2026</p>
+        <div class="crx_page">
+            <p class="crx_eyebrow">CLASSROOM PRACTICE · 2026</p>
             <h1>曹润贤的<br>高级网页设计</h1>
-            <p class="cao_intro">从 HTML 元素、表单，到 CSS 层叠与选择器，记录课堂练习中逐步搭建起来的网页世界。</p>
-            <div class="cao_rule" aria-hidden="true"></div>
+            <p class="crx_intro">从 HTML 元素、表单，到 CSS 层叠与选择器，记录课堂练习中逐步搭建起来的网页世界。</p>
+            <div class="crx_rule" aria-hidden="true"></div>
         </div>
     </header>
 
-    <main class="cao_page">
-        <section aria-labelledby="cao_works-title">
-            <div class="cao_section-heading">
-                <h2 id="cao_works-title">课堂实践目录</h2>
+    <main class="crx_page">
+        <section aria-labelledby="crx_works-title">
+            <div class="crx_section-heading">
+                <h2 id="crx_works-title">课堂实践目录</h2>
                 <p>点击卡片打开对应网页</p>
             </div>
-            <div class="cao_works">
-                <a class="cao_work" href="1.html">
-                    <span class="cao_work-number">01 / PRACTICE</span>
+            <div class="crx_works">
+                <a class="crx_work" href="1.html">
+                    <span class="crx_work-number">01 / PRACTICE</span>
                     <h3>网页实践一</h3>
-                    <span class="cao_work-file">1.html</span>
+                    <span class="crx_work-file">1.html</span>
                 </a>
-                <a class="cao_work" href="2-1.html">
-                    <span class="cao_work-number">02 / HTML</span>
+                <a class="crx_work" href="2-1.html">
+                    <span class="crx_work-number">02 / HTML</span>
                     <h3>HTML 元素</h3>
-                    <span class="cao_work-file">2-1.html</span>
+                    <span class="crx_work-file">2-1.html</span>
                 </a>
-                <a class="cao_work" href="2-2.html">
-                    <span class="cao_work-number">03 / HTML</span>
+                <a class="crx_work" href="2-2.html">
+                    <span class="crx_work-number">03 / HTML</span>
                     <h3>HTML 页面实践</h3>
-                    <span class="cao_work-file">2-2.html</span>
+                    <span class="crx_work-file">2-2.html</span>
                 </a>
-                <a class="cao_work" href="3-1-1.html">
-                    <span class="cao_work-number">04 / FORM</span>
+                <a class="crx_work" href="3-1-1.html">
+                    <span class="crx_work-number">04 / FORM</span>
                     <h3>HTML 表单 form</h3>
-                    <span class="cao_work-file">3-1-1.html</span>
+                    <span class="crx_work-file">3-1-1.html</span>
                 </a>
-                <a class="cao_work" href="3-2.html">
-                    <span class="cao_work-number">05 / CSS</span>
+                <a class="crx_work" href="3-2.html">
+                    <span class="crx_work-number">05 / CSS</span>
                     <h3>层叠样式表 CSS</h3>
-                    <span class="cao_work-file">3-2.html</span>
+                    <span class="crx_work-file">3-2.html</span>
                 </a>
-                <a class="cao_work" href="4-1 css.html">
-                    <span class="cao_work-number">06 / CSS</span>
+                <a class="crx_work" href="4-1 css.html">
+                    <span class="crx_work-number">06 / CSS</span>
                     <h3>CSS 进阶</h3>
-                    <span class="cao_work-file">4-1 css.html</span>
+                    <span class="crx_work-file">4-1 css.html</span>
                 </a>
-                <a class="cao_work" href="5-1层叠与继承.html">
-                    <span class="cao_work-number">07 / CSS</span>
+                <a class="crx_work" href="5-1层叠与继承.html">
+                    <span class="crx_work-number">07 / CSS</span>
                     <h3>层叠与继承</h3>
-                    <span class="cao_work-file">5-1层叠与继承.html</span>
+                    <span class="crx_work-file">5-1层叠与继承.html</span>
                 </a>
-                <a class="cao_work" href="5-2盒模型.html">
-                    <span class="cao_work-number">08 / CSS</span>
+                <a class="crx_work" href="5-2盒模型.html">
+                    <span class="crx_work-number">08 / CSS</span>
                     <h3>盒模型</h3>
-                    <span class="cao_work-file">5-2盒模型.html</span>
+                    <span class="crx_work-file">5-2盒模型.html</span>
                 </a>
-                <a class="cao_work" href="6-1flex.html">
-                    <span class="cao_work-number">09 / FLEX</span>
+                <a class="crx_work" href="6-1flex.html">
+                    <span class="crx_work-number">09 / FLEX</span>
                     <h3>Flex 布局</h3>
-                    <span class="cao_work-file">6-1flex.html</span>
+                    <span class="crx_work-file">6-1flex.html</span>
                 </a>
-                <a class="cao_work" href="6-2.html">
-                    <span class="cao_work-number">10 / FLEX</span>
+                <a class="crx_work" href="6-2.html">
+                    <span class="crx_work-number">10 / FLEX</span>
                     <h3>Flex 布局实践</h3>
-                    <span class="cao_work-file">6-2.html</span>
+                    <span class="crx_work-file">6-2.html</span>
                 </a>
-                <a class="cao_work" href="7-1上图下文.html">
-                    <span class="cao_work-number">11 / LAYOUT</span>
+                <a class="crx_work" href="7-1上图下文.html">
+                    <span class="crx_work-number">11 / LAYOUT</span>
                     <h3>上图下文</h3>
-                    <span class="cao_work-file">7-1上图下文.html</span>
+                    <span class="crx_work-file">7-1上图下文.html</span>
                 </a>
-                <a class="cao_work" href="7-2左图右文.html">
-                    <span class="cao_work-number">12 / LAYOUT</span>
+                <a class="crx_work" href="7-2左图右文.html">
+                    <span class="crx_work-number">12 / LAYOUT</span>
                     <h3>左图右文</h3>
-                    <span class="cao_work-file">7-2左图右文.html</span>
+                    <span class="crx_work-file">7-2左图右文.html</span>
                 </a>
-                <a class="cao_work" href="8-1 css选择器.html">
-                    <span class="cao_work-number">13 / CSS</span>
+                <a class="crx_work" href="8-1 css选择器.html">
+                    <span class="crx_work-number">13 / CSS</span>
                     <h3>CSS 选择器</h3>
-                    <span class="cao_work-file">8-1 css选择器.html</span>
+                    <span class="crx_work-file">8-1 css选择器.html</span>
                 </a>
-                <a class="cao_work" href="9-1 transition.html">
-                    <span class="cao_work-number">14 / CSS</span>
+                <a class="crx_work" href="9-1 transition.html">
+                    <span class="crx_work-number">14 / CSS</span>
                     <h3>CSS 过渡效果</h3>
-                    <span class="cao_work-file">9-1 transition.html</span>
+                    <span class="crx_work-file">9-1 transition.html</span>
                 </a>
-                <a class="cao_work" href="11.1.html">
-                    <span class="cao_work-number">15 / UNIT</span>
+                <a class="crx_work" href="11.1.html">
+                    <span class="crx_work-number">15 / UNIT</span>
                     <h3>长度单位</h3>
-                    <span class="cao_work-file">11.1.html</span>
+                    <span class="crx_work-file">11.1.html</span>
                 </a>
-                <a class="cao_work" href="11-2.html">
-                    <span class="cao_work-number">16 / 3D</span>
+                <a class="crx_work" href="11-2.html">
+                    <span class="crx_work-number">16 / 3D</span>
                     <h3>CSS3 3D 动画</h3>
-                    <span class="cao_work-file">11-2.html</span>
+                    <span class="crx_work-file">11-2.html</span>
+                </a>
+
+                <a class="crx_work" href="13-1.html">
+                    <span class="crx_work-number">17 / ICON</span>
+                    <h3>Font Awesome 字体图标</h3>
+                    <span class="crx_work-file">13-1.html</span>
+                </a>
+
+                <a class="crx_work" href="13-2.html">
+                    <span class="crx_work-number">18 / ICON</span>
+                    <h3>Lucide SVG 图标</h3>
+                    <span class="crx_work-file">13-2.html</span>
+                </a>
+
+                <a class="crx_work" href="13-3.html">
+                    <span class="crx_work-number">19 / NAV</span>
+                    <h3>底部导航 - 字体图标</h3>
+                    <span class="crx_work-file">13-3.html</span>
+                </a>
+
+                <a class="crx_work" href="13-4.html">
+                    <span class="crx_work-number">20 / NAV</span>
+                    <h3>底部导航 - SVG 图标</h3>
+                    <span class="crx_work-file">13-4.html</span>
+                </a>
+                <a class="crx_work" href="14-1.html">
+                    <span class="crx_work-number">21 / JS</span>
+                    <h3>JavaScript 入门</h3>
+                    <span class="crx_work-file">14-1.html</span>
+                </a>
+                <a class="crx_work" href="14-2.html">
+                    <span class="crx_work-number">22 / JS</span>
+                    <h3>JS 六种基本数据类型</h3>
+                    <span class="crx_work-file">14-2.html</span>
+                </a>
+                <a class="crx_work" href="15-1.html">
+                    <span class="crx_work-number">23 / JS</span>
+                    <h3>数七游戏 · 100 盒子</h3>
+                    <span class="crx_work-file">15-1.html</span>
                 </a>
             </div>
         </section>
 
-        <section class="cao_brief" aria-labelledby="cao_brief-title">
-            <h2 id="cao_brief-title">本次任务要求</h2>
+        <section class="crx_brief" aria-labelledby="crx_brief-title">
+            <h2 id="crx_brief-title">本次任务要求</h2>
             <blockquote>“创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为index.html，主题为曹润贤的《高级网页设计》课堂实践，美化页面，页面中包括本提示词。”</blockquote>
         </section>
     </main>
 
     <footer>
-        <div class="cao_page">曹润贤 · 《高级网页设计》课堂实践作品集</div>
+        <div class="crx_page">曹润贤 · 《高级网页设计》课堂实践作品集</div>
     </footer>
 </body>
 </html>
