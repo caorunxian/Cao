@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15-2 JavaScript 程序结构</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            padding: 30px 20px 60px;
+            background-color: #f3f4f6;
+            font-family: "Microsoft YaHei", sans-serif;
+            color: #1f2937;
+        }
+        h1 { text-align: center; font-size: 28px; color: #103d61; }
+        .crx_subtitle {
+            text-align: center; margin: 10px 0 30px;
+            color: #657080; font-size: 14px;
+        }
+        .crx_container {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .crx_card {
+            background-color: #fff;
+            border: 1px solid #d9d4c8;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 4px 0 rgba(23, 91, 140, 0.08);
+        }
+        .crx_card h2 {
+            color: #175b8c; font-size: 18px;
+            border-left: 5px solid #d96c3d; padding-left: 12px;
+            margin-bottom: 12px;
+        }
+        .crx_card h3 {
+            color: #d96c3d; font-size: 14px;
+            margin: 14px 0 8px;
+        }
+        .crx_code {
+            background-color: #18202b; color: #f7f4ed;
+            border-radius: 8px; padding: 12px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px; line-height: 1.75;
+            overflow-x: auto; margin-bottom: 12px;
+            white-space: pre;
+        }
+        .crx_code .c1 { color: #ffd166; }  /* 关键字 */
+        .crx_code .c2 { color: #06d6a0; }  /* 字符串 */
+        .crx_code .c3 { color: #ef476f; }  /* 数字 */
+        .crx_code .c4 { color: #7f8c8d; font-style: italic; } /* 注释 */
+        .crx_run {
+            display: inline-block;
+            padding: 7px 18px;
+            background-color: #175b8c; color: #fff;
+            border: none; border-radius: 6px;
+            font-size: 13px; cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .crx_run:hover { background-color: #103d61; }
+        .crx_result {
+            margin-top: 10px; padding: 10px 14px;
+            background-color: #f0f7ff;
+            border-left: 4px solid #175b8c;
+            border-radius: 4px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px; color: #103d61;
+            white-space: pre-wrap; word-break: break-all;
+            max-height: 200px; overflow-y: auto;
+        }
+        .crx_result-empty { color: #9ca3af; font-style: italic; }
+        .crx_result-tag {
+            display: inline-block; margin: 2px; padding: 2px 8px;
+            border-radius: 10px; font-size: 11px;
+        }
+        .crx_even  { background-color: #d1fae5; color: #065f46; }
+        .crx_odd   { background-color: #fef3c7; color: #92400e; }
+        .crx_prime { background-color: #fee2e2; color: #991b1b; }
+
+        .crx_input-row {
+            display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;
+        }
+        .crx_input-row input {
+            flex: 1 1 100px; padding: 6px 10px;
+            border: 1px solid #d9d4c8; border-radius: 6px;
+            font-size: 13px; font-family: Consolas, monospace;
+        }
+        .crx_input-row label { font-size: 13px; color: #657080; align-self: center; }
+
+        .crx_table {
+            width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px;
+        }
+        .crx_table th, .crx_table td {
+            padding: 6px 10px; text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .crx_table th { background-color: #f7f4ed; color: #103d61; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-10-26，使用大模型：GLM-5.3-Flash，功能名称：15-2 JS 循环与条件语句 -->
+
+    <h1>JavaScript 程序结构 · 循环 & 条件</h1>
+    <p class="crx_subtitle">点击每张卡片的按钮查看运行结果，观察循环与条件如何控制程序流程</p>
+
+    <div class="crx_container">
+
+        <!-- ====== 条件语句 ====== -->
+
+        <div class="crx_card">
+            <h2>条件语句</h2>
+            <h3>if / if-else</h3>
+            <div class="crx_code"><span class="c1">function</span> crx_checkAge(<span class="c1">let</span> crx_age) {
+    <span class="c1">if</span> (crx_age >= <span class="c3">18</span>) {
+        <span class="c1">return</span> <span class="c2">"成年"</span>;
+    } <span class="c1">else if</span> (crx_age >= <span class="c3">12</span>) {
+        <span class="c1">return</span> <span class="c2">"青少年"</span>;
+    } <span class="c1">else</span> {
+        <span class="c1">return</span> <span class="c2">"儿童"</span>;
+    }
+}</div>
+            <div class="crx_input-row">
+                <label>输入年龄：</label>
+                <input type="number" id="crx_age" value="16" min="0" max="120">
+                <button class="crx_run" onclick="crx_runIfElse()">运行</button>
+            </div>
+            <div class="crx_result crx_result-empty" id="crx_res_ifelse">等待运行...</div>
+
+            <h3>switch</h3>
+            <div class="crx_code"><span class="c1">switch</span>(crx_day) {
+    <span class="c1">case</span> <span class="c3">1</span>: <span class="c1">return</span> <span class="c2">"周一"</span>;
+    <span class="c1">case</span> <span class="c3">2</span>: <span class="c1">return</span> <span class="c2">"周二"</span>;
+    <span class="c1">case</span> <span class="c3">3</span>: <span class="c1">return</span> <span class="c2">"周三"</span>;
+    <span class="c1">case</span> <span class="c3">4</span>: <span class="c1">return</span> <span class="c2">"周四"</span>;
+    <span class="c1">case</span> <span class="c3">5</span>: <span class="c1">return</span> <span class="c2">"周五"</span>;
+    <span class="c1">default</span>:  <span class="c1">return</span> <span class="c2">"周末"</span>;
+}</div>
+            <div class="crx_input-row">
+                <label>输入 1–7：</label>
+                <input type="number" id="crx_day" value="3" min="1" max="7">
+                <button class="crx_run" onclick="crx_runSwitch()">运行</button>
+            </div>
+            <div class="crx_result crx_result-empty" id="crx_res_switch">等待运行...</div>
+        </div>
+
+        <!-- ====== for 循环 ====== -->
+
+        <div class="crx_card">
+            <h2>for 循环</h2>
+            <div class="crx_code"><span class="c4">// 输出 1 ~ 10，奇偶数分色</span>
+<span class="c1">for</span> (<span class="c1">let</span> crx_i = <span class="c3">1</span>; crx_i <= <span class="c3">10</span>; crx_i++) {
+    <span class="c1">if</span> (crx_i % <span class="c3">2</span> === <span class="c3">0</span>) {
+        crx_print(crx_i + <span class="c2">" 是偶数"</span>);
+    } <span class="c1">else</span> {
+        crx_print(crx_i + <span class="c2">" 是奇数"</span>);
+    }
+}</div>
+            <button class="crx_run" onclick="crx_runFor()">运行</button>
+            <div class="crx_result crx_result-empty" id="crx_res_for">等待运行...</div>
+
+            <h3>for...of 遍历数组</h3>
+            <div class="crx_code"><span class="c1">let</span> crx_arr = [<span class="c2">"苹果"</span>, <span class="c2">"香蕉"</span>, <span class="c2">"橘子"</span>, <span class="c2">"葡萄"</span>];
+<span class="c1">for</span> (<span class="c1">let</span> crx_item <span class="c1">of</span> crx_arr) {
+    crx_print(crx_item);
+}</div>
+            <button class="crx_run" onclick="crx_runForOf()">运行</button>
+            <div class="crx_result crx_result-empty" id="crx_res_forof">等待运行...</div>
+        </div>
+
+        <!-- ====== while 循环 ====== -->
+
+        <div class="crx_card">
+            <h2>while / do-while 循环</h2>
+            <div class="crx_code"><span class="c4">// 求 1+2+...+100</span>
+<span class="c1">let</span> crx_sum = <span class="c3">0</span>, crx_n = <span class="c3">1</span>;
+<span class="c1">while</span> (crx_n <= <span class="c3">100</span>) {
+    crx_sum += crx_n;
+    crx_n++;
+}
+crx_print(<span class="c2">"1+2+...+100 = "</span> + crx_sum);</div>
+            <button class="crx_run" onclick="crx_runWhile()">运行</button>
+            <div class="crx_result crx_result-empty" id="crx_res_while">等待运行...</div>
+
+            <h3>do-while：至少执行一次</h3>
+            <div class="crx_code"><span class="c1">let</span> crx_cnt = <span class="c3">0</span>;
+<span class="c1">do</span> {
+    crx_cnt++;
+    crx_print(<span class="c2">"第 "</span> + crx_cnt + <span class="c2">" 次"</span>);
+} <span class="c1">while</span> (crx_cnt < <span class="c3">3</span>);
+<span class="c4">// 即使条件为 false，也会先执行一次</span></div>
+            <button class="crx_run" onclick="crx_runDoWhile()">运行</button>
+            <div class="crx_result crx_result-empty" id="crx_res_dowhile">等待运行...</div>
+        </div>
+
+        <!-- ====== break / continue ====== -->
+
+        <div class="crx_card">
+            <h2>break / continue</h2>
+            <div class="crx_code"><span class="c4">// break：找到第一个素数大于 20 就停</span>
+<span class="c1">for</span> (<span class="c1">let</span> crx_n = <span class="c3">21</span>; crx_n < <span class="c3">50</span>; crx_n++) {
+    <span class="c1">if</span> (crx_isPrime(crx_n)) {
+        crx_print(<span class="c2">"第一个 >20 的素数: "</span> + crx_n);
+        <span class="c1">break</span>;   <span class="c4">// 终止循环</span>
+    }
+}</div>
+            <button class="crx_run" onclick="crx_runBreak()">运行 break</button>
+            <div class="crx_result crx_result-empty" id="crx_res_break">等待运行...</div>
+
+            <div class="crx_code"><span class="c4">// continue：跳过 7 的倍数</span>
+<span class="c1">for</span> (<span class="c1">let</span> crx_i = <span class="c3">1</span>; crx_i <= <span class="c3">20</span>; crx_i++) {
+    <span class="c1">if</span> (crx_i % <span class="c3">7</span> === <span class="c3">0</span>) <span class="c1">continue</span>;
+    crx_print(crx_i);
+}</div>
+            <button class="crx_run" onclick="crx_runContinue()">运行 continue</button>
+            <div class="crx_result crx_result-empty" id="crx_res_continue">等待运行...</div>
+        </div>
+
+        <!-- ====== 综合练习：猜数游戏 ====== -->
+
+        <div class="crx_card" style="grid-column: span 1;">
+            <h2>综合练习 · 猜数游戏（do-while + if）</h2>
+            <div class="crx_code"><span class="c4">// 程序生成 1–100 的随机数，用户猜，提示大了/小了</span>
+<span class="c1">let</span> crx_target = Math.floor(Math.random() * <span class="c3">100</span>) + <span class="c3">1</span>;
+<span class="c1">let</span> crx_guess, crx_tries = <span class="c3">0</span>;
+<span class="c1">do</span> {
+    crx_guess = parseInt(输入框);
+    crx_tries++;
+    <span class="c1">if</span> (crx_guess > crx_target)  提示<span class="c2">"大了"</span>;
+    <span class="c1">else if</span> (crx_guess < crx_target) 提示<span class="c2">"小了"</span>;
+} <span class="c1">while</span> (crx_guess !== crx_target);</div>
+
+            <div class="crx_input-row">
+                <label>猜 1–100：</label>
+                <input type="number" id="crx_guess" value="50" min="1" max="100">
+                <button class="crx_run" onclick="crx_runGuess()">我猜这个</button>
+                <button class="crx_run" onclick="crx_resetGuess()" style="background-color:#d96c3d">重开一局</button>
+            </div>
+            <div class="crx_result crx_result-empty" id="crx_res_guess">点击"重开一局"开始</div>
+        </div>
+
+    </div>
+
+    <script>
+        // ======== 工具 ========
+        function crx_print(crx_id, crx_text) {
+            var crx_el = document.getElementById(crx_id);
+            crx_el.classList.remove('crx_result-empty');
+            crx_el.textContent = crx_text;
+        }
+        function crx_lines() { return Array.prototype.slice.call(arguments).join('\n'); }
+
+        // ======== 条件 ========
+        function crx_runIfElse() {
+            var crx_age = parseInt(document.getElementById('crx_age').value) || 0;
+            var crx_stage;
+            if (crx_age >= 18)       crx_stage = '成年';
+            else if (crx_age >= 12) crx_stage = '青少年';
+            else                    crx_stage = '儿童';
+            crx_print('crx_res_ifelse', '年龄 ' + crx_age + ' → 阶段：' + crx_stage);
+        }
+        function crx_runSwitch() {
+            var crx_day = parseInt(document.getElementById('crx_day').value) || 0;
+            var crx_name;
+            switch (crx_day) {
+                case 1: crx_name = '周一'; break;
+                case 2: crx_name = '周二'; break;
+                case 3: crx_name = '周三'; break;
+                case 4: crx_name = '周四'; break;
+                case 5: crx_name = '周五'; break;
+                default: crx_name = '周末';
+            }
+            crx_print('crx_res_switch', crx_day + ' → ' + crx_name);
+        }
+
+        // ======== for ========
+        function crx_runFor() {
+            var crx_out = '';
+            for (var crx_i = 1; crx_i <= 10; crx_i++) {
+                if (crx_i % 2 === 0) crx_out += crx_i + ' 是偶数\n';
+                else                 crx_out += crx_i + ' 是奇数\n';
+            }
+            crx_print('crx_res_for', crx_out.trim());
+        }
+        function crx_runForOf() {
+            var crx_arr = ['苹果', '香蕉', '橘子', '葡萄'];
+            var crx_out = '';
+            for (var crx_item of crx_arr) crx_out += crx_item + '\n';
+            crx_print('crx_res_forof', '数组元素：\n' + crx_out.trim());
+        }
+
+        // ======== while / do-while ========
+        function crx_runWhile() {
+            var crx_sum = 0, crx_n = 1;
+            while (crx_n <= 100) { crx_sum += crx_n; crx_n++; }
+            crx_print('crx_res_while', '1+2+...+100 = ' + crx_sum);
+        }
+        function crx_runDoWhile() {
+            var crx_cnt = 0, crx_out = '';
+            do { crx_cnt++; crx_out += '第 ' + crx_cnt + ' 次\n'; } while (crx_cnt < 3);
+            crx_print('crx_res_dowhile', crx_out.trim());
+        }
+
+        // ======== break / continue ========
+        function crx_isPrime(crx_n) {
+            if (crx_n < 2) return false;
+            for (var crx_j = 2; crx_j * crx_j <= crx_n; crx_j++) {
+                if (crx_n % crx_j === 0) return false;
+            }
+            return true;
+        }
+        function crx_runBreak() {
+            var crx_out = '';
+            for (var crx_n = 21; crx_n < 50; crx_n++) {
+                if (crx_isPrime(crx_n)) {
+                    crx_out += '第一个 >20 的素数: ' + crx_n + '  ← break 在此处终止循环';
+                    break;
+                }
+            }
+            crx_print('crx_res_break', crx_out);
+        }
+        function crx_runContinue() {
+            var crx_out = '';
+            for (var crx_i = 1; crx_i <= 20; crx_i++) {
+                if (crx_i % 7 === 0) { crx_out += '[跳过 ' + crx_i + ']  continue 跳过\n'; continue; }
+                crx_out += crx_i + '\n';
+            }
+            crx_print('crx_res_continue', crx_out.trim());
+        }
+
+        // ======== 猜数游戏 ========
+        var crx_target = null, crx_tries = 0;
+        function crx_resetGuess() {
+            crx_target = Math.floor(Math.random() * 100) + 1;
+            crx_tries = 0;
+            crx_print('crx_res_guess', '新一局开始！目标已生成，输入 1–100 开始猜');
+        }
+        function crx_runGuess() {
+            if (crx_target === null) crx_resetGuess();
+            var crx_guess = parseInt(document.getElementById('crx_guess').value);
+            if (isNaN(crx_guess) || crx_guess < 1 || crx_guess > 100) {
+                crx_print('crx_res_guess', '请输入 1–100 之间的数字'); return;
+            }
+            crx_tries++;
+            if (crx_guess === crx_target) {
+                crx_print('crx_res_guess',
+                    '🎉 猜对了！答案是 ' + crx_target + '，总共用了 ' + crx_tries + ' 次');
+            } else if (crx_guess > crx_target) {
+                crx_print('crx_res_guess', '❌ ' + crx_guess + ' 大了！已猜 ' + crx_tries + ' 次');
+            } else {
+                crx_print('crx_res_guess', '❌ ' + crx_guess + ' 小了！已猜 ' + crx_tries + ' 次');
+            }
+        }
+    </script>
+</body>
+</html>
