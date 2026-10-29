@@ -1,0 +1,27 @@
+@font-face {
+  font-family: "iconfont";
+  src: url('iconfont.ttf?t=1793198937481') format('truetype');
+}
+
+.caorunxian213_iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.caorunxian213_icon-dingdan:before {
+  content: "\e626";
+}
+
+.caorunxian213_icon-huiyuan:before {
+  content: "\e8a6";
+}
+
+.caorunxian213_icon-hanglixiang:before {
+  content: "\e621";
+}
+
+/* 说明：高铁（\e613）与我的（\e689）为多色图标，转成字体后会丢失细节，
+   因此这两个图标改用 SVG 方式引入，见 bottom-nav.html */

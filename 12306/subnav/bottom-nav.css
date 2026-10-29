@@ -1,0 +1,124 @@
+/* ================= 全局公共样式 ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Microsoft YaHei", Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+  background: #f5f6f8;
+  padding-bottom: calc(50px + env(safe-area-inset-bottom));
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ================= 页面示意内容 ================= */
+.caorunxian213_appbar {
+  padding: 20px 16px 26px;
+  color: #fff;
+  background: linear-gradient(135deg, #3b99fc, #1d6fd1);
+}
+
+.caorunxian213_appbar-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.caorunxian213_appbar-sub {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.caorunxian213_content {
+  padding: 16px;
+}
+
+.caorunxian213_content-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.caorunxian213_content-text {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.7;
+}
+
+/* ================= 下导航（自适应宽度） ================= */
+.caorunxian213_bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  height: 50px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #fff;
+  border-top: 1px solid #e5e5e5;
+}
+
+.caorunxian213_nav-item {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: #666;
+}
+
+.caorunxian213_iconfont {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.caorunxian213_nav-svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.caorunxian213_nav-text {
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.caorunxian213_active {
+  color: #3b99fc;
+}
+
+/* 宽屏时放大图标与文字，验证自适应效果 */
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 64px;
+  }
+
+  .caorunxian213_bottom-nav {
+    height: 64px;
+  }
+
+  .caorunxian213_iconfont {
+    font-size: 28px;
+  }
+
+  .caorunxian213_nav-svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .caorunxian213_nav-text {
+    font-size: 12px;
+  }
+}

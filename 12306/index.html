@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<!-- 高级网页设计I 网页元素设计 三级项目｜学号：24001010213（213）｜姓名：曹润贤（caorunxian） -->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中国铁路12306</title>
+  <link rel="stylesheet" href="fonts/iconfont.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="crx213-page">
+  <!-- 姓名：曹润贤，建立时间：2026-10-29，使用大模型：DeepSeek-V4.1-Flash，功能名称：12306 首页导航与车票查询等网页元素还原 -->
+
+  <!-- ===================== 顶部工具条 ===================== -->
+  <header class="caorunxian213_topbar">
+    <div class="caorunxian213_container caorunxian213_topbar-inner">
+      <h1 class="caorunxian213_logo">
+        <a href="#"><img src="images/logo.png" alt="中国铁路12306"></a>
+      </h1>
+
+      <form class="caorunxian213_search" action="#" method="get">
+        <input type="search" name="keyword" placeholder="搜索车票、餐饮、常旅客、相关规章">
+        <button type="submit" aria-label="搜索">
+          <i class="icon icon-search"></i>
+        </button>
+      </form>
+
+      <!-- 结构与官网 .header-menu 一致：菜单项 + 竖线分隔项 -->
+      <ul class="caorunxian213_top-links" role="menubar">
+        <li class="caorunxian213_menu-item"><a href="#" class="caorunxian213_menu-nav-hd">无障碍</a></li>
+        <li class="caorunxian213_menu-item caorunxian213_menu-line">|</li>
+        <li class="caorunxian213_menu-item"><a href="#" class="caorunxian213_menu-nav-hd">敬老版</a></li>
+        <li class="caorunxian213_menu-item caorunxian213_menu-line">|</li>
+        <li class="caorunxian213_menu-item"><a href="#" class="caorunxian213_menu-nav-hd">English<i class="caorunxian213_caret"></i></a></li>
+        <li class="caorunxian213_menu-item caorunxian213_menu-line">|</li>
+        <li class="caorunxian213_menu-item"><a href="#" class="caorunxian213_menu-nav-hd">我的12306<i class="caorunxian213_caret"></i></a></li>
+        <li class="caorunxian213_menu-item caorunxian213_menu-line">|</li>
+        <li class="caorunxian213_menu-item caorunxian213_menu-login">
+          <a href="#">登录</a><a href="#" class="caorunxian213_ml">注册</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ===================== 主导航 ===================== -->
+  <nav class="caorunxian213_mainnav" aria-label="主导航">
+    <ul class="caorunxian213_container caorunxian213_mainnav-list">
+      <li class="caorunxian213_active"><a href="#">首页</a></li>
+      <li><a href="#">车票 <i class="caorunxian213_caret"></i></a></li>
+      <li><a href="#">团购服务 <i class="caorunxian213_caret"></i></a></li>
+      <li><a href="#">会员服务 <i class="caorunxian213_caret"></i></a></li>
+      <li><a href="#">站车服务 <i class="caorunxian213_caret"></i></a></li>
+      <li><a href="#">商旅服务 <i class="caorunxian213_caret"></i></a></li>
+      <li><a href="#">出行指南 <i class="caorunxian213_caret"></i></a></li>
+      <li><a href="#">信息查询 <i class="caorunxian213_caret"></i></a></li>
+    </ul>
+  </nav>
+
+  <!-- ===================== 轮播横幅 + 车票查询（一左一右） ===================== -->
+  <section class="caorunxian213_hero">
+    <!-- 轮播图：12306 官网 6 张，整屏通铺，当前显示第 6 张（江西风景独好） -->
+    <div class="caorunxian213_hero-slides">
+      <div class="caorunxian213_slide caorunxian213_slide-1"></div>
+      <div class="caorunxian213_slide caorunxian213_slide-2"></div>
+      <div class="caorunxian213_slide caorunxian213_slide-3"></div>
+      <div class="caorunxian213_slide caorunxian213_slide-4"></div>
+      <div class="caorunxian213_slide caorunxian213_slide-5"></div>
+      <div class="caorunxian213_slide caorunxian213_slide-6 caorunxian213_active"></div>
+    </div>
+
+    <div class="caorunxian213_container caorunxian213_hero-inner">
+      <!-- 车票查询面板：结构与官网 .search-index 一致 -->
+      <div class="caorunxian213_search-index">
+        <!-- 左侧菜单 -->
+        <ul class="caorunxian213_search-side">
+          <li class="caorunxian213_active"><a href="javascript:;"><i class="icon icon-huochepiao"></i>车票</a></li>
+          <li><a href="javascript:;"><i class="icon icon-cycx"></i>常用查询</a></li>
+          <li class="caorunxian213_last"><a href="javascript:;"><i class="icon icon-dingcan"></i>订餐</a></li>
+        </ul>
+
+        <!-- 右侧内容 -->
+        <div class="caorunxian213_search-main">
+          <div class="caorunxian213_search-main-item">
+            <div class="caorunxian213_search-main-tab">
+              <div class="caorunxian213_search-tab-hd">
+                <ul>
+                  <li class="caorunxian213_active"><a href="javascript:void(0)"><i class="icon icon-dancheng"></i>单程</a></li>
+                  <li><a href="javascript:void(0)"><i class="icon icon-wangfan"></i>往返</a></li>
+                  <li><a href="javascript:void(0)"><i class="icon icon-huancheng"></i>中转换乘</a></li>
+                  <li><a href="javascript:void(0)"><i class="icon icon-chepiao"></i>退改签</a></li>
+                </ul>
+              </div>
+              <div class="caorunxian213_search-tab-bd">
+                <!-- 单程 -->
+                <div class="caorunxian213_search-tab-item">
+                  <div class="caorunxian213_search-form">
+                    <div class="caorunxian213_form-item-group">
+                      <div class="caorunxian213_form-item">
+                        <label for="fromStationText" class="caorunxian213_form-label">出发地</label>
+                        <div class="caorunxian213_form-bd">
+                          <div class="caorunxian213_input-box caorunxian213_input-city">
+                            <input id="fromStation" type="hidden" value="" name="from_station">
+                            <input type="text" class="caorunxian213_input" value="" id="fromStationText" placeholder="简拼/全拼/汉字"
+                              aria-label="请输入或选择出发地" autocomplete="off">
+                            <i class="icon icon-place" data-click="fromStationText"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="caorunxian213_form-item">
+                        <label for="toStationText" class="caorunxian213_form-label">到达地</label>
+                        <div class="caorunxian213_form-bd">
+                          <div class="caorunxian213_input-box caorunxian213_input-city">
+                            <input id="toStation" type="hidden" value="" name="to_station">
+                            <input type="text" class="caorunxian213_input" value="" id="toStationText" placeholder="简拼/全拼/汉字"
+                              aria-label="请输入或选择到达地" autocomplete="off">
+                            <i class="icon icon-place" data-click="toStationText"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="caorunxian213_city-change">
+                        <i class="icon icon-qiehuan" title="切换" id="danChange"></i>
+                      </div>
+                    </div>
+                    <div class="caorunxian213_form-item">
+                      <label for="train_date" class="caorunxian213_form-label">出发日期</label>
+                      <div class="caorunxian213_form-bd">
+                        <div class="caorunxian213_input-box caorunxian213_input-data">
+                          <input type="text" class="caorunxian213_input" value="2026-10-26" id="train_date"
+                            aria-label="请输入日期，例如2021杠01杠01" autocomplete="off">
+                          <i class="icon icon-date" data-click="train_date"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="caorunxian213_form-item caorunxian213_form-item-check">
+                      <div class="caorunxian213_form-bd">
+                        <ul class="caorunxian213_check-list caorunxian213_check-list-right">
+                          <li id="isStudentDan">学生<i></i></li>
+                          <li id="isHighDan">高铁/动车<i></i></li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="caorunxian213_form-item caorunxian213_form-item-btn">
+                      <a href="javascript:void(0)" class="caorunxian213_btn caorunxian213_btn-primary caorunxian213_form-block" id="search_one">查&nbsp;&nbsp;&nbsp;&nbsp;询</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 轮播圆点 -->
+      <ol class="caorunxian213_dots">
+        <li></li><li></li><li></li><li></li><li></li><li class="caorunxian213_on"></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== 服务图标导航 ===================== -->
+  <section class="caorunxian213_services">
+    <ul class="caorunxian213_container caorunxian213_services-list">
+      <li><a href="#"><img src="images/svc-1.png" alt=""><span>重点旅客预约</span></a></li>
+      <li><a href="#"><img src="images/svc-2.png" alt=""><span>遗失物品查找</span></a></li>
+      <li><a href="#"><img src="images/svc-3.png" alt=""><span>约车服务</span></a></li>
+      <li><a href="#"><img src="images/svc-4.png" alt=""><span>便民托运</span></a></li>
+      <li><a href="#"><img src="images/svc-5.png" alt=""><span>车站引导</span></a></li>
+      <li><a href="#"><img src="images/svc-6.png" alt=""><span>站车风采</span></a></li>
+      <li><a href="#"><img src="images/svc-7.png" alt=""><span>用户反馈</span></a></li>
+    </ul>
+  </section>
+
+  <!-- ===================== 推广卡片（左文右图） ===================== -->
+  <section class="caorunxian213_promo">
+    <div class="caorunxian213_container caorunxian213_promo-grid">
+      <a href="#" class="caorunxian213_promo-card">
+        <div class="caorunxian213_promo-text">
+          <h3>会员服务</h3>
+          <p>铁路畅行 尊享体验<br>12306铁路会员积分服务</p>
+        </div>
+        <img src="images/card-member.png" alt="铁路会员服务插画">
+      </a>
+      <a href="#" class="caorunxian213_promo-card">
+        <div class="caorunxian213_promo-text">
+          <h3>餐饮·特产</h3>
+          <p>带有温度的旅途配餐<br>享受星级的体验和家乡的味道</p>
+        </div>
+        <img src="images/card-food.png" alt="餐饮特产插画">
+      </a>
+      <a href="#" class="caorunxian213_promo-card">
+        <div class="caorunxian213_promo-text">
+          <h3>铁路保险</h3>
+          <p>用心呵护 放心出行<br>12306铁路保障出行安全</p>
+        </div>
+        <img src="images/card-insure.png" alt="铁路保险插画">
+      </a>
+      <a href="#" class="caorunxian213_promo-card">
+        <div class="caorunxian213_promo-text">
+          <h3>计次·定期票</h3>
+          <p>预约细心乘 出行更便捷<br>为您提供全新的自助式出行体验</p>
+        </div>
+        <img src="images/card-ticket.png" alt="计次定期票插画">
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================== 信息公告（tab + 列表） ===================== -->
+  <section class="caorunxian213_news">
+    <div class="caorunxian213_container">
+      <div class="caorunxian213_news-tabs" role="tablist">
+        <a href="#" class="caorunxian213_news-tab caorunxian213_active">最新发布</a>
+        <a href="#" class="caorunxian213_news-tab">常见问题</a>
+        <a href="#" class="caorunxian213_news-tab">信用信息</a>
+      </div>
+
+      <div class="caorunxian213_news-lists">
+        <ul class="caorunxian213_news-list">
+          <li><a href="#">公告</a><time>2024-12-11</time></li>
+          <li><a href="#">关于优化旅客列车票改签规则的公告</a><time>2024-01-11</time></li>
+          <li><a href="#">铁路旅客禁止、限制携带和托运物品目录</a><time>2023-11-30</time></li>
+          <li><a href="#">公 告</a><time>2022-12-22</time></li>
+          <li><a href="#">中国铁路成都局集团有限公司关于2026年10月26日至11月2...</a><time>2026-10-25</time></li>
+        </ul>
+        <ul class="caorunxian213_news-list">
+          <li><a href="#">关于铁路客运推广使用全面数字化的电子发票的公告</a><time>2025-08-19</time></li>
+          <li><a href="#">外国护照身份核验使用说明</a><time>2023-12-13</time></li>
+          <li><a href="#">核价票价操作说明</a><time>2024-04-19</time></li>
+          <li><a href="#">关于旅客列车晚点时间的公告</a><time>2025-10-11</time></li>
+          <li><a href="#">中国铁路成都局集团有限公司关于2026年10月24日至11月2...</a><time>2026-10-25</time></li>
+        </ul>
+      </div>
+      <a href="#" class="caorunxian213_news-more">更多&gt;</a>
+    </div>
+  </section>
+
+  <!-- ===================== 右侧悬浮菜单（官网 .fixed-right，fixed 定位随页滚动） ===================== -->
+  <div class="caorunxian213_fixed-right">
+    <ul class="caorunxian213_fixed-right-menu">
+      <li class="caorunxian213_menu-item">
+        <a href="javascript:;" class="caorunxian213_menu-hd">
+          <i class="icon icon-notice"></i>
+          <h4 class="caorunxian213_menu-name">最新发布</h4>
+        </a>
+      </li>
+      <li class="caorunxian213_menu-item">
+        <a href="javascript:;" class="caorunxian213_menu-hd">
+          <i class="icon icon-phone"></i>
+          <h4 class="caorunxian213_menu-name">联系客服</h4>
+        </a>
+      </li>
+      <li class="caorunxian213_menu-item">
+        <a href="javascript:;" class="caorunxian213_menu-hd">
+          <i class="icon icon-code"></i>
+          <h4 class="caorunxian213_menu-name">APP下载</h4>
+        </a>
+      </li>
+      <li class="caorunxian213_menu-item" id="close-right">
+        <a href="javascript:;" class="caorunxian213_menu-hd">
+          <i class="icon icon-close"></i>
+          <h4 class="caorunxian213_menu-name">关闭</h4>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    /* 轮播与悬浮菜单交互｜学号 24001010213（213）｜曹润贤 caorunxian */
+    (function () {
+      /* ---------- 轮播图：点击圆点切换 + 自动播放 ---------- */
+      var crx213Slides = document.querySelectorAll('.caorunxian213_hero-slides .caorunxian213_slide');
+      var crx213Dots = document.querySelectorAll('.caorunxian213_dots li');
+      var crx213Index = 0;
+      var crx213Timer = null;
+
+      for (var crx213I = 0; crx213I < crx213Slides.length; crx213I++) {
+        if (crx213Slides[crx213I].classList.contains('caorunxian213_active')) crx213Index = crx213I;
+      }
+
+      function crx213Show(n) {
+        crx213Index = (n + crx213Slides.length) % crx213Slides.length;
+        for (var crx213I = 0; crx213I < crx213Slides.length; crx213I++) {
+          crx213Slides[crx213I].classList.toggle('caorunxian213_active', crx213I === crx213Index);
+          crx213Dots[crx213I].classList.toggle('caorunxian213_on', crx213I === crx213Index);
+        }
+      }
+
+      function crx213Stop() {
+        if (crx213Timer) { clearInterval(crx213Timer); crx213Timer = null; }
+      }
+
+      function crx213Start() {
+        crx213Stop();
+        crx213Timer = setInterval(function () { crx213Show(crx213Index + 1); }, 5000);
+      }
+
+      for (var crx213J = 0; crx213J < crx213Dots.length; crx213J++) {
+        crx213Dots[crx213J].addEventListener('click', (function (n) {
+          return function () { crx213Show(n); crx213Start(); };
+        })(crx213J));
+      }
+
+      crx213Start();
+
+      /* ---------- 右侧悬浮菜单：关闭 ---------- */
+      var crx213CloseBtn = document.getElementById('close-right');
+      crx213CloseBtn.addEventListener('click', function () {
+        document.querySelector('.caorunxian213_fixed-right').style.display = 'none';
+      });
+    })();
+  </script>
+
+</body>
+</html>
