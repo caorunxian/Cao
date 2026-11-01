@@ -9,108 +9,129 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            padding: 44px 16px;
+            padding: 30px 0 0 35px;
             background-color: #fff;
             font-family: SimSun, "宋体", serif;
         }
 
-        .crx_widget { width: 570px; margin: 0 auto; }
+        .crx_widget { width: 512px; margin: 0; }
 
         /* ===== 栏目头 ===== */
-        .crx_head { display: flex; align-items: baseline; gap: 10px; }
+        .crx_head { display: flex; align-items: baseline; }
 
         .crx_title {
-            font-size: 22px;
+            font-size: 33px;
             font-weight: bold;
-            color: #9e1f24;
-            letter-spacing: 1px;
+            color: #90080e;
         }
 
-        .crx_sub { font-size: 12px; color: #999; }
+        .crx_sub { font-size: 20px; color: #999; margin-left: 4px; }
         .crx_sub a { color: #999; text-decoration: none; }
-        .crx_sub a:hover { color: #9e1f24; text-decoration: underline; }
-        .crx_sub .iconfont { font-size: 12px; }
+        .crx_sub a:hover { color: #90080e; text-decoration: underline; }
+        .crx_dot {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #d8d8d8;
+            margin: 0 6px;
+            vertical-align: middle;
+        }
 
-        /* ===== 日期页签 ===== */
+        /* ===== 日期页签：选中框紧贴下方红线 ===== */
         .crx_tabs {
-            display: flex; align-items: center;
-            margin-top: 16px; padding-bottom: 8px;
-            border-bottom: 1px solid #e5c8c8;
+            display: flex;
+            align-items: flex-end;
+            width: 485px;
+            margin-top: 13px;
+            border-bottom: 1px solid #90080e;
         }
 
         .crx_tab {
-            padding: 4px 10px;
-            border: 1px solid transparent;
-            border-radius: 2px;
-            font-size: 14px;
-            color: #9e1f24;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 14px;
+            font-size: 21px;
+            color: #90080e;
             cursor: pointer;
             user-select: none;
         }
 
         .crx_tab-on {
-            background-color: #fdeeee;
-            border-color: #dca6a6;
+            width: 90px;
+            height: 57px;
+            padding: 0;
+            font-size: 26px;
             font-weight: bold;
+            background-color: #f6e5e6;
+            border: 1px solid #90080e;
+            border-bottom: none;
+            margin-bottom: -1px;
         }
 
-        .crx_sep { color: #ccc; font-size: 12px; margin: 0 2px; }
+        .crx_sep { color: #90080e; font-size: 18px; padding: 0 0 16px; }
 
-        /* ===== 头条（大引号） ===== */
+        /* ===== 头条（左侧大引号，正文整体缩进） ===== */
         .crx_featured {
-            margin: 20px 0 8px;
-            font-size: 17px;
-            font-weight: bold;
-            line-height: 1.75;
+            position: relative;
+            margin: 26px 0 21px;
+            padding-left: 36px;
         }
 
         .crx_quote {
-            float: left;
-            margin: 4px 6px 0 0;
+            position: absolute;
+            left: 0;
+            top: 0;
             font-family: Georgia, "Times New Roman", serif;
-            font-size: 42px;
-            line-height: 30px;
-            color: #d9a8a8;
-            text-decoration: none;
+            font-size: 40px;
+            line-height: 1;
+            color: #e3cdcd;
         }
 
         .crx_feat-link {
-            color: #9e1f24;
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1.46;
+            color: #90080e;
             text-decoration: underline;
         }
-        .crx_feat-link:hover { color: #c0392b; }
+        .crx_feat-link:hover { color: #b32222; }
 
         /* ===== 评论列表 ===== */
-        .crx_list { clear: both; list-style: none; margin-top: 18px; }
+        .crx_list { list-style: none; }
 
         .crx_list li {
             position: relative;
-            padding-left: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.7;
+            padding-left: 22px;
+            margin-bottom: 22px;
+            font-size: 24px;
+            font-weight: normal;
+            line-height: 1.46;
         }
 
         .crx_list li::before {
             content: '';
             position: absolute;
-            left: 0; top: 9px;
-            width: 5px; height: 5px;
+            left: 0; top: 13px;
+            width: 7px; height: 7px;
             border-radius: 50%;
-            background-color: #b8524f;
+            background-color: #8095c0;
         }
 
-        .crx_list a { color: #333; text-decoration: none; }
-        .crx_list a:hover { color: #9e1f24; text-decoration: underline; }
+        .crx_list a { color: #58585b; text-decoration: none; }
+        .crx_list a:hover { color: #90080e; text-decoration: underline; }
     </style>
 </head>
 <body>
-    <!-- 姓名：曹润贤，建立时间：2026-10-29，使用大模型：GLM-5.3-Flash，功能名称：16-4 环球评论（日期切换栏目） -->
+    <!-- 姓名：曹润贤，建立时间：2026-10-29，使用大模型：DeepSeek-V4.1-Flash，功能名称：16-4 环球评论（日期切换栏目） -->
 
     <div class="crx_widget">
         <div class="crx_head">
             <h2 class="crx_title">环球评论</h2>
-            <span class="crx_sub">·<a href="javascript:void(0)">社评</a>·<a href="javascript:void(0)"><i class="iconfont icon-gengduo"></i>更多</a></span>
+            <span class="crx_sub"><span class="crx_dot"></span><a href="javascript:void(0)">社评</a><span class="crx_dot"></span><a href="javascript:void(0)">更多</a></span>
         </div>
 
         <div class="crx_tabs" id="crx_tabs"></div>
@@ -127,57 +148,57 @@
         // ==================== 数据 ====================
         var crx_data = {
             '29日': {
-                featured: '刘钊轶: 南非推汽车本土化，中国制造机会来了',
+                featured: '刘钊轶：南非推汽车本土化，中国制造机会来了',
                 items: [
-                    '樊鹏： 从长征中汲取穿越风浪的力量',
-                    '张健： “新北极战略”是欧盟自身焦虑的投射',
-                    '王晋： 以大选结果难改中东局势整体走向',
-                    '刘明礼: 法国抗议潮会导致欧债危机重演吗'
+                    '樊鹏：从长征中汲取穿越风浪的力量',
+                    '张健：“新北极战略”是欧盟自身焦虑的投射',
+                    '王晋：以大选结果难改中东局势整体走向',
+                    '刘明礼：法国抗议潮会导致欧债危机重演吗'
                 ]
             },
             '28日': {
-                featured: '李海东: 布鲁塞尔峰会后，欧洲安全架构走向何方',
+                featured: '李海东：布鲁塞尔峰会后，欧洲安全架构走向何方',
                 items: [
-                    '高志凯： 中东变局下的中国外交定力',
-                    '华黎明： 沙特伊朗和解改变地区格局',
-                    '崔洪建： 英国“回流欧洲”还有多远',
-                    '丁工: 全球南方正在重塑世界秩序'
+                    '高志凯：中东变局下的中国外交定力',
+                    '华黎明：沙特伊朗和解改变地区格局',
+                    '崔洪建：英国“回流欧洲”还有多远',
+                    '丁工：全球南方正在重塑世界秩序'
                 ]
             },
             '27日': {
-                featured: '张军社: 美菲军事合作升级，南海局势如何破局',
+                featured: '张军社：美菲军事合作升级，南海局势如何破局',
                 items: [
-                    '王帆： 大国竞争不应成为时代主旋律',
-                    '金灿荣： 美国国内政治极化愈演愈烈',
-                    '达巍： 中美关系企稳仍需相向而行',
-                    '周永生: 日韩关系缓和能走多远'
+                    '王帆：大国竞争不应成为时代主旋律',
+                    '金灿荣：美国国内政治极化愈演愈烈',
+                    '达巍：中美关系企稳仍需相向而行',
+                    '周永生：日韩关系缓和能走多远'
                 ]
             },
             '26日': {
-                featured: '董漫远: 中东和解潮为地区发展注入新动能',
+                featured: '董漫远：中东和解潮为地区发展注入新动能',
                 items: [
-                    '朱永彪： 阿富汗重建需要国际社会合力',
-                    '钮松： 海湾国家经济转型初见成效',
-                    '刘中民： 巴以问题重回两国方案正轨',
-                    '李伟建: 地区国家渴望自主解决问题'
+                    '朱永彪：阿富汗重建需要国际社会合力',
+                    '钮松：海湾国家经济转型初见成效',
+                    '刘中民：巴以问题重回两国方案正轨',
+                    '李伟建：地区国家渴望自主解决问题'
                 ]
             },
             '23日': {
-                featured: '苏晓晖: 北约亚太化倾向值得高度警惕',
+                featured: '苏晓晖：北约亚太化倾向值得高度警惕',
                 items: [
-                    '杨希雨： 朝鲜半岛局势缓和窗口仍在',
-                    '滕建群： 美国“印太战略”难以得逞',
-                    '吴心伯： 对华竞争损害美国自身利益',
-                    '傅梦孜: 亚太合作大局不容破坏'
+                    '杨希雨：朝鲜半岛局势缓和窗口仍在',
+                    '滕建群：美国“印太战略”难以得逞',
+                    '吴心伯：对华竞争损害美国自身利益',
+                    '傅梦孜：亚太合作大局不容破坏'
                 ]
             },
             '22日': {
-                featured: '阮宗泽: 中国式现代化为世界提供新机遇',
+                featured: '阮宗泽：中国式现代化为世界提供新机遇',
                 items: [
-                    '贾秀东： 全球治理呼唤中国方案',
+                    '贾秀东：全球治理呼唤中国方案',
                     '姚遥： “一带一路”十年再出发',
-                    '崔洪建： 欧洲对华认知正在悄然变化',
-                    '高飞: 多边主义是时代前行方向'
+                    '崔洪建：欧洲对华认知正在悄然变化',
+                    '高飞：多边主义是时代前行方向'
                 ]
             }
         };
@@ -188,14 +209,19 @@
 
         // ==================== 生成日期页签 ====================
         var crx_dates = Object.keys(crx_data);
-        var crx_tabsHtml = '';
 
-        crx_dates.forEach(function (crx_date, crx_i) {
-            if (crx_i > 0) crx_tabsHtml += '<span class="crx_sep">|</span>';
-            crx_tabsHtml += '<span class="crx_tab' + (crx_i === 0 ? ' crx_tab-on' : '')
-                + '" data-crx-date="' + crx_date + '">' + crx_date + '</span>';
-        });
-        crx_tabsEl.innerHTML = crx_tabsHtml;
+        // 选中项左右不显示分隔线，与原图一致
+        function crx_buildTabs(crx_active) {
+            var crx_tabsHtml = '';
+            crx_dates.forEach(function (crx_date, crx_i) {
+                if (crx_i > 0 && crx_dates[crx_i - 1] !== crx_active && crx_date !== crx_active) {
+                    crx_tabsHtml += '<span class="crx_sep">|</span>';
+                }
+                crx_tabsHtml += '<span class="crx_tab' + (crx_date === crx_active ? ' crx_tab-on' : '')
+                    + '" data-crx-date="' + crx_date + '">' + crx_date + '</span>';
+            });
+            crx_tabsEl.innerHTML = crx_tabsHtml;
+        }
 
         // ==================== 渲染内容 ====================
         function crx_render(crx_date) {
@@ -214,14 +240,15 @@
             var crx_tab = crx_e.target.closest('[data-crx-date]');
             if (!crx_tab) return;
 
-            var crx_on = crx_tabsEl.querySelector('.crx_tab-on');
-            if (crx_on) crx_on.classList.remove('crx_tab-on');
-            crx_tab.classList.add('crx_tab-on');
+            var crx_date = crx_tab.getAttribute('data-crx-date');
+            if (crx_tab.classList.contains('crx_tab-on')) return;
 
-            crx_render(crx_tab.getAttribute('data-crx-date'));
+            crx_buildTabs(crx_date);
+            crx_render(crx_date);
         });
 
         // 初始渲染 29 日
+        crx_buildTabs(crx_dates[0]);
         crx_render(crx_dates[0]);
     </script>
 </body>
