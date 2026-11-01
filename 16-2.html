@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-2 JavaScript 对象</title>
+    <link rel="stylesheet" href="font/iconfont.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 26px 18px 64px;
+            background-color: #eef2f7;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 22px; }
+        .crx_head h1 { font-size: 26px; color: #12395c; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #64707d; }
+
+        .crx_main { max-width: 1080px; margin: 0 auto; }
+
+        .crx_panel {
+            margin-bottom: 22px; padding: 18px 20px 20px;
+            background-color: #fff;
+            border: 1px solid #d7dee7;
+            border-radius: 14px;
+        }
+
+        .crx_panel-title {
+            margin-bottom: 6px; padding-left: 12px;
+            border-left: 5px solid #d96c3d;
+            font-size: 16px; color: #12395c;
+        }
+        .crx_panel-desc {
+            margin-bottom: 14px; padding-left: 17px;
+            font-size: 12.5px; color: #64707d;
+        }
+
+        /* ===== 对象解剖图 ===== */
+        .crx_objcard {
+            padding: 14px 16px;
+            background-color: #1b2430;
+            border-radius: 10px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px; color: #eef3f8;
+            overflow-x: auto;
+        }
+        .crx_objcard-head, .crx_objcard-foot { color: #7f8c8d; }
+        .crx_rows { display: flex; flex-direction: column; }
+
+        .crx_row {
+            display: flex; align-items: center; gap: 8px;
+            padding: 5px 8px 5px 24px;
+            border-radius: 6px; cursor: pointer;
+            transition: background-color .2s ease;
+        }
+        .crx_row:hover { background-color: #232f3d; }
+        .crx_row-on { background-color: #2a3a4d; }
+
+        .crx_row-key { flex: none; color: #ffd166; }
+        .crx_row-sep { flex: none; color: #7f8c8d; }
+        .crx_row-val {
+            flex: 1 1 auto; min-width: 0; color: #06d6a0;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .crx_row-type {
+            flex: none; padding: 1px 8px;
+            border-radius: 9px; background-color: #2a3a4d;
+            font-size: 11px; color: #9fb3c8;
+        }
+
+        .crx_inspect {
+            margin-top: 12px; padding: 12px 14px;
+            background-color: #f4f8fc;
+            border-left: 4px solid #175b8c;
+            border-radius: 6px;
+            font-family: Consolas, monospace;
+            font-size: 12.5px; line-height: 1.8; color: #40505f;
+            white-space: pre-wrap; word-break: break-all;
+        }
+
+        /* ===== 操作台 ===== */
+        .crx_console { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+        .crx_input {
+            flex: 1 1 150px; min-width: 120px;
+            padding: 8px 10px;
+            border: 1px solid #c6d3e0;
+            border-radius: 7px;
+            font-family: Consolas, monospace;
+            font-size: 13px; color: #1f2937;
+        }
+        .crx_input:focus { outline: none; border-color: #175b8c; }
+
+        .crx_btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px;
+            border: none; border-radius: 7px;
+            background-color: #175b8c; color: #fff;
+            font-family: inherit; font-size: 13px;
+            cursor: pointer;
+            transition: background-color .2s ease, transform .1s ease;
+        }
+        .crx_btn:hover { background-color: #12395c; }
+        .crx_btn:active { transform: translateY(1px); }
+
+        .crx_btn-ghost {
+            background-color: #fff; color: #175b8c;
+            border: 1px solid #c6d3e0;
+        }
+        .crx_btn-ghost:hover { background-color: #eef4fa; }
+
+        .crx_chips {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            margin: 14px 0 4px;
+        }
+        .crx_chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 6px 4px 10px;
+            background-color: #e8f0fa;
+            border-radius: 6px;
+            font-family: Consolas, monospace;
+            font-size: 12px; color: #12395c;
+        }
+        .crx_chip-del {
+            padding: 2px 4px;
+            border: none; border-radius: 4px;
+            background: none; color: #b4441c;
+            font-size: 12px; line-height: 1;
+            cursor: pointer;
+        }
+        .crx_chip-del:hover { background-color: #fde8e0; }
+
+        .crx_json {
+            margin-top: 12px; padding: 12px 14px;
+            background-color: #1b2430; color: #d6e4f0;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 12.5px; line-height: 1.6;
+            white-space: pre; overflow-x: auto;
+        }
+        .crx_hint { margin-top: 10px; font-size: 12px; color: #b4441c; }
+        .crx_hint-quiet { color: #93a1af; }
+
+        /* ===== 方法卡片 ===== */
+        .crx_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .crx_card {
+            display: flex; flex-direction: column;
+            padding: 16px 18px 18px;
+            background-color: #fff;
+            border: 1px solid #d7dee7;
+            border-radius: 12px;
+        }
+        .crx_card-head {
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 10px;
+        }
+        .crx_card-head h3 {
+            font-family: Consolas, monospace;
+            font-size: 15px; color: #12395c;
+        }
+        .crx_badge {
+            flex: none; padding: 2px 8px;
+            border-radius: 10px;
+            background-color: #e8f0fa; color: #1d5588;
+            font-size: 11px;
+        }
+        .crx_desc {
+            margin: 8px 0 10px;
+            font-size: 12.5px; line-height: 1.6; color: #55636f;
+        }
+        .crx_code {
+            padding: 10px 12px;
+            background-color: #1b2430; color: #eef3f8;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 12px; line-height: 1.7;
+            white-space: pre; overflow-x: auto;
+        }
+        .crx_card .crx_btn { margin-top: 12px; align-self: flex-start; }
+
+        .crx_out {
+            margin-top: 12px; padding-top: 10px;
+            border-top: 1px dashed #e0e7ee;
+            font-family: Consolas, monospace;
+            font-size: 12.5px; line-height: 1.7; color: #12395c;
+            white-space: pre-wrap; word-break: break-all;
+        }
+        .crx_out-empty { color: #93a1af; font-style: italic; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-10-29，使用大模型：DeepSeek-V4.1-Flash，功能名称：16-2 JavaScript 对象演示 -->
+
+    <header class="crx_head">
+        <h1>JavaScript 对象 · 可视化演示</h1>
+        <p class="crx_sub">对象就是一堆「键: 值」的集合 —— 点属性看类型，动手增删改，再看常用操作</p>
+    </header>
+
+    <main class="crx_main">
+
+        <!-- ===== 对象解剖图 ===== -->
+        <section class="crx_panel">
+            <h2 class="crx_panel-title">对象长什么样</h2>
+            <p class="crx_panel-desc">下面就是一个真实的 JavaScript 对象，点击任意一行，查看这个属性的类型和值</p>
+
+            <div class="crx_objcard">
+                <div class="crx_objcard-head">var crx_student = {</div>
+                <div class="crx_rows" id="crx_rows"></div>
+                <div class="crx_objcard-foot">};</div>
+            </div>
+
+            <div class="crx_inspect" id="crx_inspect">点击上面的属性行查看详情…</div>
+        </section>
+
+        <!-- ===== 增删改操作台 ===== -->
+        <section class="crx_panel">
+            <h2 class="crx_panel-title">给对象增删改</h2>
+            <p class="crx_panel-desc">输入属性名和值就能添加或覆盖；点标签右侧的图标可以删除属性。下方 JSON 会实时跟着变</p>
+
+            <div class="crx_console">
+                <input class="crx_input" id="crx_key" type="text" placeholder="属性名，例如 score">
+                <input class="crx_input" id="crx_val" type="text" placeholder="值，例如 95">
+                <button class="crx_btn" id="crx_set" type="button">
+                    <i class="iconfont icon-jia"></i> 添加 / 修改
+                </button>
+                <button class="crx_btn crx_btn-ghost" id="crx_reset" type="button">
+                    <i class="iconfont icon-fanhui"></i> 恢复初始对象
+                </button>
+            </div>
+
+            <div class="crx_chips" id="crx_props"></div>
+
+            <pre class="crx_json" id="crx_json"></pre>
+
+            <p class="crx_hint" id="crx_hint">提示：属性名相同会覆盖原值；JSON 里看不到方法（函数），因为 JSON 只认数据</p>
+        </section>
+
+        <!-- ===== 常用操作卡片 ===== -->
+        <section class="crx_panel">
+            <h2 class="crx_panel-title">对象的常用操作</h2>
+            <p class="crx_panel-desc">点「运行示例」看真实输出，代码里的 crx_student 就是上面那个对象</p>
+            <div class="crx_grid" id="crx_cards"></div>
+        </section>
+
+    </main>
+
+    <script>
+        // ==================== 初始对象 ====================
+        function crx_makeStudent() {
+            return {
+                name: '曹润贤',
+                age: 20,
+                gender: '男',
+                hobbies: ['编程', '篮球', '摄影'],
+                address: { city: '武汉', school: '高级网页设计班' },
+                sayHi: function () {
+                    return '大家好，我是' + this.name;
+                }
+            };
+        }
+
+        var crx_student = crx_makeStudent();
+
+        var crx_rowsEl = document.getElementById('crx_rows');
+        var crx_propsEl = document.getElementById('crx_props');
+        var crx_jsonEl = document.getElementById('crx_json');
+        var crx_inspectEl = document.getElementById('crx_inspect');
+        var crx_hintEl = document.getElementById('crx_hint');
+
+        // ==================== 工具 ====================
+        function crx_typeName(crx_v) {
+            if (crx_v === null) return 'null';
+            if (Array.isArray(crx_v)) return 'object（数组）';
+            return typeof crx_v;
+        }
+
+        function crx_preview(crx_v) {
+            if (typeof crx_v === 'function') return 'function () { … }';
+            if (Array.isArray(crx_v)) return '[' + crx_v.join(', ') + ']';
+            if (crx_v !== null && typeof crx_v === 'object') {
+                var crx_parts = [];
+                Object.keys(crx_v).forEach(function (crx_k) {
+                    crx_parts.push(crx_k + ': ' + crx_v[crx_k]);
+                });
+                return '{ ' + crx_parts.join(', ') + ' }';
+            }
+            if (typeof crx_v === 'string') return '"' + crx_v + '"';
+            return String(crx_v);
+        }
+
+        // ==================== 解剖图渲染 ====================
+        function crx_renderRows() {
+            crx_rowsEl.innerHTML = '';
+
+            Object.keys(crx_student).forEach(function (crx_k) {
+                var crx_v = crx_student[crx_k];
+
+                var crx_row = document.createElement('div');
+                crx_row.className = 'crx_row';
+                crx_row.setAttribute('data-crx-key', crx_k);
+
+                var crx_keyEl = document.createElement('span');
+                crx_keyEl.className = 'crx_row-key';
+                crx_keyEl.textContent = crx_k;
+
+                var crx_sep = document.createElement('span');
+                crx_sep.className = 'crx_row-sep';
+                crx_sep.textContent = ':';
+
+                var crx_valEl = document.createElement('span');
+                crx_valEl.className = 'crx_row-val';
+                crx_valEl.textContent = crx_preview(crx_v);
+
+                var crx_typeEl = document.createElement('span');
+                crx_typeEl.className = 'crx_row-type';
+                crx_typeEl.textContent = crx_typeName(crx_v);
+
+                crx_row.appendChild(crx_keyEl);
+                crx_row.appendChild(crx_sep);
+                crx_row.appendChild(crx_valEl);
+                crx_row.appendChild(crx_typeEl);
+                crx_rowsEl.appendChild(crx_row);
+            });
+        }
+
+        // ==================== 属性标签 + JSON ====================
+        function crx_renderProps() {
+            crx_propsEl.innerHTML = '';
+
+            Object.keys(crx_student).forEach(function (crx_k) {
+                var crx_chip = document.createElement('span');
+                crx_chip.className = 'crx_chip';
+
+                var crx_name = document.createElement('span');
+                crx_name.textContent = crx_k;
+
+                var crx_del = document.createElement('button');
+                crx_del.className = 'crx_chip-del';
+                crx_del.type = 'button';
+                crx_del.title = '删除属性 ' + crx_k;
+                crx_del.setAttribute('data-crx-del', crx_k);
+                crx_del.innerHTML = '<i class="iconfont icon-shanchu"></i>';
+
+                crx_chip.appendChild(crx_name);
+                crx_chip.appendChild(crx_del);
+                crx_propsEl.appendChild(crx_chip);
+            });
+
+            crx_jsonEl.textContent = JSON.stringify(crx_student, null, 2);
+        }
+
+        function crx_refresh() {
+            crx_renderRows();
+            crx_renderProps();
+        }
+
+        // ==================== 解剖图点击 ====================
+        crx_rowsEl.addEventListener('click', function (crx_e) {
+            var crx_row = crx_e.target.closest('[data-crx-key]');
+            if (!crx_row) return;
+
+            var crx_k = crx_row.getAttribute('data-crx-key');
+            var crx_v = crx_student[crx_k];
+
+            Array.prototype.forEach.call(crx_rowsEl.children, function (crx_item) {
+                crx_item.classList.remove('crx_row-on');
+            });
+            crx_row.classList.add('crx_row-on');
+
+            var crx_detail;
+            if (typeof crx_v === 'function') {
+                crx_detail = crx_v.toString();
+            } else if (crx_v !== null && typeof crx_v === 'object') {
+                crx_detail = JSON.stringify(crx_v, null, 2);
+            } else {
+                crx_detail = JSON.stringify(crx_v);
+            }
+
+            crx_inspectEl.textContent =
+                'crx_student.' + crx_k + '\n' +
+                '类型：' + crx_typeName(crx_v) + '\n' +
+                '值：' + crx_detail;
+        });
+
+        // ==================== 增删改 ====================
+        document.getElementById('crx_set').addEventListener('click', function () {
+            var crx_key = document.getElementById('crx_key').value.trim();
+            var crx_val = document.getElementById('crx_val').value;
+
+            if (!crx_key) {
+                crx_hintEl.className = 'crx_hint';
+                crx_hintEl.textContent = '属性名不能为空';
+                return;
+            }
+
+            crx_student[crx_key] = crx_val;
+            crx_hintEl.className = 'crx_hint';
+            crx_hintEl.textContent = '已设置 crx_student.' + crx_key + ' = "' + crx_val + '"';
+            crx_refresh();
+        });
+
+        crx_propsEl.addEventListener('click', function (crx_e) {
+            var crx_del = crx_e.target.closest('[data-crx-del]');
+            if (!crx_del) return;
+
+            var crx_k = crx_del.getAttribute('data-crx-del');
+            delete crx_student[crx_k];
+            crx_hintEl.className = 'crx_hint';
+            crx_hintEl.textContent = '已删除属性 ' + crx_k;
+            crx_refresh();
+        });
+
+        document.getElementById('crx_reset').addEventListener('click', function () {
+            crx_student = crx_makeStudent();
+            crx_hintEl.className = 'crx_hint crx_hint-quiet';
+            crx_hintEl.textContent = '已恢复成初始对象';
+            crx_inspectEl.textContent = '点击上面的属性行查看详情…';
+            crx_refresh();
+        });
+
+        // ==================== 常用操作卡片 ====================
+        var crx_cards = [
+            {
+                name: '字面量创建 { }', badge: '创建',
+                desc: '最常用的写法：直接用花括号写出键值对。',
+                code: `var crx_book = {
+    title: 'JavaScript',
+    price: 59
+};`,
+                run: function () {
+                    var crx_book = { title: 'JavaScript', price: 59 };
+                    return 'crx_book.title → ' + crx_book.title + '\n' +
+                        'crx_book.price → ' + crx_book.price + '\n' +
+                        '属性总数 → ' + Object.keys(crx_book).length;
+                }
+            },
+            {
+                name: '构造函数 new', badge: '创建',
+                desc: '用一个函数当模板，批量生产同类对象，this 指向新对象。',
+                code: `var crx_Person = function (crx_name, crx_age) {
+    this.name = crx_name;
+    this.age = crx_age;
+};
+var crx_p = new crx_Person('李明', 21);`,
+                run: function () {
+                    var crx_Person = function (crx_name, crx_age) {
+                        this.name = crx_name;
+                        this.age = crx_age;
+                    };
+                    var crx_p = new crx_Person('李明', 21);
+                    return 'crx_p.name → ' + crx_p.name + '\n' +
+                        'crx_p.age → ' + crx_p.age + '\n' +
+                        'crx_p instanceof crx_Person → ' + (crx_p instanceof crx_Person);
+                }
+            },
+            {
+                name: '点号 vs 方括号', badge: '访问',
+                desc: '点号适合固定键名；方括号里可以放变量，做到动态取值。',
+                code: `crx_student.name
+crx_student['age']
+var crx_key = 'gender';
+crx_student[crx_key]`,
+                run: function () {
+                    var crx_key = 'gender';
+                    return 'crx_student.name → ' + crx_student.name + '\n' +
+                        "crx_student['age'] → " + crx_student['age'] + '\n' +
+                        'crx_student[crx_key] → ' + crx_student[crx_key] + '（变量当键名）';
+                }
+            },
+            {
+                name: '方法里的 this', badge: 'this',
+                desc: '作为对象方法调用时，this 指向对象本身；把函数单独拿出来调用，this 就丢了。',
+                code: `var crx_counter = {
+    count: 0,
+    add: function () {
+        this.count++;
+        return this.count;
+    }
+};`,
+                run: function () {
+                    var crx_counter = {
+                        count: 0,
+                        add: function () { this.count++; return this.count; }
+                    };
+                    var crx_first = crx_counter.add();
+                    var crx_second = crx_counter.add();
+                    var crx_fn = crx_counter.add;
+                    return 'crx_counter.add() → ' + crx_first + '\n' +
+                        'crx_counter.add() → ' + crx_second + '（count 累加了）\n' +
+                        '单独调用 crx_fn() → ' + crx_fn() + '（this 丢失）';
+                }
+            },
+            {
+                name: '遍历对象属性', badge: '遍历',
+                desc: 'for...in 逐键遍历；keys / values / entries 一次取出键、值或键值对。',
+                code: `var crx_course = { name: '网页设计', hours: 64 };
+for (var crx_k in crx_course) { ... }
+Object.keys(crx_course)    // ['name', 'hours']
+Object.values(crx_course)  // ['网页设计', 64]
+Object.entries(crx_course) // [['name','网页设计'], ...]`,
+                run: function () {
+                    var crx_course = { name: '网页设计', hours: 64 };
+                    var crx_lines = [];
+                    for (var crx_k in crx_course) {
+                        crx_lines.push('for...in  ' + crx_k + ' = ' + crx_course[crx_k]);
+                    }
+                    crx_lines.push('keys → ' + Object.keys(crx_course).join(', '));
+                    crx_lines.push('values → ' + Object.values(crx_course).join(', '));
+                    crx_lines.push('entries → ' + JSON.stringify(Object.entries(crx_course)));
+                    return crx_lines.join('\n');
+                }
+            },
+            {
+                name: '复制与合并', badge: '复制',
+                desc: 'Object.assign 和展开运算符都只复制第一层，里面的引用是共享的。',
+                code: `var crx_info = { name: '小明', tags: ['a'] };
+var crx_copy = Object.assign({}, crx_info);
+var crx_new = { ...crx_info, age: 18 };
+crx_copy.tags === crx_info.tags  // true`,
+                run: function () {
+                    var crx_info = { name: '小明', tags: ['a'] };
+                    var crx_copy = Object.assign({}, crx_info);
+                    var crx_new = { ...crx_info, age: 18 };
+                    crx_copy.tags.push('b');
+                    return 'crx_new → ' + JSON.stringify(crx_new) + '\n' +
+                        'crx_copy.tags === crx_info.tags → ' + (crx_copy.tags === crx_info.tags) + '\n' +
+                        '改副本后原对象 tags → ' + JSON.stringify(crx_info.tags) + '（浅拷贝的坑）';
+                }
+            },
+            {
+                name: 'JSON 互转', badge: '数据',
+                desc: 'stringify 把对象转成字符串，parse 再把字符串转回对象。',
+                code: `JSON.stringify(crx_small)
+JSON.parse('{"name":"网页设计"}')`,
+                run: function () {
+                    var crx_small = {
+                        name: '网页设计',
+                        hours: 64,
+                        fn: function () { return 1; }
+                    };
+                    var crx_back = JSON.parse('{"name":"网页设计"}');
+                    return 'stringify → ' + JSON.stringify(crx_small) + '\n' +
+                        '（函数 fn 被丢掉了）\n' +
+                        'parse 后 crx_back.name → ' + crx_back.name;
+                }
+            },
+            {
+                name: '属性是否存在', badge: '判断',
+                desc: 'in 会顺着原型链找，hasOwnProperty 只查对象自己身上的属性。',
+                code: `'name' in crx_student          // true
+crx_student.hasOwnProperty('toString') // false`,
+                run: function () {
+                    return "'name' in crx_student → " + ('name' in crx_student) + '\n' +
+                        "'age' in crx_student → " + ('age' in crx_student) + '\n' +
+                        "crx_student.hasOwnProperty('toString') → " + crx_student.hasOwnProperty('toString') + '（原型链上的不算自己的）';
+                }
+            }
+        ];
+
+        function crx_buildCard(crx_c, crx_index) {
+            var crx_card = document.createElement('article');
+            crx_card.className = 'crx_card';
+
+            var crx_cardHead = document.createElement('div');
+            crx_cardHead.className = 'crx_card-head';
+
+            var crx_h3 = document.createElement('h3');
+            crx_h3.textContent = crx_c.name;
+            crx_cardHead.appendChild(crx_h3);
+
+            var crx_badge = document.createElement('span');
+            crx_badge.className = 'crx_badge';
+            crx_badge.textContent = crx_c.badge;
+            crx_cardHead.appendChild(crx_badge);
+
+            crx_card.appendChild(crx_cardHead);
+
+            var crx_desc = document.createElement('p');
+            crx_desc.className = 'crx_desc';
+            crx_desc.textContent = crx_c.desc;
+            crx_card.appendChild(crx_desc);
+
+            var crx_code = document.createElement('pre');
+            crx_code.className = 'crx_code';
+            crx_code.textContent = crx_c.code;
+            crx_card.appendChild(crx_code);
+
+            var crx_btn = document.createElement('button');
+            crx_btn.type = 'button';
+            crx_btn.className = 'crx_btn';
+            crx_btn.setAttribute('data-crx-card', String(crx_index));
+            crx_btn.textContent = '运行示例';
+            crx_card.appendChild(crx_btn);
+
+            var crx_out = document.createElement('div');
+            crx_out.className = 'crx_out crx_out-empty';
+            crx_out.id = 'crx_out-' + crx_index;
+            crx_out.textContent = '点击按钮看结果';
+            crx_card.appendChild(crx_out);
+
+            return crx_card;
+        }
+
+        var crx_gridEl = document.getElementById('crx_cards');
+        crx_cards.forEach(function (crx_c, crx_index) {
+            crx_gridEl.appendChild(crx_buildCard(crx_c, crx_index));
+        });
+
+        crx_gridEl.addEventListener('click', function (crx_e) {
+            var crx_btn = crx_e.target.closest('[data-crx-card]');
+            if (!crx_btn) return;
+
+            var crx_index = Number(crx_btn.getAttribute('data-crx-card'));
+            var crx_out = document.getElementById('crx_out-' + crx_index);
+
+            crx_out.className = 'crx_out';
+            crx_out.textContent = crx_cards[crx_index].run();
+        });
+
+        // ==================== 初始化 ====================
+        crx_refresh();
+    </script>
+</body>
+</html>

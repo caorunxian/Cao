@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-3 汽车上市列表</title>
+    <link rel="stylesheet" href="font/iconfont.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 60px 16px;
+            background-color: #fff;
+            font-family: SimSun, "宋体", serif;
+        }
+
+        /* ===== 组件外框 ===== */
+        .crx_widget {
+            width: 320px;
+            margin: 0 auto;
+        }
+
+        /* ===== 页签 ===== */
+        .crx_tabs { display: flex; }
+
+        .crx_tab {
+            flex: 1;
+            height: 28px;
+            line-height: 26px;
+            text-align: center;
+            font-size: 13px;
+            background-color: #fff;
+            color: #2a6fbe;
+            border: 1px solid #2a6fbe;
+            border-bottom: none;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* 选中页签：蓝底白字（蓝=选中），向下与表格上边框齐平 */
+        .crx_tab-on {
+            background-color: #2a6fbe;
+            color: #fff;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+            margin-bottom: -1px;
+        }
+
+        .crx_tab .iconfont { font-size: 13px; margin-right: 4px; }
+
+        /* ===== 表格 ===== */
+        .crx_table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #2a6fbe;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .crx_table th {
+            padding: 5px 8px;
+            text-align: left;
+            font-weight: normal;
+            color: #33618f;
+            background-color: #dce9f5;
+            border-bottom: 1px solid #dce9f5;
+        }
+
+        .crx_table td {
+            padding: 5px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e4eef7;
+        }
+
+        .crx_table tr:last-child td { border-bottom: none; }
+
+        .crx_table th:nth-child(1) { width: 80px; }
+        .crx_table th:nth-child(3) { width: 96px; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-10-29，使用大模型：GLM-5.3-Flash，功能名称：16-3 汽车上市列表（Tab 切换表格） -->
+
+    <div class="crx_widget">
+        <div class="crx_tabs">
+            <div class="crx_tab crx_tab-on" data-crx-tab="newest">
+                <i class="iconfont icon-faxian"></i>最新上市
+            </div>
+            <div class="crx_tab" data-crx-tab="upcoming">
+                <i class="iconfont icon-dengji"></i>即将上市
+            </div>
+        </div>
+
+        <table class="crx_table">
+            <thead>
+                <tr>
+                    <th>上市时间</th>
+                    <th>品牌/车型</th>
+                    <th>售价（万元）</th>
+                </tr>
+            </thead>
+            <tbody id="crx_body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // ==================== 数据 ====================
+        var crx_data = {
+            newest: [
+                ['12月13日', '沃尔沃S60L', '26.99-38.49'],
+                ['12月12日', 'Jeep牧马人龙腾典藏', '47.99-59.99'],
+                ['12月10日', '一汽大众高尔夫7', '11.89-18.29'],
+                ['12月6日', '2014款古思特', '419.0-666.0'],
+                ['12月5日', '起亚新智跑', '15.98-25.18'],
+                ['12月5日', '2014款奥德赛', '22.98-28.68']
+            ],
+            upcoming: [
+                ['12月20日', '广汽本田凌派', '11.48-14.98'],
+                ['12月21日', '2014款翼搏', '9.98-13.68'],
+                ['12月23日', '东风标致301', '8.47-11.67'],
+                ['12月25日', '长城哈弗H8', '20.18-26.20'],
+                ['12月28日', '2014款凯美瑞', '17.98-27.98'],
+                ['12月30日', '观致Qoros 3', '11.99-16.79']
+            ]
+        };
+
+        var crx_bodyEl = document.getElementById('crx_body');
+
+        // ==================== 渲染表格 ====================
+        function crx_render(crx_key) {
+            var crx_rows = crx_data[crx_key];
+            var crx_html = '';
+
+            for (var crx_i = 0; crx_i < crx_rows.length; crx_i++) {
+                crx_html += '<tr>'
+                    + '<td>' + crx_rows[crx_i][0] + '</td>'
+                    + '<td>' + crx_rows[crx_i][1] + '</td>'
+                    + '<td>' + crx_rows[crx_i][2] + '</td>'
+                    + '</tr>';
+            }
+            crx_bodyEl.innerHTML = crx_html;
+        }
+
+        // ==================== 页签切换 ====================
+        var crx_tabEls = document.querySelectorAll('.crx_tab');
+
+        crx_tabEls.forEach(function (crx_tab) {
+            crx_tab.addEventListener('click', function () {
+                crx_tabEls.forEach(function (crx_item) {
+                    crx_item.classList.remove('crx_tab-on');
+                });
+                crx_tab.classList.add('crx_tab-on');
+                crx_render(crx_tab.getAttribute('data-crx-tab'));
+            });
+        });
+
+        // 初始渲染「最新上市」
+        crx_render('newest');
+    </script>
+</body>
+</html>

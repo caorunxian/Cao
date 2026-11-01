@@ -6,36 +6,28 @@
     <title>曹润贤｜高级网页设计课堂实践</title>
     <style>
         :root {
-            --ink: #18202b;
-            --muted: #657080;
-            --paper: #f7f4ed;
-            --card: #fffdf8;
-            --blue: #175b8c;
-            --blue-dark: #103d61;
-            --orange: #d96c3d;
-            --line: #d9d4c8;
-            --shadow: 0 18px 45px rgba(24, 32, 43, 0.10);
+            --crx_ink: #18202b;
+            --crx_muted: #657080;
+            --crx_paper: #f7f4ed;
+            --crx_card: #fffdf8;
+            --crx_blue: #175b8c;
+            --crx_blue-dark: #103d61;
+            --crx_orange: #d96c3d;
+            --crx_line: #d9d4c8;
+            --crx_shadow: 0 18px 45px rgba(24, 32, 43, 0.10);
         }
 
         * {
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
+        .crx_body {
             margin: 0;
-            color: var(--ink);
+            color: var(--crx_ink);
             background:
                 linear-gradient(135deg, rgba(23, 91, 140, 0.07) 0, rgba(23, 91, 140, 0) 38%),
-                var(--paper);
+                var(--crx_paper);
             font-family: Georgia, "Times New Roman", "Microsoft YaHei", sans-serif;
-        }
-
-        a {
-            color: inherit;
         }
 
         .crx_page {
@@ -43,7 +35,7 @@
             margin: 0 auto;
         }
 
-        header {
+        .crx_header {
             min-height: 430px;
             display: flex;
             align-items: center;
@@ -52,8 +44,8 @@
             padding: 72px 0 82px;
         }
 
-        header::before,
-        header::after {
+        .crx_header::before,
+        .crx_header::after {
             content: "";
             position: absolute;
             pointer-events: none;
@@ -61,7 +53,7 @@
             transform: rotate(-9deg);
         }
 
-        header::before {
+        .crx_header::before {
             width: 280px;
             height: 280px;
             right: -70px;
@@ -69,7 +61,7 @@
             border-radius: 50%;
         }
 
-        header::after {
+        .crx_header::after {
             width: 170px;
             height: 170px;
             right: 55px;
@@ -79,15 +71,15 @@
 
         .crx_eyebrow {
             margin: 0 0 18px;
-            color: var(--orange);
+            color: var(--crx_orange);
             font: bold 13px/1.4 "Microsoft YaHei", sans-serif;
             letter-spacing: 3px;
         }
 
-        h1 {
+        .crx_title {
             max-width: 760px;
             margin: 0;
-            color: var(--blue-dark);
+            color: var(--crx_blue-dark);
             font-size: clamp(42px, 7vw, 82px);
             line-height: 1.05;
             letter-spacing: 1px;
@@ -96,7 +88,7 @@
         .crx_intro {
             max-width: 630px;
             margin: 25px 0 0;
-            color: var(--muted);
+            color: var(--crx_muted);
             font: 17px/1.9 "Microsoft YaHei", sans-serif;
         }
 
@@ -104,10 +96,10 @@
             width: 78px;
             height: 5px;
             margin-top: 29px;
-            background: var(--orange);
+            background: var(--crx_orange);
         }
 
-        main {
+        .crx_main {
             padding-bottom: 80px;
         }
 
@@ -119,16 +111,16 @@
             margin: 0 0 23px;
         }
 
-        h2 {
+        .crx_h2 {
             margin: 0;
-            color: var(--blue-dark);
+            color: var(--crx_blue-dark);
             font-size: 30px;
             font-weight: normal;
         }
 
         .crx_section-heading p {
             margin: 0;
-            color: var(--muted);
+            color: var(--crx_muted);
             font: 14px "Microsoft YaHei", sans-serif;
         }
 
@@ -144,8 +136,8 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 20px;
-            border: 1px solid var(--line);
-            background: var(--card);
+            border: 1px solid var(--crx_line);
+            background: var(--crx_card);
             text-decoration: none;
             box-shadow: 0 4px 0 rgba(23, 91, 140, 0.08);
             transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
@@ -153,20 +145,20 @@
 
         .crx_work:hover,
         .crx_work:focus-visible {
-            border-color: var(--blue);
-            box-shadow: var(--shadow);
+            border-color: var(--crx_blue);
+            box-shadow: var(--crx_shadow);
             transform: translateY(-5px);
             outline: none;
         }
 
         .crx_work-number {
-            color: var(--orange);
+            color: var(--crx_orange);
             font: bold 13px "Microsoft YaHei", sans-serif;
         }
 
         .crx_work h3 {
             margin: 12px 0 0;
-            color: var(--ink);
+            color: var(--crx_ink);
             font-size: 21px;
             font-weight: normal;
             line-height: 1.35;
@@ -174,7 +166,7 @@
 
         .crx_work-file {
             margin-top: 13px;
-            color: var(--muted);
+            color: var(--crx_muted);
             font: 12px "Microsoft YaHei", sans-serif;
             overflow-wrap: anywhere;
         }
@@ -186,26 +178,34 @@
             align-items: start;
             margin-top: 78px;
             padding-top: 30px;
-            border-top: 1px solid var(--line);
+            border-top: 1px solid var(--crx_line);
         }
 
-        .crx_brief h2 {
+        .crx_brief .crx_h2 {
             font-size: 25px;
         }
 
-        blockquote {
+        .crx_blockquote {
             margin: 0;
             padding: 20px 24px;
-            border-left: 4px solid var(--orange);
+            border-left: 4px solid var(--crx_orange);
             background: rgba(255, 253, 248, 0.8);
             color: #394554;
             font: 16px/2 "Microsoft YaHei", sans-serif;
         }
 
-        footer {
+        .crx_blockquote p {
+            margin: 0 0 14px;
+        }
+
+        .crx_blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        .crx_footer {
             padding: 20px 0 34px;
-            border-top: 1px solid var(--line);
-            color: var(--muted);
+            border-top: 1px solid var(--crx_line);
+            color: var(--crx_muted);
             font: 13px "Microsoft YaHei", sans-serif;
         }
 
@@ -214,7 +214,7 @@
                 width: min(100% - 28px, 560px);
             }
 
-            header {
+            .crx_header {
                 min-height: 390px;
                 padding: 55px 0 65px;
             }
@@ -245,22 +245,23 @@
         }
     </style>
 </head>
-<body>
-    <!-- 姓名：曹润贤，日期：2026-10-22，功能名称：index -->
-    <header>
+<body class="crx_body">
+    <!-- 姓名：曹润贤，建立时间：2026-11-01，使用大模型：DeepSeek-V4.1-Flash，功能名称：作品集首页（全站页面导航） -->
+
+    <header class="crx_header">
         <div class="crx_page">
             <p class="crx_eyebrow">CLASSROOM PRACTICE · 2026</p>
-            <h1>曹润贤的<br>高级网页设计</h1>
-            <p class="crx_intro">从 HTML 元素、表单，到 CSS 层叠与选择器，记录课堂练习中逐步搭建起来的网页世界。</p>
+            <h1 class="crx_title">曹润贤的<br>高级网页设计</h1>
+            <p class="crx_intro">从 HTML 元素、表单，到 CSS 层叠、布局与动画，再到 JavaScript 语法、数组与对象——记录课堂练习中逐步搭建起来的网页世界。</p>
             <div class="crx_rule" aria-hidden="true"></div>
         </div>
     </header>
 
-    <main class="crx_page">
+    <main class="crx_page crx_main">
         <section aria-labelledby="crx_works-title">
             <div class="crx_section-heading">
-                <h2 id="crx_works-title">课堂实践目录</h2>
-                <p>点击卡片打开对应网页</p>
+                <h2 class="crx_h2" id="crx_works-title">课堂实践目录</h2>
+                <p>共 34 个页面 · 点击卡片打开对应网页</p>
             </div>
             <div class="crx_works">
                 <a class="crx_work" href="1.html">
@@ -333,80 +334,119 @@
                     <h3>CSS 过渡效果</h3>
                     <span class="crx_work-file">9-1 transition.html</span>
                 </a>
+                <a class="crx_work" href="10-1-animation.html">
+                    <span class="crx_work-number">15 / ANIMATION</span>
+                    <h3>CSS 关键帧动画</h3>
+                    <span class="crx_work-file">10-1-animation.html</span>
+                </a>
+                <a class="crx_work" href="10-2.html">
+                    <span class="crx_work-number">16 / ANIMATION</span>
+                    <h3>Animation 幻灯片</h3>
+                    <span class="crx_work-file">10-2.html</span>
+                </a>
+                <a class="crx_work" href="10-3.html">
+                    <span class="crx_work-number">17 / MEDIA</span>
+                    <h3>媒体查询背景变化</h3>
+                    <span class="crx_work-file">10-3.html</span>
+                </a>
+                <a class="crx_work" href="10-4.html">
+                    <span class="crx_work-number">18 / MEDIA</span>
+                    <h3>媒体查询响应式布局</h3>
+                    <span class="crx_work-file">10-4.html</span>
+                </a>
                 <a class="crx_work" href="11.1.html">
-                    <span class="crx_work-number">15 / UNIT</span>
-                    <h3>长度单位</h3>
+                    <span class="crx_work-number">19 / CSS</span>
+                    <h3>CSS 长度单位</h3>
                     <span class="crx_work-file">11.1.html</span>
                 </a>
                 <a class="crx_work" href="11-2.html">
-                    <span class="crx_work-number">16 / 3D</span>
+                    <span class="crx_work-number">20 / 3D</span>
                     <h3>CSS3 3D 动画</h3>
                     <span class="crx_work-file">11-2.html</span>
                 </a>
-
                 <a class="crx_work" href="13-1.html">
-                    <span class="crx_work-number">17 / ICON</span>
-                    <h3>Font Awesome 字体图标</h3>
+                    <span class="crx_work-number">21 / ICON</span>
+                    <h3>字体图标</h3>
                     <span class="crx_work-file">13-1.html</span>
                 </a>
-
                 <a class="crx_work" href="13-2.html">
-                    <span class="crx_work-number">18 / ICON</span>
-                    <h3>Lucide SVG 图标</h3>
+                    <span class="crx_work-number">22 / ICON</span>
+                    <h3>SVG 图标</h3>
                     <span class="crx_work-file">13-2.html</span>
                 </a>
-
                 <a class="crx_work" href="13-3.html">
-                    <span class="crx_work-number">19 / NAV</span>
-                    <h3>底部导航 - 字体图标</h3>
+                    <span class="crx_work-number">23 / ICON</span>
+                    <h3>移动端底部导航</h3>
                     <span class="crx_work-file">13-3.html</span>
                 </a>
-
                 <a class="crx_work" href="13-4.html">
-                    <span class="crx_work-number">20 / NAV</span>
-                    <h3>底部导航 - SVG 图标</h3>
+                    <span class="crx_work-number">24 / ICON</span>
+                    <h3>底部导航（SVG 版）</h3>
                     <span class="crx_work-file">13-4.html</span>
                 </a>
                 <a class="crx_work" href="14-1.html">
-                    <span class="crx_work-number">21 / JS</span>
+                    <span class="crx_work-number">25 / JS</span>
                     <h3>JavaScript 入门</h3>
                     <span class="crx_work-file">14-1.html</span>
                 </a>
                 <a class="crx_work" href="14-2.html">
-                    <span class="crx_work-number">22 / JS</span>
-                    <h3>JS 六种基本数据类型</h3>
+                    <span class="crx_work-number">26 / JS</span>
+                    <h3>六种基本数据类型</h3>
                     <span class="crx_work-file">14-2.html</span>
                 </a>
                 <a class="crx_work" href="15-1.html">
-                    <span class="crx_work-number">23 / JS</span>
-                    <h3>数七游戏 · 100 盒子</h3>
+                    <span class="crx_work-number">27 / JS</span>
+                    <h3>数七游戏</h3>
                     <span class="crx_work-file">15-1.html</span>
                 </a>
                 <a class="crx_work" href="15-2.html">
-                    <span class="crx_work-number">24 / JS</span>
-                    <h3>循环 & 条件语句</h3>
+                    <span class="crx_work-number">28 / JS</span>
+                    <h3>程序结构 · 循环与条件</h3>
                     <span class="crx_work-file">15-2.html</span>
                 </a>
+                <a class="crx_work" href="16-1.html">
+                    <span class="crx_work-number">29 / JS</span>
+                    <h3>数组常用方法</h3>
+                    <span class="crx_work-file">16-1.html</span>
+                </a>
+                <a class="crx_work" href="16-2.html">
+                    <span class="crx_work-number">30 / JS</span>
+                    <h3>对象 · 属性与操作</h3>
+                    <span class="crx_work-file">16-2.html</span>
+                </a>
+                <a class="crx_work" href="16-3.html">
+                    <span class="crx_work-number">31 / JS</span>
+                    <h3>汽车上市列表</h3>
+                    <span class="crx_work-file">16-3.html</span>
+                </a>
+                <a class="crx_work" href="16-4.html">
+                    <span class="crx_work-number">32 / JS</span>
+                    <h3>环球评论 · 日期切换</h3>
+                    <span class="crx_work-file">16-4.html</span>
+                </a>
                 <a class="crx_work" href="12306/index.html">
-                    <span class="crx_work-number">25 / 项目</span>
-                    <h3>12306 首页网页元素还原</h3>
+                    <span class="crx_work-number">33 / 项目</span>
+                    <h3>12306 首页还原</h3>
                     <span class="crx_work-file">12306/index.html</span>
                 </a>
                 <a class="crx_work" href="12306/subnav/bottom-nav.html">
-                    <span class="crx_work-number">26 / 项目</span>
-                    <h3>移动端底部下导航 · iconfont</h3>
+                    <span class="crx_work-number">34 / 项目</span>
+                    <h3>移动端底部导航</h3>
                     <span class="crx_work-file">12306/subnav/bottom-nav.html</span>
                 </a>
             </div>
         </section>
 
         <section class="crx_brief" aria-labelledby="crx_brief-title">
-            <h2 id="crx_brief-title">本次任务要求</h2>
-            <blockquote>“创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为index.html，主题为曹润贤的《高级网页设计》课堂实践，美化页面，页面中包括本提示词。”</blockquote>
+            <h2 class="crx_h2" id="crx_brief-title">本次任务要求</h2>
+            <blockquote class="crx_blockquote">
+                <p>“创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为index.html，主题为曹润贤的《高级网页设计》课堂实践，美化页面，页面中包括本提示词。”</p>
+                <p>“更新首页，加入所有网页的超链接。”</p>
+            </blockquote>
         </section>
     </main>
 
-    <footer>
+    <footer class="crx_footer">
         <div class="crx_page">曹润贤 · 《高级网页设计》课堂实践作品集</div>
     </footer>
 </body>

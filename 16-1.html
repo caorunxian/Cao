@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-1 JavaScript 数组方法</title>
+    <link rel="stylesheet" href="font/iconfont.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 26px 18px 64px;
+            background-color: #eef2f7;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 22px; }
+        .crx_head h1 { font-size: 26px; color: #12395c; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #64707d; }
+
+        /* ===== 顶部数组舞台（吸顶） ===== */
+        .crx_stage {
+            position: sticky; top: 0; z-index: 9;
+            max-width: 1080px; margin: 0 auto 28px;
+            padding: 16px 18px 14px;
+            background-color: #fff;
+            border: 1px solid #d7dee7;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(18, 57, 92, .08);
+        }
+
+        .crx_stage-top {
+            display: flex; justify-content: space-between;
+            align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+
+        .crx_stage-label {
+            font-family: Consolas, monospace;
+            font-size: 13px; color: #12395c;
+        }
+
+        .crx_board {
+            display: flex; flex-wrap: wrap; gap: 12px;
+            margin: 18px 0 26px;
+        }
+
+        .crx_cell {
+            position: relative;
+            width: 62px; height: 62px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px;
+            background: linear-gradient(160deg, #2a6ea6, #12395c);
+            color: #fff;
+            font-family: Consolas, monospace;
+            font-size: 17px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 3px 8px rgba(18, 57, 92, .18);
+            transition: background-color .25s ease, transform .25s ease;
+        }
+
+        /* 被方法改动过的格子 */
+        .crx_cell-hl {
+            background: linear-gradient(160deg, #f5a35b, #d96c3d);
+            animation: crx_pop .55s ease;
+        }
+
+        .crx_cell-idx {
+            position: absolute; bottom: -19px; left: 0;
+            width: 100%; text-align: center;
+            font-size: 11px; color: #93a1af;
+        }
+
+        .crx_empty {
+            padding: 20px 4px;
+            font-family: Consolas, monospace;
+            font-size: 13px; color: #93a1af;
+        }
+
+        @keyframes crx_pop {
+            0%   { transform: scale(.5) rotate(-8deg); opacity: 0; }
+            65%  { transform: scale(1.14) rotate(2deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .crx_readout {
+            display: flex; gap: 16px; flex-wrap: wrap;
+            align-items: baseline; font-size: 12.5px;
+        }
+        .crx_readout-len { font-family: Consolas, monospace; color: #12395c; }
+        .crx_readout-note { color: #b4441c; }
+
+        /* ===== 按钮 ===== */
+        .crx_btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            align-self: flex-start;
+            margin-top: 12px; padding: 7px 16px;
+            border: none; border-radius: 7px;
+            background-color: #175b8c; color: #fff;
+            font-family: inherit; font-size: 13px;
+            cursor: pointer;
+            transition: background-color .2s ease, transform .1s ease;
+        }
+        .crx_btn:hover { background-color: #12395c; }
+        .crx_btn:active { transform: translateY(1px); }
+
+        .crx_btn-ghost {
+            margin-top: 0; padding: 5px 12px;
+            background-color: #fff; color: #175b8c;
+            border: 1px solid #c6d3e0;
+            font-size: 12px;
+        }
+        .crx_btn-ghost:hover { background-color: #eef4fa; }
+
+        /* ===== 方法卡片 ===== */
+        .crx_cats { max-width: 1080px; margin: 0 auto; }
+        .crx_cat { margin-bottom: 26px; }
+
+        .crx_cat-title {
+            margin: 0 0 14px 2px; padding-left: 12px;
+            border-left: 5px solid #d96c3d;
+            font-size: 15px; color: #12395c;
+        }
+
+        .crx_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 16px;
+        }
+
+        .crx_card {
+            display: flex; flex-direction: column;
+            padding: 16px 18px 18px;
+            background-color: #fff;
+            border: 1px solid #d7dee7;
+            border-radius: 12px;
+        }
+
+        .crx_card-head {
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 10px;
+        }
+        .crx_card-head h3 {
+            font-family: Consolas, monospace;
+            font-size: 16px; color: #12395c;
+        }
+
+        .crx_badge {
+            flex: none; padding: 2px 8px;
+            border-radius: 10px; font-size: 11px;
+        }
+        .crx_badge-mut  { background-color: #fde8e0; color: #b4441c; }
+        .crx_badge-pure { background-color: #dcf3e7; color: #136b45; }
+
+        .crx_desc {
+            margin: 8px 0 10px;
+            font-size: 12.5px; line-height: 1.6; color: #55636f;
+        }
+
+        .crx_code {
+            padding: 10px 12px;
+            background-color: #1b2430; color: #eef3f8;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 12px; line-height: 1.7;
+            overflow-x: auto; white-space: pre;
+        }
+
+        .crx_out {
+            margin-top: 12px; padding-top: 10px;
+            border-top: 1px dashed #e0e7ee;
+            font-size: 12.5px; color: #40505f;
+        }
+        .crx_out-label { color: #93a1af; }
+
+        .crx_mini {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin-top: 7px;
+        }
+        .crx_mini span {
+            padding: 4px 10px;
+            border-radius: 6px;
+            background-color: #e8f0fa; color: #12395c;
+            font-family: Consolas, monospace; font-size: 12px;
+        }
+
+        .crx_out-text {
+            display: inline-block; margin-top: 6px;
+            font-family: Consolas, monospace; color: #12395c;
+        }
+        .crx_out-note { margin-top: 8px; color: #b4441c; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-10-29，使用大模型：DeepSeek-V4.1-Flash，功能名称：16-1 JavaScript 数组常用方法可视化演示 -->
+
+    <header class="crx_head">
+        <h1>JavaScript 数组方法 · 可视化演示</h1>
+        <p class="crx_sub">点卡片上的按钮，看数组的格子怎么变化 —— 橙色格子就是这次被改动的位置</p>
+    </header>
+
+    <section class="crx_stage">
+        <div class="crx_stage-top">
+            <span class="crx_stage-label">当前数组 crx_arr</span>
+            <button class="crx_btn crx_btn-ghost" id="crx_reset" type="button">
+                <i class="iconfont icon-fanhui"></i> 重置为 [10, 20, 30, 40, 50]
+            </button>
+        </div>
+        <div class="crx_board" id="crx_board"></div>
+        <div class="crx_readout">
+            <span class="crx_readout-len" id="crx_len">length = 5</span>
+            <span class="crx_readout-note" id="crx_note">等待操作…</span>
+        </div>
+    </section>
+
+    <main class="crx_cats" id="crx_cats"></main>
+
+    <script>
+        // ==================== 数据与视图 ====================
+        var crx_arr = [10, 20, 30, 40, 50];
+
+        var crx_boardEl = document.getElementById('crx_board');
+        var crx_lenEl = document.getElementById('crx_len');
+        var crx_noteEl = document.getElementById('crx_note');
+
+        // 重绘数组格子，crx_hit 中的下标会高亮并播放动画
+        function crx_drawBoard(crx_hit) {
+            crx_hit = crx_hit || [];
+            crx_boardEl.innerHTML = '';
+
+            if (crx_arr.length === 0) {
+                var crx_empty = document.createElement('div');
+                crx_empty.className = 'crx_empty';
+                crx_empty.textContent = '空数组 []';
+                crx_boardEl.appendChild(crx_empty);
+            }
+
+            for (var crx_i = 0; crx_i < crx_arr.length; crx_i++) {
+                var crx_cell = document.createElement('div');
+                crx_cell.className = 'crx_cell' + (crx_hit.indexOf(crx_i) > -1 ? ' crx_cell-hl' : '');
+
+                var crx_val = document.createElement('span');
+                crx_val.className = 'crx_cell-val';
+                crx_val.textContent = crx_arr[crx_i];
+
+                var crx_idx = document.createElement('span');
+                crx_idx.className = 'crx_cell-idx';
+                crx_idx.textContent = crx_i;
+
+                crx_cell.appendChild(crx_val);
+                crx_cell.appendChild(crx_idx);
+                crx_boardEl.appendChild(crx_cell);
+            }
+
+            crx_lenEl.textContent = 'length = ' + crx_arr.length;
+        }
+
+        // ==================== 方法清单 ====================
+        var crx_methods = [
+            {
+                id: 'push', cat: 'crud', name: 'push()', badge: 'mut',
+                desc: '在数组末尾追加元素，返回新的长度。',
+                code: 'crx_arr.push(60);\n// → 6（新长度）',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.push(60);
+                    return { ret: crx_ret, type: 'scalar', hit: [crx_a.length - 1], note: '在末尾追加了 60，返回新长度 ' + crx_ret };
+                }
+            },
+            {
+                id: 'pop', cat: 'crud', name: 'pop()', badge: 'mut',
+                desc: '删除末尾最后一个元素，并把它返回。',
+                code: 'var crx_last = crx_arr.pop();\n// → 50',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.pop();
+                    return { ret: crx_ret, type: 'scalar', hit: [], note: '删掉末尾元素，返回值为被删掉的值' };
+                }
+            },
+            {
+                id: 'unshift', cat: 'crud', name: 'unshift()', badge: 'mut',
+                desc: '在数组开头插入元素，返回新的长度。',
+                code: 'crx_arr.unshift(5);\n// → 6（新长度）',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.unshift(5);
+                    return { ret: crx_ret, type: 'scalar', hit: [0], note: '在开头插入 5，后面所有元素都往后挪了一位' };
+                }
+            },
+            {
+                id: 'shift', cat: 'crud', name: 'shift()', badge: 'mut',
+                desc: '删除开头第一个元素，并把它返回。',
+                code: 'var crx_first = crx_arr.shift();\n// → 10',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.shift();
+                    return { ret: crx_ret, type: 'scalar', hit: [], note: '删掉开头元素，返回值为被删掉的值' };
+                }
+            },
+            {
+                id: 'splice', cat: 'crud', name: 'splice()', badge: 'mut',
+                desc: '在任意位置删除、插入、替换元素，返回被删除的部分。',
+                code: "var crx_cut = crx_arr.splice(2, 1, 35);\n// 索引 2 删 1 个，插入 35\n// → [30]",
+                run: function (crx_a) {
+                    var crx_ret = crx_a.splice(2, 1, 35);
+                    return { ret: crx_ret, type: 'array', hit: [2], note: '从索引 2 位置删掉 1 个元素并插入 35，返回被删掉的元素' };
+                }
+            },
+
+            {
+                id: 'indexOf', cat: 'find', name: 'indexOf()', badge: 'pure',
+                desc: '查找某个值第一次出现的下标，找不到返回 -1。',
+                code: 'var crx_pos = crx_arr.indexOf(30);\n// → 2',
+                run: function (crx_a) {
+                    var crx_pos = crx_a.indexOf(30);
+                    return {
+                        ret: crx_pos, type: 'scalar', hit: crx_pos > -1 ? [crx_pos] : [],
+                        note: crx_pos > -1 ? '30 出现在索引 ' + crx_pos + ' 的位置' : '数组里没有 30，返回 -1'
+                    };
+                }
+            },
+            {
+                id: 'includes', cat: 'find', name: 'includes()', badge: 'pure',
+                desc: '判断数组里是否包含某个值，返回 true / false。',
+                code: 'var crx_has = crx_arr.includes(40);\n// → true',
+                run: function (crx_a) {
+                    var crx_pos = crx_a.indexOf(40);
+                    return {
+                        ret: crx_a.includes(40), type: 'scalar', hit: crx_pos > -1 ? [crx_pos] : [],
+                        note: '包含 40 就返回 true，否则返回 false'
+                    };
+                }
+            },
+            {
+                id: 'find', cat: 'find', name: 'find()', badge: 'pure',
+                desc: '按条件找出第一个符合条件的元素。',
+                code: 'crx_arr.find(function (crx_x) {\n    return crx_x > 25;\n});\n// → 30',
+                run: function (crx_a) {
+                    var crx_v = crx_a.find(function (crx_x) { return crx_x > 25; });
+                    var crx_pos = crx_a.indexOf(crx_v);
+                    return {
+                        ret: crx_v, type: 'scalar', hit: crx_pos > -1 ? [crx_pos] : [],
+                        note: crx_v === undefined ? '没有元素大于 25' : '第一个大于 25 的元素是 ' + crx_v
+                    };
+                }
+            },
+            {
+                id: 'filter', cat: 'find', name: 'filter()', badge: 'pure',
+                desc: '筛选出所有满足条件的元素，组成新数组。',
+                code: 'crx_arr.filter(function (crx_x) {\n    return crx_x % 20 === 0;\n});\n// → [20, 40]',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.filter(function (crx_x) { return crx_x % 20 === 0; });
+                    return { ret: crx_ret, type: 'array', hit: [], note: '只保留 20 的倍数，原数组不做改动' };
+                }
+            },
+
+            {
+                id: 'slice', cat: 'build', name: 'slice()', badge: 'pure',
+                desc: '截取一段元素组成新数组，含头不含尾。',
+                code: 'var crx_part = crx_arr.slice(1, 3);\n// → [20, 30]',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.slice(1, 3);
+                    return { ret: crx_ret, type: 'array', hit: [], note: '取索引 1、2 两个元素（不含 3），原数组不变' };
+                }
+            },
+            {
+                id: 'concat', cat: 'build', name: 'concat()', badge: 'pure',
+                desc: '把另一个数组拼接在后面，生成新数组。',
+                code: 'var crx_all = crx_arr.concat([99, 100]);\n// → [10, 20, 30, 40, 50, 99, 100]',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.concat([99, 100]);
+                    return { ret: crx_ret, type: 'array', hit: [], note: '拼接后得到新数组，原数组仍是 5 个元素' };
+                }
+            },
+            {
+                id: 'join', cat: 'build', name: 'join()', badge: 'pure',
+                desc: '用指定分隔符把所有元素连成一个字符串。',
+                code: "var crx_str = crx_arr.join(' - ');\n// → \"10 - 20 - 30 - 40 - 50\"",
+                run: function (crx_a) {
+                    var crx_ret = crx_a.join(' - ');
+                    return { ret: crx_ret, type: 'string', hit: [], note: '数组变成了一个字符串，元素之间用 " - " 连接' };
+                }
+            },
+            {
+                id: 'map', cat: 'build', name: 'map()', badge: 'pure',
+                desc: '对每个元素做同样的处理，生成等长的新数组。',
+                code: 'crx_arr.map(function (crx_x) {\n    return crx_x * 2;\n});\n// → [20, 40, 60, 80, 100]',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.map(function (crx_x) { return crx_x * 2; });
+                    return { ret: crx_ret, type: 'array', hit: [], note: '每个元素都乘以 2，原数组保持不变' };
+                }
+            },
+
+            {
+                id: 'forEach', cat: 'loop', name: 'forEach()', badge: 'pure',
+                desc: '逐个遍历元素，本身没有返回值。',
+                code: "crx_arr.forEach(function (crx_x, crx_i) {\n    console.log(crx_i, crx_x);\n});",
+                run: function (crx_a) {
+                    var crx_lines = [];
+                    crx_a.forEach(function (crx_x, crx_i) {
+                        crx_lines.push('[' + crx_i + '] ' + crx_x);
+                    });
+                    return { ret: crx_lines, type: 'lines', hit: [], note: 'forEach 没有返回值，下面只是遍历过程' };
+                }
+            },
+            {
+                id: 'reduce', cat: 'loop', name: 'reduce()', badge: 'pure',
+                desc: '把所有元素归约成一个值，常用于求和。',
+                code: 'crx_arr.reduce(function (crx_s, crx_x) {\n    return crx_s + crx_x;\n}, 0);\n// → 150',
+                run: function (crx_a) {
+                    var crx_ret = crx_a.reduce(function (crx_s, crx_x) { return crx_s + crx_x; }, 0);
+                    return { ret: crx_ret, type: 'scalar', hit: [], note: '从 0 开始累加所有元素，得到总和 ' + crx_ret };
+                }
+            },
+
+            {
+                id: 'sort', cat: 'order', name: 'sort()', badge: 'mut',
+                desc: '按比较函数排序，直接改动原数组。',
+                code: 'crx_arr.sort(function (crx_x, crx_y) {\n    return crx_y - crx_x;\n});\n// → 从大到小',
+                run: function (crx_a) {
+                    crx_a.sort(function (crx_x, crx_y) { return crx_y - crx_x; });
+                    return { ret: crx_a.slice(), type: 'array', hit: [], note: '按从大到小原地排序，返回的还是这个数组' };
+                }
+            },
+            {
+                id: 'reverse', cat: 'order', name: 'reverse()', badge: 'mut',
+                desc: '把数组顺序整个翻转，直接改动原数组。',
+                code: 'crx_arr.reverse();\n// → 首尾互换',
+                run: function (crx_a) {
+                    crx_a.reverse();
+                    return { ret: crx_a.slice(), type: 'array', hit: [], note: '原地反转顺序，返回的是同一个数组' };
+                }
+            }
+        ];
+
+        var crx_cats = [
+            { key: 'crud',  title: '增删元素 · 会改原数组' },
+            { key: 'find',  title: '查找判断 · 只读操作' },
+            { key: 'build', title: '截取与转换 · 生成新结果' },
+            { key: 'loop',  title: '遍历与归约 · 逐项处理' },
+            { key: 'order', title: '排序与反转 · 原地修改' }
+        ];
+
+        // ==================== 生成卡片 ====================
+        function crx_buildCard(crx_m) {
+            var crx_card = document.createElement('article');
+            crx_card.className = 'crx_card';
+
+            var crx_head = document.createElement('div');
+            crx_head.className = 'crx_card-head';
+
+            var crx_h3 = document.createElement('h3');
+            crx_h3.textContent = crx_m.name;
+            crx_head.appendChild(crx_h3);
+
+            var crx_badge = document.createElement('span');
+            crx_badge.className = 'crx_badge ' + (crx_m.badge === 'mut' ? 'crx_badge-mut' : 'crx_badge-pure');
+            crx_badge.textContent = crx_m.badge === 'mut' ? '改原数组' : '不改原数组';
+            crx_head.appendChild(crx_badge);
+
+            crx_card.appendChild(crx_head);
+
+            var crx_desc = document.createElement('p');
+            crx_desc.className = 'crx_desc';
+            crx_desc.textContent = crx_m.desc;
+            crx_card.appendChild(crx_desc);
+
+            var crx_code = document.createElement('pre');
+            crx_code.className = 'crx_code';
+            crx_code.textContent = crx_m.code;
+            crx_card.appendChild(crx_code);
+
+            var crx_btn = document.createElement('button');
+            crx_btn.type = 'button';
+            crx_btn.className = 'crx_btn';
+            crx_btn.setAttribute('data-crx-id', crx_m.id);
+            crx_btn.textContent = '运行 ' + crx_m.name;
+            crx_card.appendChild(crx_btn);
+
+            var crx_out = document.createElement('div');
+            crx_out.className = 'crx_out';
+            crx_out.id = 'crx_out-' + crx_m.id;
+            crx_out.textContent = '点上面的按钮看结果';
+            crx_card.appendChild(crx_out);
+
+            return crx_card;
+        }
+
+        var crx_catsEl = document.getElementById('crx_cats');
+
+        crx_cats.forEach(function (crx_cat) {
+            var crx_sec = document.createElement('section');
+            crx_sec.className = 'crx_cat';
+
+            var crx_title = document.createElement('h2');
+            crx_title.className = 'crx_cat-title';
+            crx_title.textContent = crx_cat.title;
+            crx_sec.appendChild(crx_title);
+
+            var crx_grid = document.createElement('div');
+            crx_grid.className = 'crx_grid';
+
+            crx_methods.forEach(function (crx_m) {
+                if (crx_m.cat === crx_cat.key) crx_grid.appendChild(crx_buildCard(crx_m));
+            });
+
+            crx_sec.appendChild(crx_grid);
+            crx_catsEl.appendChild(crx_sec);
+        });
+
+        // ==================== 展示返回值 ====================
+        function crx_showOut(crx_m, crx_res) {
+            var crx_out = document.getElementById('crx_out-' + crx_m.id);
+            crx_out.innerHTML = '';
+
+            var crx_lab = document.createElement('span');
+            crx_lab.className = 'crx_out-label';
+            crx_lab.textContent = '返回值：';
+            crx_out.appendChild(crx_lab);
+
+            if (crx_res.type === 'array' || crx_res.type === 'lines') {
+                if (crx_res.ret.length === 0) {
+                    var crx_none = document.createElement('span');
+                    crx_none.className = 'crx_out-text';
+                    crx_none.textContent = '[] （空数组）';
+                    crx_out.appendChild(crx_none);
+                } else {
+                    var crx_wrap = document.createElement('div');
+                    crx_wrap.className = 'crx_mini';
+                    crx_res.ret.forEach(function (crx_v) {
+                        var crx_item = document.createElement('span');
+                        crx_item.textContent = crx_v;
+                        crx_wrap.appendChild(crx_item);
+                    });
+                    crx_out.appendChild(crx_wrap);
+                }
+            } else {
+                var crx_txt = document.createElement('span');
+                crx_txt.className = 'crx_out-text';
+                if (crx_res.type === 'string') {
+                    crx_txt.textContent = '"' + crx_res.ret + '"';
+                } else {
+                    crx_txt.textContent = String(crx_res.ret);
+                }
+                crx_out.appendChild(crx_txt);
+            }
+
+            var crx_note = document.createElement('div');
+            crx_note.className = 'crx_out-note';
+            crx_note.textContent = crx_res.note;
+            crx_out.appendChild(crx_note);
+        }
+
+        // ==================== 事件 ====================
+        document.addEventListener('click', function (crx_e) {
+            var crx_btn = crx_e.target.closest('[data-crx-id]');
+            if (!crx_btn) return;
+
+            var crx_id = crx_btn.getAttribute('data-crx-id');
+            var crx_m = null;
+            crx_methods.forEach(function (crx_item) {
+                if (crx_item.id === crx_id) crx_m = crx_item;
+            });
+            if (!crx_m) return;
+
+            var crx_res = crx_m.run(crx_arr);
+            crx_drawBoard(crx_res.hit);
+            crx_noteEl.textContent = crx_m.name + ' → ' + crx_res.note;
+            crx_showOut(crx_m, crx_res);
+        });
+
+        document.getElementById('crx_reset').addEventListener('click', function () {
+            crx_arr = [10, 20, 30, 40, 50];
+            crx_drawBoard([]);
+            crx_noteEl.textContent = '已重置为 [10, 20, 30, 40, 50]';
+
+            crx_methods.forEach(function (crx_m) {
+                document.getElementById('crx_out-' + crx_m.id).textContent = '点上面的按钮看结果';
+            });
+        });
+
+        // 初始渲染
+        crx_drawBoard([]);
+    </script>
+</body>
+</html>
