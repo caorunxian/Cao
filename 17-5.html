@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-5 JavaScript 定时器</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 32px 20px 80px;
+            background-color: #f4f6f9;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            min-height: 100vh;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 28px; }
+        .crx_head h1 { font-size: 30px; color: #12395c; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #64707d; }
+
+        .crx_wrap { max-width: 960px; margin: 0 auto; }
+
+        .crx_compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .crx_card {
+            background-color: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 22px;
+            box-shadow: 0 6px 20px rgba(18, 57, 92, .08);
+        }
+
+        .crx_tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            letter-spacing: .5px;
+        }
+        .crx_tag-green { background-color: #e8f5e9; color: #27ae60; }
+        .crx_tag-blue { background-color: #e3f2fd; color: #2980b9; }
+
+        .crx_card h2 { font-size: 20px; color: #12395c; margin-bottom: 4px; }
+        .crx_card .crx_name { font-family: Consolas, monospace; font-size: 14px; color: #34495e; margin-bottom: 12px; }
+        .crx_card .crx_desc { font-size: 13px; color: #64707d; line-height: 1.7; margin-bottom: 16px; }
+
+        .crx_code {
+            background-color: #0f1720;
+            color: #d2dae2;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            overflow-x: auto;
+        }
+        .crx_code .crx_k { color: #70a1ff; }
+        .crx_code .crx_s { color: #7bed9f; }
+        .crx_code .crx_n { color: #f8c291; }
+        .crx_code .crx_f { color: #ff6b81; }
+        .crx_code .crx_c { color: #808e9b; font-style: italic; }
+
+        /* ===== 演示区 ===== */
+        .crx_demo {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+        }
+        .crx_demo-title {
+            font-size: 13px;
+            color: #34495e;
+            margin-bottom: 14px;
+            font-weight: bold;
+        }
+
+        .crx_display {
+            text-align: center;
+            font-family: Consolas, monospace;
+            font-size: 42px;
+            font-weight: bold;
+            color: #12395c;
+            padding: 16px 0;
+            letter-spacing: 2px;
+            background-color: #fff;
+            border-radius: 8px;
+            border: 2px dashed #e2e8f0;
+            margin-bottom: 12px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .crx_btn-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .crx_btn {
+            border: none;
+            border-radius: 18px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: "Microsoft YaHei", sans-serif;
+            transition: all .15s;
+        }
+        .crx_btn-start { background-color: #27ae60; color: #fff; }
+        .crx_btn-start:hover { background-color: #219a52; }
+        .crx_btn-stop { background-color: #e74c3c; color: #fff; }
+        .crx_btn-stop:hover { background-color: #c0392b; }
+        .crx_btn-pause { background-color: #f39c12; color: #fff; }
+        .crx_btn-pause:hover { background-color: #d78b0d; }
+        .crx_btn:disabled { opacity: .5; cursor: not-allowed; }
+
+        /* ===== 生活场景 ===== */
+        .crx_scene {
+            margin-top: 18px;
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 22px;
+        }
+        .crx_scene h3 { font-size: 18px; color: #12395c; margin-bottom: 14px; }
+
+        .crx_scene-item {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px dashed #e2e8f0;
+            align-items: center;
+        }
+        .crx_scene-item:last-child { border-bottom: none; }
+        .crx_scene-label { font-size: 13px; color: #34495e; font-weight: bold; }
+        .crx_scene-demo {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .crx_progress-wrap {
+            width: 160px; height: 14px;
+            background-color: #e2e8f0;
+            border-radius: 7px;
+            overflow: hidden;
+        }
+        .crx_progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 7px;
+            transition: width .1s linear;
+        }
+
+        .crx_log {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #0f1720;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            max-height: 140px;
+            overflow-y: auto;
+            color: #7bed9f;
+        }
+        .crx_log-entry { color: #d2dae2; }
+        .crx_log-time { color: #80ced6; }
+
+        .crx_diff-box {
+            margin-top: 18px;
+            background-color: #eef5fb;
+            border-left: 4px solid #12395c;
+            padding: 14px 18px;
+            border-radius: 0 10px 10px 0;
+            font-size: 13px;
+            color: #34495e;
+            line-height: 1.8;
+        }
+        .crx_diff-box b { color: #12395c; }
+
+        @media (max-width: 720px) {
+            .crx_compare { grid-template-columns: 1fr; }
+            .crx_display { font-size: 32px; }
+            .crx_scene-item { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-02，使用大模型：DeepSeek-V4.1-Flash，功能名称：17-5 两种定时器 setTimeout / setInterval -->
+
+    <header class="crx_head">
+        <h1>⏰ JavaScript 定时器</h1>
+        <p class="crx_sub">setTimeout（一次性延迟）· setInterval（周期性循环）· 生活场景演示</p>
+    </header>
+
+    <div class="crx_wrap">
+        <!-- 对比卡 -->
+        <div class="crx_compare">
+            <!-- setTimeout -->
+            <div class="crx_card">
+                <span class="crx_tag crx_tag-green">一次性</span>
+                <h2>setTimeout</h2>
+                <div class="crx_name">setTimeout(callback, delay)</div>
+                <div class="crx_desc">
+                    等 delay 毫秒之后，执行一次 callback。<br>
+                    相当于"闹钟"：响完就停。
+                </div>
+                <div class="crx_code">
+<span class="crx_c">// 3 秒后弹一次框</span>
+<span class="crx_k">var</span> crx_t = <span class="crx_f">setTimeout</span>(<span class="crx_k">function</span>() {
+    <span class="crx_f">alert</span>(<span class="crx_s">'时间到！'</span>);
+}, <span class="crx_n">3000</span>);
+
+<span class="crx_c">// 还没响就取消</span>
+<span class="crx_f">clearTimeout</span>(crx_t);
+                </div>
+
+                <div class="crx_demo">
+                    <div class="crx_demo-title">🎯 演示：倒计时炸弹（5 秒后爆炸 💥）</div>
+                    <div class="crx_display" id="crx_bomb">点击开始</div>
+                    <div class="crx_btn-row">
+                        <button class="crx_btn crx_btn-start" id="crx_bomb_start">💣 启动炸弹（5s）</button>
+                        <button class="crx_btn crx_btn-stop" id="crx_bomb_stop">🛑 拆弹取消</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- setInterval -->
+            <div class="crx_card">
+                <span class="crx_tag crx_tag-blue">周期性</span>
+                <h2>setInterval</h2>
+                <div class="crx_name">setInterval(callback, interval)</div>
+                <div class="crx_desc">
+                    每隔 interval 毫秒，重复执行 callback，直到手动停止。<br>
+                    相当于"节拍器"：一直滴答。
+                </div>
+                <div class="crx_code">
+<span class="crx_c">// 每秒数一次数</span>
+<span class="crx_k">var</span> crx_i = <span class="crx_n">0</span>;
+<span class="crx_k">var</span> crx_clock = <span class="crx_f">setInterval</span>(<span class="crx_k">function</span>() {
+    crx_i++;
+    <span class="crx_f">console</span>.<span class="crx_f">log</span>(crx_i);
+    <span class="crx_k">if</span> (crx_i >= <span class="crx_n">10</span>) {
+        <span class="crx_f">clearInterval</span>(crx_clock);
+    }
+}, <span class="crx_n">1000</span>);
+                </div>
+
+                <div class="crx_demo">
+                    <div class="crx_demo-title">⏱ 演示：秒表（每秒 +1）</div>
+                    <div class="crx_display" id="crx_timer">0</div>
+                    <div class="crx_btn-row">
+                        <button class="crx_btn crx_btn-start" id="crx_timer_start">▶ 开始</button>
+                        <button class="crx_btn crx_btn-pause" id="crx_timer_pause">⏸ 暂停</button>
+                        <button class="crx_btn crx_btn-stop" id="crx_timer_stop">🔄 重置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 生活场景 -->
+        <div class="crx_scene">
+            <h3>🎬 生活场景演示</h3>
+
+            <!-- 场景 1 -->
+            <div class="crx_scene-item">
+                <div class="crx_scene-label">🌡 水沸腾提醒<br>(setTimeout)</div>
+                <div class="crx_scene-demo">
+                    <div id="crx_water" style="font-size:22px;">💧 冷水</div>
+                    <button class="crx_btn crx_btn-start" id="crx_water_start">🔥 开始烧（4s 后响）</button>
+                    <button class="crx_btn crx_btn-stop" id="crx_water_stop">取消</button>
+                </div>
+            </div>
+
+            <!-- 场景 2 -->
+            <div class="crx_scene-item">
+                <div class="crx_scene-label">🍳 煎蛋倒计时<br>(setInterval)</div>
+                <div class="crx_scene-demo">
+                    <div class="crx_progress-wrap"><div class="crx_progress" id="crx_egg_progress"></div></div>
+                    <span id="crx_egg_text" style="font-size:14px;color:#34495e;">0 / 10 秒</span>
+                    <button class="crx_btn crx_btn-start" id="crx_egg_start">🍳 开始煎（10s）</button>
+                    <button class="crx_btn crx_btn-stop" id="crx_egg_stop">停止</button>
+                </div>
+            </div>
+
+            <!-- 场景 3：两个一起用 -->
+            <div class="crx_scene-item">
+                <div class="crx_scene-label">📨 消息轮询<br>(setInterval + setTimeout)</div>
+                <div class="crx_scene-demo" style="display:block; width:100%;">
+                    <div style="font-size:13px;color:#64707d;margin-bottom:8px;">
+                        每 2 秒"检查一次邮箱"（setInterval），总共检查 20 秒后自动停（setTimeout）
+                    </div>
+                    <div class="crx_log" id="crx_poll_log">
+                        <span class="crx_log-entry">· 点击下方按钮开始轮询</span><br>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <button class="crx_btn crx_btn-start" id="crx_poll_start">📨 开始轮询（20s）</button>
+                        <button class="crx_btn crx_btn-stop" id="crx_poll_stop">提前停止</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 总结 -->
+        <div class="crx_diff-box">
+            <b>📌 一句话区别：</b><br>
+            <b>setTimeout</b> 是"等一会做一件事"，<b>setInterval</b> 是"每隔一会一直做"。<br>
+            两者都会返回一个定时器 ID，用 <code>clearTimeout(id)</code> / <code>clearInterval(id)</code> 可以提前取消。<br>
+            ⚠ <b>注意：</b>定时器不是精确计时（主线程被阻塞时会延后执行），适合做"演示 / 动画 / 延迟 / 轮询"，不适合做精准时间戳。
+        </div>
+    </div>
+
+    <script>
+        // ==================== 1. 炸弹（setTimeout） ====================
+        var crx_bombTimer = null;
+        var crx_bombEl = document.getElementById('crx_bomb');
+        document.getElementById('crx_bomb_start').addEventListener('click', function () {
+            if (crx_bombTimer) return;
+            var crx_count = 5;
+            crx_bombEl.textContent = crx_count + ' 秒';
+            crx_bombEl.style.color = '#e74c3c';
+            crx_bombEl.style.fontSize = '42px';
+            crx_bombEl.style.borderColor = '#e74c3c';
+
+            // 每秒闪烁一次 —— 用 setTimeout 递归调用自己，比 setInterval 更灵活
+            function crx_tick() {
+                crx_bombEl.textContent = crx_count + ' 秒';
+                crx_bombTimer = setTimeout(function () {
+                    crx_count--;
+                    if (crx_count > 0) {
+                        crx_tick();
+                    } else {
+                        crx_bombEl.textContent = '💥 BOOM!';
+                        crx_bombEl.style.fontSize = '52px';
+                        crx_bombEl.style.borderColor = '#f39c12';
+                        crx_bombTimer = null;
+                    }
+                }, 1000);
+            }
+            crx_tick();
+        });
+        document.getElementById('crx_bomb_stop').addEventListener('click', function () {
+            if (crx_bombTimer) {
+                clearTimeout(crx_bombTimer);
+                crx_bombTimer = null;
+                crx_bombEl.textContent = '✅ 已拆弹';
+                crx_bombEl.style.color = '#27ae60';
+                crx_bombEl.style.borderColor = '#27ae60';
+            }
+        });
+
+        // ==================== 2. 秒表（setInterval） ====================
+        var crx_timer = null;
+        var crx_timerVal = 0;
+        var crx_timerEl = document.getElementById('crx_timer');
+        document.getElementById('crx_timer_start').addEventListener('click', function () {
+            if (crx_timer) return;
+            crx_timer = setInterval(function () {
+                crx_timerVal++;
+                crx_timerEl.textContent = crx_timerVal;
+            }, 1000);
+        });
+        document.getElementById('crx_timer_pause').addEventListener('click', function () {
+            if (crx_timer) {
+                clearInterval(crx_timer);
+                crx_timer = null;
+            }
+        });
+        document.getElementById('crx_timer_stop').addEventListener('click', function () {
+            if (crx_timer) clearInterval(crx_timer);
+            crx_timer = null;
+            crx_timerVal = 0;
+            crx_timerEl.textContent = '0';
+        });
+
+        // ==================== 3. 水沸腾（setTimeout） ====================
+        var crx_waterTimer = null;
+        var crx_waterEl = document.getElementById('crx_water');
+        document.getElementById('crx_water_start').addEventListener('click', function () {
+            if (crx_waterTimer) return;
+            crx_waterEl.textContent = '🔥 正在加热...';
+            crx_waterEl.style.color = '#e67e22';
+            crx_waterTimer = setTimeout(function () {
+                crx_waterEl.textContent = '♨️ 水沸腾了！100°C';
+                crx_waterEl.style.color = '#e74c3c';
+                crx_waterEl.style.fontWeight = 'bold';
+                crx_waterTimer = null;
+            }, 4000);
+        });
+        document.getElementById('crx_water_stop').addEventListener('click', function () {
+            if (crx_waterTimer) {
+                clearTimeout(crx_waterTimer);
+                crx_waterTimer = null;
+                crx_waterEl.textContent = '💧 已取消';
+                crx_waterEl.style.color = '#9ca3af';
+                crx_waterEl.style.fontWeight = 'normal';
+            }
+        });
+
+        // ==================== 4. 煎蛋（setInterval） ====================
+        var crx_egg = null;
+        var crx_eggCount = 0;
+        var crx_eggTotal = 10;
+        var crx_eggBar = document.getElementById('crx_egg_progress');
+        var crx_eggTxt = document.getElementById('crx_egg_text');
+        document.getElementById('crx_egg_start').addEventListener('click', function () {
+            if (crx_egg) return;
+            crx_eggCount = 0;
+            crx_egg = setInterval(function () {
+                crx_eggCount++;
+                crx_eggBar.style.width = (crx_eggCount / crx_eggTotal * 100) + '%';
+                crx_eggTxt.textContent = crx_eggCount + ' / ' + crx_eggTotal + ' 秒';
+                if (crx_eggCount >= crx_eggTotal) {
+                    clearInterval(crx_egg);
+                    crx_egg = null;
+                    crx_eggBar.style.background = 'linear-gradient(90deg, #e74c3c, #f39c12)';
+                    crx_eggTxt.textContent = '🍳 煎好啦！';
+                }
+            }, 1000);
+        });
+        document.getElementById('crx_egg_stop').addEventListener('click', function () {
+            if (crx_egg) {
+                clearInterval(crx_egg);
+                crx_egg = null;
+                crx_eggBar.style.width = '0%';
+                crx_eggTxt.textContent = '已停止';
+            }
+        });
+
+        // ==================== 5. 消息轮询（setInterval + setTimeout 组合） ====================
+        var crx_pollInterval = null;
+        var crx_pollTimeout = null;
+        var crx_pollLog = document.getElementById('crx_poll_log');
+        function crx_addLog(msg, color) {
+            var d = new Date();
+            var t = d.toLocaleTimeString();
+            var div = document.createElement('div');
+            div.innerHTML = '<span class="crx_log-time">[' + t + ']</span> <span style="color:' + (color || '#d2dae2') + ';">' + msg + '</span>';
+            crx_pollLog.appendChild(div);
+            crx_pollLog.scrollTop = crx_pollLog.scrollHeight;
+        }
+
+        document.getElementById('crx_poll_start').addEventListener('click', function () {
+            if (crx_pollInterval) return;
+            crx_pollLog.innerHTML = '';
+            crx_addLog('📨 开始轮询邮箱（每 2 秒一次，共 20 秒自动停）', '#80ced6');
+            var crx_count = 0;
+
+            // setInterval 每 2 秒检查一次
+            crx_pollInterval = setInterval(function () {
+                crx_count++;
+                if (Math.random() > 0.6) {
+                    crx_addLog('✉️ 有新邮件！📩 ' + crx_count, '#27ae60');
+                } else {
+                    crx_addLog('📭 无新邮件 第 ' + crx_count + ' 次检查', '#808e9b');
+                }
+            }, 2000);
+
+            // setTimeout 20 秒后整体停止
+            crx_pollTimeout = setTimeout(function () {
+                clearInterval(crx_pollInterval);
+                crx_pollInterval = null;
+                crx_pollTimeout = null;
+                crx_addLog('⏹ 20 秒到，自动停止轮询', '#e74c3c');
+            }, 20000);
+        });
+
+        document.getElementById('crx_poll_stop').addEventListener('click', function () {
+            if (crx_pollInterval) {
+                clearInterval(crx_pollInterval);
+                clearTimeout(crx_pollTimeout);
+                crx_pollInterval = null;
+                crx_pollTimeout = null;
+                crx_addLog('🛑 用户手动停止', '#f39c12');
+            }
+        });
+    </script>
+</body>
+</html>

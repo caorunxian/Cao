@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-3 商品详情</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 28px 20px 80px;
+            background-color: #f4f6f9;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_wrap {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .crx_back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #12395c;
+            font-size: 14px;
+            margin-bottom: 18px;
+            padding: 6px 14px;
+            border-radius: 16px;
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            transition: all .15s;
+        }
+        .crx_back:hover { background-color: #12395c; color: #fff; border-color: #12395c; }
+
+        /* ===== 加载 / 错误 ===== */
+        .crx_state {
+            padding: 80px 20px;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+        }
+        .crx_spinner {
+            width: 36px; height: 36px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #12395c;
+            border-radius: 50%;
+            margin: 0 auto 14px;
+            animation: crx_spin 1s linear infinite;
+        }
+        @keyframes crx_spin { to { transform: rotate(360deg); } }
+        .crx_state-text { font-size: 13px; color: #64707d; }
+
+        /* ===== 详情主体 ===== */
+        .crx_detail {
+            background-color: #fff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(18, 57, 92, .08);
+        }
+
+        .crx_top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        /* ===== 图片区 ===== */
+        .crx_img-main {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            background-color: #f0f3f8;
+            border-right: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .crx_img-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .crx_thumbs {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            overflow-x: auto;
+            border-top: 1px solid #e2e8f0;
+        }
+        .crx_thumb {
+            width: 60px;
+            height: 60px;
+            flex: none;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            overflow: hidden;
+            cursor: pointer;
+            background-color: #f0f3f8;
+        }
+        .crx_thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .crx_thumb.crx-active { border-color: #12395c; }
+
+        /* ===== 信息区 ===== */
+        .crx_info { padding: 28px 32px; display: flex; flex-direction: column; }
+
+        .crx_cat-line {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #12395c;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .crx_title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #1f2937;
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .crx_brand-line { font-size: 13px; color: #64707d; margin-bottom: 14px; }
+        .crx_brand-line b { color: #12395c; }
+
+        .crx_rating-line {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            font-size: 13px;
+            color: #64707d;
+            margin-bottom: 18px;
+        }
+        .crx_rating-stars { color: #f39c12; font-size: 15px; font-weight: bold; }
+        .crx_stock { color: #27ae60; font-weight: bold; }
+        .crx_stock.low { color: #f39c12; }
+        .crx_stock.out { color: #e74c3c; }
+
+        .crx_desc {
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .crx_price-row {
+            margin-bottom: 18px;
+        }
+        .crx_price-now { font-size: 34px; font-weight: bold; color: #e74c3c; }
+        .crx_price-old { font-size: 15px; color: #9ca3af; text-decoration: line-through; margin-left: 10px; }
+        .crx_discount {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: #fff;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .crx_tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 24px;
+        }
+        .crx_tag {
+            font-size: 12px;
+            background-color: #eef5fb;
+            color: #12395c;
+            padding: 3px 10px;
+            border-radius: 10px;
+            border: 1px solid #d4e4f4;
+        }
+
+        .crx_actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+        .crx_add, .crx_buy {
+            flex: 1;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: "Microsoft YaHei", sans-serif;
+            transition: all .15s;
+        }
+        .crx_add { background-color: #eef5fb; color: #12395c; border: 1px solid #12395c; }
+        .crx_add:hover { background-color: #d4e4f4; }
+        .crx_buy { background-color: #e74c3c; color: #fff; }
+        .crx_buy:hover { background-color: #c0392b; }
+
+        /* ===== 规格卡片 ===== */
+        .crx_meta {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background-color: #e2e8f0;
+            border-top: 1px solid #e2e8f0;
+        }
+        .crx_meta-item {
+            background-color: #fff;
+            padding: 14px 16px;
+        }
+        .crx_meta-label { font-size: 11px; color: #9ca3af; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+        .crx_meta-val { font-size: 14px; color: #1f2937; font-weight: bold; }
+
+        /* ===== 描述与评论 ===== */
+        .crx_sec {
+            margin-top: 18px;
+            background-color: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .crx_sec-head {
+            padding: 14px 20px;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 15px;
+            font-weight: bold;
+            color: #12395c;
+        }
+        .crx_sec-body { padding: 20px; }
+
+        .crx_review {
+            padding: 14px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .crx_review:last-child { border-bottom: none; }
+        .crx_review-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .crx_review-name { font-size: 13px; font-weight: bold; color: #1f2937; }
+        .crx_review-date { font-size: 12px; color: #9ca3af; }
+        .crx_review-stars { font-size: 13px; color: #f39c12; font-weight: bold; }
+        .crx_review-comment { font-size: 14px; color: #4b5563; line-height: 1.6; }
+
+        @media (max-width: 760px) {
+            .crx_top { grid-template-columns: 1fr; }
+            .crx_img-main { border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .crx_info { padding: 22px; }
+            .crx_meta { grid-template-columns: repeat(2, 1fr); }
+            .crx_title { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-02，使用大模型：DeepSeek-V4.1-Flash，功能名称：17-3-detail 商品详情（fetch 按 ID 获取单个商品） -->
+
+    <div class="crx_wrap">
+        <a class="crx_back" href="17-3.html">← 返回商品列表</a>
+        <div id="crx_main">
+            <div class="crx_state">
+                <div class="crx_spinner"></div>
+                <div class="crx_state-text">fetch 请求中……</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 工具 ====================
+        function crx_getIdFromUrl() {
+            var crx_q = location.search.substring(1);
+            var crx_params = crx_q.split('&');
+            for (var i = 0; i < crx_params.length; i++) {
+                var crx_kv = crx_params[i].split('=');
+                if (crx_kv[0] === 'id') return crx_kv[1];
+            }
+            return null;
+        }
+
+        function crx_stars(r) {
+            var crx_full = Math.round(r);
+            return '★'.repeat(crx_full) + '☆'.repeat(5 - crx_full);
+        }
+
+        function crx_fmtDate(iso) {
+            if (!iso) return '';
+            var d = new Date(iso);
+            return d.getFullYear() + '-' +
+                String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                String(d.getDate()).padStart(2, '0');
+        }
+
+        function crx_stockText(p) {
+            if (p.stock > 50) return { text: '现货充足', cls: '' };
+            if (p.stock > 0) return { text: '仅剩 ' + p.stock + ' 件', cls: 'low' };
+            return { text: '暂时缺货', cls: 'out' };
+        }
+
+        // ==================== 渲染 ====================
+        function crx_render(p) {
+            var crx_newPrice = (p.price * (1 - p.discountPercentage / 100)).toFixed(2);
+            var crx_discount = Math.round(p.discountPercentage);
+            var crx_imgs = p.images && p.images.length ? p.images : [];
+            var crx_mainImg = crx_imgs[0] || p.thumbnail || '';
+            var crx_stockInfo = crx_stockText(p);
+
+            var crx_thumbsHtml = '';
+            crx_imgs.forEach(function (src, i) {
+                crx_thumbsHtml +=
+                    '<div class="crx_thumb' + (i === 0 ? ' crx-active' : '') + '" data-crx-src="' + src + '">' +
+                        '<img src="' + src + '" alt="thumb">' +
+                    '</div>';
+            });
+
+            var crx_reviewsHtml = '';
+            if (p.reviews && p.reviews.length) {
+                p.reviews.forEach(function (rv) {
+                    crx_reviewsHtml +=
+                        '<div class="crx_review">' +
+                            '<div class="crx_review-head">' +
+                                '<span class="crx_review-name">' + rv.reviewerName + '</span>' +
+                                '<span class="crx_review-date">' + crx_fmtDate(rv.date) + '</span>' +
+                            '</div>' +
+                            '<div class="crx_review-stars">' + crx_stars(rv.rating) + ' ' + rv.rating.toFixed(1) + '</div>' +
+                            '<div class="crx_review-comment">' + rv.comment + '</div>' +
+                        '</div>';
+                });
+            }
+
+            var crx_html =
+                '<div class="crx_detail">' +
+                    '<div class="crx_top">' +
+                        // 图片
+                        '<div>' +
+                            '<div class="crx_img-main"><img id="crx_big" src="' + crx_mainImg + '" alt="' + p.title + '"></div>' +
+                            (crx_thumbsHtml ? '<div class="crx_thumbs">' + crx_thumbsHtml + '</div>' : '') +
+                        '</div>' +
+                        // 信息
+                        '<div class="crx_info">' +
+                            '<div class="crx_cat-line">' + (p.category || '').toUpperCase() + '</div>' +
+                            '<div class="crx_title">' + p.title + '</div>' +
+                            '<div class="crx_brand-line">品牌 <b>' + (p.brand || '—') + '</b> · SKU ' + p.sku + '</div>' +
+                            '<div class="crx_rating-line">' +
+                                '<span class="crx_rating-stars">' + crx_stars(p.rating) + ' ' + p.rating.toFixed(1) + '</span>' +
+                                '<span>库存 <span class="crx_stock ' + crx_stockInfo.cls + '">' + crx_stockInfo.text + '</span></span>' +
+                            '</div>' +
+                            '<div class="crx_desc">' + p.description + '</div>' +
+                            '<div class="crx_price-row">' +
+                                '<span class="crx_price-now">¥' + crx_newPrice + '</span>' +
+                                (crx_discount > 0 ? '<span class="crx_price-old">¥' + p.price.toFixed(2) + '</span>' : '') +
+                                (crx_discount > 0 ? '<span class="crx_discount">省' + crx_discount + '%</span>' : '') +
+                            '</div>' +
+                            (p.tags && p.tags.length ?
+                                '<div class="crx_tags">' +
+                                    p.tags.map(function (t) { return '<span class="crx_tag">#' + t + '</span>'; }).join('') +
+                                '</div>' : '') +
+                            '<div class="crx_actions">' +
+                                '<button class="crx_add" onclick="alert(\'已加入购物车\')">加入购物车</button>' +
+                                '<button class="crx_buy" onclick="alert(\'立即购买（演示）\')">立即购买</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    // 规格
+                    '<div class="crx_meta">' +
+                        '<div class="crx_meta-item"><div class="crx_meta-label">重量</div><div class="crx_meta-val">' + p.weight + ' g</div></div>' +
+                        '<div class="crx_meta-item"><div class="crx_meta-label">尺寸 (cm)</div><div class="crx_meta-val">' + (p.dimensions ? p.dimensions.width + '×' + p.dimensions.height + '×' + p.dimensions.depth : '—') + '</div></div>' +
+                        '<div class="crx_meta-item"><div class="crx_meta-label">保修</div><div class="crx_meta-val">' + (p.warrantyInformation || '—') + '</div></div>' +
+                        '<div class="crx_meta-item"><div class="crx_meta-label">发货</div><div class="crx_meta-val">' + (p.shippingInformation || '—') + '</div></div>' +
+                    '</div>' +
+                '</div>' +
+                // 评论
+                (crx_reviewsHtml ?
+                    '<div class="crx_sec">' +
+                        '<div class="crx_sec-head">用户评论 (' + (p.reviews && p.reviews.length || 0) + ')</div>' +
+                        '<div class="crx_sec-body">' + crx_reviewsHtml + '</div>' +
+                    '</div>' : '');
+
+            document.getElementById('crx_main').innerHTML = crx_html;
+
+            // 缩略图切换（事件委托，渲染后绑定一次）
+            document.getElementById('crx_main').addEventListener('click', function (e) {
+                var crx_t = e.target.closest('.crx_thumb');
+                if (!crx_t) return;
+                document.querySelectorAll('.crx_thumb').forEach(function (el) { el.classList.remove('crx-active'); });
+                crx_t.classList.add('crx-active');
+                var crx_big = document.getElementById('crx_big');
+                if (crx_big) crx_big.src = crx_t.getAttribute('data-crx-src');
+            });
+        }
+
+        function crx_showLoading() {
+            document.getElementById('crx_main').innerHTML =
+                '<div class="crx_state"><div class="crx_spinner"></div>' +
+                '<div class="crx_state-text">fetch 请求中……</div></div>';
+        }
+
+        function crx_showError(msg) {
+            document.getElementById('crx_main').innerHTML =
+                '<div class="crx_state" style="border-color:#e74c3c;">' +
+                    '<div style="font-size:48px;margin-bottom:12px;">😵</div>' +
+                    '<div style="font-size:15px;font-weight:bold;color:#c0392b;">加载失败</div>' +
+                    '<div style="font-size:12px;margin-top:6px;color:#64707d;">' + msg + '</div>' +
+                '</div>';
+        }
+
+        // ==================== fetch 详情 ====================
+        var crx_id = crx_getIdFromUrl();
+        if (!crx_id) {
+            crx_showError('URL 缺少商品 ID，请从列表页点击进入');
+        } else {
+            crx_showLoading();
+            var crx_url = 'https://dummyjson.com/products/' + crx_id;
+            fetch(crx_url)
+                .then(function (crx_res) {
+                    if (!crx_res.ok) throw new Error('HTTP ' + crx_res.status);
+                    return crx_res.json();
+                })
+                .then(function (crx_p) { crx_render(crx_p); })
+                .catch(function (crx_err) { crx_showError(crx_err.message); });
+        }
+    </script>
+</body>
+</html>

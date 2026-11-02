@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-6 Promise · async 包饺子</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 32px 20px 80px;
+            background: linear-gradient(160deg, #fff9e6 0%, #ffeaa7 100%);
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            min-height: 100vh;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 28px; }
+        .crx_head h1 { font-size: 30px; color: #c0392b; letter-spacing: 1px; }
+        .crx_head h1 span { font-size: 36px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #b8860b; }
+
+        .crx_wrap { max-width: 820px; margin: 0 auto; }
+
+        /* ===== 流程图 ===== */
+        .crx_flow {
+            background-color: #fff;
+            border-radius: 16px;
+            border: 2px solid #f39c12;
+            padding: 28px;
+            margin-bottom: 22px;
+            box-shadow: 0 10px 30px rgba(192, 57, 43, .1);
+        }
+        .crx_flow-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #c0392b;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #f39c12;
+        }
+
+        .crx_step {
+            display: flex;
+            gap: 14px;
+            padding: 12px 0;
+            align-items: flex-start;
+            opacity: .35;
+            transition: all .4s;
+        }
+        .crx-step-active { opacity: 1; }
+        .crx-step-done { opacity: 1; }
+        .crx-step-error { opacity: 1; }
+
+        .crx_step-icon {
+            width: 44px; height: 44px;
+            flex: none;
+            border-radius: 50%;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border: 2px solid transparent;
+            transition: all .3s;
+        }
+        .crx-step-active .crx_step-icon {
+            background-color: #ffeaa7;
+            border-color: #f39c12;
+            animation: crx_pulse 1s ease-in-out infinite;
+        }
+        .crx-step-done .crx_step-icon {
+            background-color: #d5f5e3;
+            border-color: #27ae60;
+        }
+        .crx-step-error .crx_step-icon {
+            background-color: #fadbd8;
+            border-color: #e74c3c;
+        }
+        @keyframes crx_pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(243, 156, 18, .5); }
+            50% { transform: scale(1.06); box-shadow: 0 0 0 8px rgba(243, 156, 18, 0); }
+        }
+
+        .crx_step-body { flex: 1; }
+        .crx_step-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 3px;
+        }
+        .crx_step-desc {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .crx-step-active .crx_step-name { color: #c0392b; }
+        .crx-step-active .crx_step-desc { color: #e67e22; }
+        .crx-step-done .crx_step-name { color: #27ae60; }
+
+        .crx_step-meta {
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            color: #808e9b;
+        }
+        .crx-step-active .crx_step-meta { color: #e67e22; font-weight: bold; }
+        .crx-step-done .crx_step-meta { color: #27ae60; }
+
+        /* 连接箭头 */
+        .crx_arrow {
+            margin-left: 22px;
+            font-size: 20px;
+            color: #9ca3af;
+            margin-top: -4px;
+            margin-bottom: -4px;
+        }
+        .crx_arrow.parallel {
+            margin-left: 66px;
+            color: #f39c12;
+            font-size: 12px;
+            font-family: Consolas, monospace;
+        }
+
+        /* ===== 并行分支 ===== */
+        .crx_parallel-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-left: 58px;
+        }
+
+        /* ===== 控制区 ===== */
+        .crx_ctrl {
+            background-color: #fff;
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+            border: 1px solid #f39c12;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .crx_btn {
+            border: none;
+            border-radius: 22px;
+            padding: 10px 26px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: "Microsoft YaHei", sans-serif;
+            transition: all .15s;
+        }
+        .crx_btn-start { background-color: #27ae60; color: #fff; }
+        .crx_btn-start:hover:not(:disabled) { background-color: #219a52; transform: translateY(-1px); }
+        .crx_btn-reset { background-color: #9ca3af; color: #fff; }
+        .crx_btn-reset:hover:not(:disabled) { background-color: #7f8c8d; }
+        .crx_btn:disabled { opacity: .4; cursor: not-allowed; }
+
+        .crx_total-time {
+            margin-left: auto;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        /* ===== 日志区 ===== */
+        .crx_log-box {
+            background-color: #1e272e;
+            border-radius: 14px;
+            padding: 18px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.85;
+            max-height: 280px;
+            overflow-y: auto;
+            color: #d2dae2;
+        }
+        .crx_log-box h4 {
+            font-size: 13px;
+            color: #f39c12;
+            margin-bottom: 10px;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .crx_log-line {
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+        }
+        .crx_log-line b { font-weight: bold; }
+        .crx_log-start { color: #70a1ff; }
+        .crx_log-done { color: #7bed9f; }
+        .crx_log-parallel { color: #ffa502; }
+        .crx_log-all { color: #ff6b81; }
+        .crx_log-time { color: #808e9b; }
+
+        /* ===== 代码 ===== */
+        .crx_code-title {
+            margin-top: 18px;
+            font-size: 14px;
+            color: #c0392b;
+            font-weight: bold;
+        }
+        .crx_code {
+            background-color: #0f1720;
+            color: #d2dae2;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 8px;
+            overflow-x: auto;
+        }
+        .crx_code .crx_k { color: #70a1ff; }
+        .crx_code .crx_s { color: #7bed9f; }
+        .crx_code .crx_n { color: #f8c291; }
+        .crx_code .crx_f { color: #ff6b81; }
+        .crx_code .crx_c { color: #808e9b; font-style: italic; }
+        .crx_code .crx_t { color: #ffa502; }
+
+        @media (max-width: 620px) {
+            .crx_parallel-row { grid-template-columns: 1fr; }
+            .crx_wrap { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-02，使用大模型：DeepSeek-V4.1-Flash，功能名称：17-6 Promise + async/await 包饺子异步流程演示 -->
+
+    <header class="crx_head">
+        <h1><span>🥟</span> 异步包饺子流水线</h1>
+        <p class="crx_sub">async / await + Promise.all — 把串行任务变成并行</p>
+    </header>
+
+    <div class="crx_wrap">
+        <!-- 控制区 -->
+        <div class="crx_ctrl">
+            <button class="crx_btn crx_btn-start" id="crx_start">🚀 开始包饺子</button>
+            <button class="crx_btn crx_btn-reset" id="crx_reset">🔄 重置</button>
+            <div class="crx_total-time" id="crx_total">⏱ 总耗时: —</div>
+        </div>
+
+        <!-- 流程图 -->
+        <div class="crx_flow">
+            <div class="crx_flow-title">📋 完整流程（共约 16 秒，并行后仅 12 秒）</div>
+
+            <!-- 步骤 1 -->
+            <div class="crx_step" data-crx-step="buy">
+                <div class="crx_step-icon">🛒</div>
+                <div class="crx_step-body">
+                    <div class="crx_step-name">① 买原料</div>
+                    <div class="crx_step-desc">去菜市场买面粉、肉馅、白菜、葱姜蒜</div>
+                </div>
+                <div class="crx_step-meta" data-crx-meta="buy">6s</div>
+            </div>
+
+            <div class="crx_arrow">↓</div>
+
+            <!-- 步骤 2 -->
+            <div class="crx_step" data-crx-step="fetch">
+                <div class="crx_step-icon">🧺</div>
+                <div class="crx_step-body">
+                    <div class="crx_step-name">② 取原料回家</div>
+                    <div class="crx_step-desc">拎着两大袋原料走回家</div>
+                </div>
+                <div class="crx_step-meta" data-crx-meta="fetch">1s</div>
+            </div>
+
+            <div class="crx_arrow parallel">⏬ Promise.all 开始并行 ⏬</div>
+
+            <!-- 步骤 3 & 4 并行 -->
+            <div class="crx_parallel-row">
+                <div class="crx_step" data-crx-step="dough">
+                    <div class="crx_step-icon">🍞</div>
+                    <div class="crx_step-body">
+                        <div class="crx_step-name">③a 和面</div>
+                        <div class="crx_step-desc">面粉 + 水 + 酵母，揉成光滑面团</div>
+                    </div>
+                    <div class="crx_step-meta" data-crx-meta="dough">3s</div>
+                </div>
+                <div class="crx_step" data-crx-step="filling">
+                    <div class="crx_step-icon">🥩</div>
+                    <div class="crx_step-body">
+                        <div class="crx_step-name">③b 和馅</div>
+                        <div class="crx_step-desc">肉馅 + 白菜 + 葱姜 + 盐酱油</div>
+                    </div>
+                    <div class="crx_step-meta" data-crx-meta="filling">4s</div>
+                </div>
+            </div>
+
+            <div class="crx_arrow parallel">⏬ 两者都完成后继续 ⏬</div>
+
+            <!-- 步骤 5 -->
+            <div class="crx_step" data-crx-step="wrap">
+                <div class="crx_step-icon">🥟</div>
+                <div class="crx_step-body">
+                    <div class="crx_step-name">④ 包饺子</div>
+                    <div class="crx_step-desc">擀皮 → 包馅 → 捏褶皱，一共包 20 个</div>
+                </div>
+                <div class="crx_step-meta" data-crx-meta="wrap">5s</div>
+            </div>
+
+            <div class="crx_arrow">↓</div>
+
+            <!-- 步骤 6 -->
+            <div class="crx_step" data-crx-step="eat">
+                <div class="crx_step-icon">😋</div>
+                <div class="crx_step-body">
+                    <div class="crx_step-name">⑤ 吃饺子！</div>
+                    <div class="crx_step-desc">烧开水下锅，煮三开，开吃 🥣</div>
+                </div>
+                <div class="crx_step-meta" data-crx-meta="eat">2s</div>
+            </div>
+        </div>
+
+        <!-- 日志 -->
+        <div class="crx_code-box">
+            <div class="crx_log-box" id="crx_log">
+                <h4>📜 实时执行日志</h4>
+                <div class="crx_log-line" style="color:#808e9b;">等待开始...</div>
+            </div>
+
+            <div class="crx_code-title">💻 核心代码（Promise + async/await）</div>
+            <div class="crx_code">
+<span class="crx_k">function</span> <span class="crx_f">crx_delay</span>(ms) {
+    <span class="crx_c">// setTimeout 包装成 Promise</span>
+    <span class="crx_k">return new</span> <span class="crx_t">Promise</span>(<span class="crx_k">function</span>(resolve) {
+        <span class="crx_f">setTimeout</span>(resolve, ms);
+    });
+}
+
+<span class="crx_k">async function</span> <span class="crx_f">crx_makeDumplings</span>() {
+    <span class="crx_c">// 1. 串行</span>
+    <span class="crx_k">await</span> <span class="crx_f">crx_doStep</span>(<span class="crx_s">'buy'</span>, <span class="crx_n">6000</span>);        <span class="crx_c">// 买原料</span>
+    <span class="crx_k">await</span> <span class="crx_f">crx_doStep</span>(<span class="crx_s">'fetch'</span>, <span class="crx_n">1000</span>);       <span class="crx_c">// 取回家</span>
+
+    <span class="crx_c">// 2. 并行 ↓↓↓</span>
+    <span class="crx_k">await</span> <span class="crx_t">Promise</span>.<span class="crx_f">all</span>([
+        <span class="crx_f">crx_doStep</span>(<span class="crx_s">'dough'</span>, <span class="crx_n">3000</span>),
+        <span class="crx_f">crx_doStep</span>(<span class="crx_s">'filling'</span>, <span class="crx_n">4000</span>)
+    ]);
+
+    <span class="crx_c">// 3. 串行</span>
+    <span class="crx_k">await</span> <span class="crx_f">crx_doStep</span>(<span class="crx_s">'wrap'</span>, <span class="crx_n">5000</span>);        <span class="crx_c">// 包饺子</span>
+    <span class="crx_k">await</span> <span class="crx_f">crx_doStep</span>(<span class="crx_s">'eat'</span>, <span class="crx_n">2000</span>);         <span class="crx_c">// 吃！</span>
+}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 状态管理 ====================
+        var crx_steps = ['buy', 'fetch', 'dough', 'filling', 'wrap', 'eat'];
+        var crx_el = {};
+        crx_steps.forEach(function (s) {
+            crx_el[s] = document.querySelector('[data-crx-step="' + s + '"]');
+        });
+
+        var crx_logEl = document.getElementById('crx_log');
+        var crx_totalEl = document.getElementById('crx_total');
+        var crx_startBtn = document.getElementById('crx_start');
+        var crx_resetBtn = document.getElementById('crx_reset');
+
+        var crx_running = false;
+        var crx_startTime = 0;
+
+        // ==================== 辅助：setTimeout → Promise ====================
+        function crx_delay(ms) {
+            return new Promise(function (resolve) {
+                setTimeout(resolve, ms);
+            });
+        }
+
+        // ==================== 辅助：日志 ====================
+        function crx_log(msg, cls) {
+            var d = new Date();
+            var t = d.toLocaleTimeString();
+            var line = document.createElement('div');
+            line.className = 'crx_log-line';
+            line.innerHTML = '<span class="crx_log-time">[' + t + ']</span> <span class="' + (cls || '') + '">' + msg + '</span>';
+            crx_logEl.appendChild(line);
+            crx_logEl.scrollTop = crx_logEl.scrollHeight;
+        }
+
+        // ==================== 辅助：单步执行 ====================
+        function crx_doStep(name, ms) {
+            return new Promise(function (resolve) {
+                // 激活
+                crx_el[name].classList.add('crx-step-active');
+                crx_log('▶ 开始: ' + crx_stepLabel(name) + '（' + (ms / 1000) + 's）', 'crx_log-start');
+
+                crx_delay(ms).then(function () {
+                    // 完成
+                    crx_el[name].classList.remove('crx-step-active');
+                    crx_el[name].classList.add('crx-step-done');
+                    crx_meta(name).textContent = '✓ ' + (ms / 1000) + 's';
+                    crx_log('✅ 完成: ' + crx_stepLabel(name), 'crx_log-done');
+                    resolve();
+                });
+            });
+        }
+
+        function crx_stepLabel(n) {
+            var map = {
+                buy: '① 买原料',
+                fetch: '② 取原料回家',
+                dough: '③a 和面',
+                filling: '③b 和馅',
+                wrap: '④ 包饺子',
+                eat: '⑤ 吃饺子'
+            };
+            return map[n] || n;
+        }
+        function crx_meta(n) { return document.querySelector('[data-crx-meta="' + n + '"]'); }
+
+        // ==================== 核心：async 主流程 ====================
+        async function crx_makeDumplings() {
+            crx_running = true;
+            crx_startBtn.disabled = true;
+            crx_startTime = performance.now();
+            crx_logEl.innerHTML = '<h4>📜 实时执行日志</h4>';
+            crx_log('🚀 开始包饺子流水线！', 'crx_log-all');
+
+            try {
+                // ===== 第一阶段：串行 =====
+                await crx_doStep('buy', 6000);       // 买原料 6s
+                await crx_doStep('fetch', 1000);     // 取回家 1s
+
+                // ===== 第二阶段：并行 ↓↓↓ =====
+                crx_log('⚡ Promise.all：和面 + 和馅 同时开始！', 'crx_log-parallel');
+                await Promise.all([
+                    crx_doStep('dough', 3000),        // 和面 3s
+                    crx_doStep('filling', 4000)       // 和馅 4s
+                ]);
+                crx_log('🎉 两道工序都完成了！继续包饺子', 'crx_log-all');
+
+                // ===== 第三阶段：串行 =====
+                await crx_doStep('wrap', 5000);      // 包饺子 5s
+                await crx_doStep('eat', 2000);       // 吃 2s
+
+                // ===== 结束 =====
+                var crx_used = ((performance.now() - crx_startTime) / 1000).toFixed(1);
+                crx_log('🏆 全部搞定！总耗时 ' + crx_used + ' 秒（串行约 21 秒 → 并行后 ' + crx_used + ' 秒）', 'crx_log-all');
+                crx_totalEl.textContent = '⏱ 总耗时: ' + crx_used + 's';
+            } catch (crx_err) {
+                crx_log('💥 出错了: ' + crx_err.message, 'crx_log-error');
+            } finally {
+                crx_running = false;
+                crx_startBtn.disabled = false;
+            }
+        }
+
+        // ==================== 重置 ====================
+        function crx_reset() {
+            crx_steps.forEach(function (s) {
+                crx_el[s].classList.remove('crx-step-active', 'crx-step-done', 'crx-step-error');
+            });
+            crx_steps.forEach(function (s) {
+                var times = { buy: '6s', fetch: '1s', dough: '3s', filling: '4s', wrap: '5s', eat: '2s' };
+                crx_meta(s).textContent = times[s];
+            });
+            crx_logEl.innerHTML = '<h4>📜 实时执行日志</h4><div class="crx_log-line" style="color:#808e9b;">等待开始...</div>';
+            crx_totalEl.textContent = '⏱ 总耗时: —';
+        }
+
+        crx_startBtn.addEventListener('click', crx_makeDumplings);
+        crx_resetBtn.addEventListener('click', crx_reset);
+    </script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-3 商品列表</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 28px 20px 80px;
+            background-color: #f4f6f9;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 28px; }
+        .crx_head h1 { font-size: 28px; color: #12395c; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #64707d; }
+
+        .crx_wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        /* ===== 工具栏 ===== */
+        .crx_toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 14px 18px;
+            background-color: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .crx_count { font-size: 13px; color: #64707d; }
+        .crx_count b { color: #12395c; font-size: 18px; margin: 0 4px; }
+
+        .crx_btn {
+            height: 36px;
+            padding: 0 16px;
+            border: none;
+            border-radius: 18px;
+            background-color: #12395c;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: "Microsoft YaHei", sans-serif;
+            transition: all .15s;
+        }
+        .crx_btn:hover { background-color: #0e2d49; transform: translateY(-1px); }
+
+        /* ===== 商品网格 ===== */
+        .crx_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 18px;
+        }
+
+        .crx_card {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: transform .2s, box-shadow .2s;
+            display: block;
+        }
+        .crx_card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 32px rgba(18, 57, 92, .18);
+            border-color: #12395c;
+        }
+
+        .crx_img-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background-color: #f0f3f8;
+        }
+        .crx_img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s;
+        }
+        .crx_card:hover .crx_img-box img { transform: scale(1.06); }
+
+        .crx_discount {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #e74c3c;
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .crx_cat-tag {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(18, 57, 92, .85);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .crx_info { padding: 14px 16px 16px; }
+        .crx_title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 8px;
+            line-height: 1.35;
+            height: 42px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .crx_brand { font-size: 12px; color: #9ca3af; margin-bottom: 8px; }
+
+        .crx_price-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+
+        .crx_price { font-size: 20px; font-weight: bold; color: #e74c3c; }
+        .crx_price-old {
+            font-size: 12px;
+            color: #9ca3af;
+            text-decoration: line-through;
+            margin-left: 6px;
+        }
+        .crx_rating { font-size: 12px; color: #f39c12; font-weight: bold; }
+
+        /* ===== 加载 / 空 / 错 ===== */
+        .crx_state {
+            padding: 60px 20px;
+            text-align: center;
+            background-color: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+        }
+        .crx_spinner {
+            width: 36px; height: 36px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #12395c;
+            border-radius: 50%;
+            margin: 0 auto 14px;
+            animation: crx_spin 1s linear infinite;
+        }
+        @keyframes crx_spin { to { transform: rotate(360deg); } }
+        .crx_state-text { font-size: 13px; color: #64707d; }
+
+        .crx_hint {
+            margin-top: 20px;
+            padding: 12px 16px;
+            background-color: #eef5fb;
+            border-left: 3px solid #12395c;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #334155;
+            line-height: 1.7;
+            font-family: Consolas, monospace;
+        }
+        .crx_hint b { color: #12395c; font-family: "Microsoft YaHei", sans-serif; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-02，使用大模型：DeepSeek-V4.1-Flash，功能名称：17-3 商品列表（fetch 跨域接口 + 点击跳转详情） -->
+
+    <header class="crx_head">
+        <h1>商品列表</h1>
+        <p class="crx_sub">接口：<code>https://dummyjson.com/products?limit=8</code> · 点击卡片进入详情</p>
+    </header>
+
+    <div class="crx_wrap">
+        <div class="crx_toolbar">
+            <div class="crx_count">共加载 <b id="crx_total">—</b> 件商品</div>
+            <button class="crx_btn" id="crx_btn_refresh">⟳ 刷新</button>
+        </div>
+
+        <div id="crx_list">
+            <div class="crx_state">
+                <div class="crx_spinner"></div>
+                <div class="crx_state-text">fetch 请求中……</div>
+            </div>
+        </div>
+
+        <div class="crx_hint">
+            <b>fetch 关键代码：</b><br>
+            fetch('https://dummyjson.com/products?limit=8')<br>
+            &nbsp;&nbsp;.then(res =&gt; res.json())<br>
+            &nbsp;&nbsp;.then(data =&gt; render(data.products))<br>
+            点击卡片 → 17-3-detail.html?id=商品ID
+        </div>
+    </div>
+
+    <script>
+        var crx_LIST_URL = 'https://dummyjson.com/products?limit=8';
+        var crx_listEl = document.getElementById('crx_list');
+        var crx_totalEl = document.getElementById('crx_total');
+        var crx_btnRefresh = document.getElementById('crx_btn_refresh');
+
+        function crx_render(list) {
+            if (!list || list.length === 0) {
+                crx_listEl.innerHTML =
+                    '<div class="crx_state"><div style="font-size:40px;margin-bottom:10px;">📦</div>' +
+                    '<div class="crx_state-text">暂无数据</div></div>';
+                crx_totalEl.textContent = '0';
+                return;
+            }
+
+            crx_totalEl.textContent = list.length;
+
+            var crx_html = '';
+            list.forEach(function (p) {
+                var crx_oldPrice = p.price;
+                var crx_newPrice = (p.price * (1 - p.discountPercentage / 100)).toFixed(2);
+                var crx_discount = Math.round(p.discountPercentage);
+                var crx_img = p.thumbnail || (p.images && p.images[0]) || '';
+                var crx_ratingStars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating));
+
+                crx_html +=
+                    '<a class="crx_card" href="17-3-detail.html?id=' + p.id + '">' +
+                        '<div class="crx_img-box">' +
+                            '<img src="' + crx_img + '" alt="' + p.title + '" loading="lazy">' +
+                            (crx_discount > 0 ? '<span class="crx_discount">-' + crx_discount + '%</span>' : '') +
+                            '<span class="crx_cat-tag">' + p.category + '</span>' +
+                        '</div>' +
+                        '<div class="crx_info">' +
+                            '<div class="crx_title">' + p.title + '</div>' +
+                            '<div class="crx_brand">' + (p.brand || '未知品牌') + ' · SKU ' + p.sku + '</div>' +
+                            '<div class="crx_price-row">' +
+                                '<div>' +
+                                    '<span class="crx_price">¥' + crx_newPrice + '</span>' +
+                                    (crx_discount > 0 ? '<span class="crx_price-old">¥' + crx_oldPrice + '</span>' : '') +
+                                '</div>' +
+                                '<span class="crx_rating">' + crx_ratingStars + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</a>';
+            });
+            crx_listEl.innerHTML = '<div class="crx_grid">' + crx_html + '</div>';
+        }
+
+        function crx_showError(msg) {
+            crx_listEl.innerHTML =
+                '<div class="crx_state" style="border-color:#e74c3c;color:#e74c3c;">' +
+                    '<div style="font-size:40px;margin-bottom:10px;">😵</div>' +
+                    '<div class="crx_state-text" style="color:#c0392b;">请求失败：' + msg + '</div>' +
+                '</div>';
+        }
+
+        function crx_showLoading() {
+            crx_listEl.innerHTML =
+                '<div class="crx_state"><div class="crx_spinner"></div>' +
+                '<div class="crx_state-text">fetch 请求中……</div></div>';
+        }
+
+        function crx_fetch() {
+            crx_showLoading();
+            fetch(crx_LIST_URL)
+                .then(function (crx_res) {
+                    if (!crx_res.ok) throw new Error('HTTP ' + crx_res.status);
+                    return crx_res.json();
+                })
+                .then(function (crx_data) { crx_render(crx_data.products); })
+                .catch(function (crx_err) { crx_showError(crx_err.message); });
+        }
+
+        crx_btnRefresh.addEventListener('click', crx_fetch);
+        crx_fetch();
+    </script>
+</body>
+</html>

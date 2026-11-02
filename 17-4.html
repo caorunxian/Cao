@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-4 接口测试工具</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 28px 20px 80px;
+            background: linear-gradient(135deg, #1e272e 0%, #2f3640 100%);
+            color: #d2dae2;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            min-height: 100vh;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 24px; }
+        .crx_head h1 { font-size: 28px; color: #fff; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #80ced6; }
+
+        .crx_wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ===== 请求面板 ===== */
+        .crx_panel {
+            background-color: #1e272e;
+            border: 1px solid #34495e;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.25);
+        }
+
+        .crx_row {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .crx_row-1 { grid-template-columns: 120px 1fr auto; }
+        .crx_row-2 { grid-template-columns: 1fr 1fr; }
+
+        .crx_method {
+            height: 42px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: "Microsoft YaHei", sans-serif;
+            color: #fff;
+            background-color: #27ae60;
+        }
+        .crx_method[data-m="GET"] { background-color: #27ae60; }
+        .crx_method[data-m="POST"] { background-color: #2980b9; }
+        .crx_method[data-m="PUT"] { background-color: #f39c12; }
+        .crx_method[data-m="PATCH"] { background-color: #9b59b6; }
+        .crx_method[data-m="DELETE"] { background-color: #e74c3c; }
+
+        .crx_url {
+            height: 42px;
+            padding: 0 14px;
+            border-radius: 8px;
+            border: 1px solid #34495e;
+            background-color: #0f1720;
+            color: #ecf0f1;
+            font-size: 13px;
+            font-family: Consolas, monospace;
+        }
+        .crx_url:focus { outline: none; border-color: #80ced6; }
+
+        .crx_send {
+            height: 42px;
+            padding: 0 26px;
+            border-radius: 8px;
+            border: none;
+            background-color: #e74c3c;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: "Microsoft YaHei", sans-serif;
+            transition: all .15s;
+        }
+        .crx_send:hover:not(:disabled) { background-color: #c0392b; transform: translateY(-1px); }
+        .crx_send:disabled { opacity: .5; cursor: not-allowed; }
+
+        label.crx_lbl {
+            display: block;
+            font-size: 12px;
+            color: #80ced6;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .crx_ta {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #34495e;
+            background-color: #0f1720;
+            color: #ecf0f1;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+        .crx_ta:focus { outline: none; border-color: #80ced6; }
+
+        .crx_headers {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .crx_hdr {
+            display: grid;
+            grid-template-columns: 4fr 5fr auto;
+            gap: 8px;
+        }
+        .crx_hdr input {
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 6px;
+            border: 1px solid #34495e;
+            background-color: #0f1720;
+            color: #ecf0f1;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+        }
+        .crx_hdr button {
+            border: none;
+            background-color: #34495e;
+            color: #d2dae2;
+            border-radius: 6px;
+            padding: 0 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .crx_hdr button:hover { background-color: #4a5c6e; }
+
+        .crx_add-row {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        .crx_add-row .crx_btn {
+            background-color: #34495e;
+            color: #80ced6;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .crx_add-row .crx_btn:hover { background-color: #4a5c6e; }
+
+        /* ===== 示例选择 ===== */
+        .crx_examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .crx_example {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 14px;
+            background-color: #34495e;
+            color: #d2dae2;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .crx_example:hover { border-color: #80ced6; color: #80ced6; }
+
+        /* ===== 响应面板 ===== */
+        .crx_resp-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background-color: #0f1720;
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+
+        .crx_status {
+            font-family: Consolas, monospace;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background-color: #34495e;
+        }
+        .crx_status[data-c="ok"] { background-color: #27ae60; color: #fff; }
+        .crx_status[data-c="warn"] { background-color: #f39c12; color: #fff; }
+        .crx_status[data-c="err"] { background-color: #e74c3c; color: #fff; }
+
+        .crx_time { font-family: Consolas, monospace; font-size: 12px; color: #80ced6; }
+        .crx_size { font-family: Consolas, monospace; font-size: 12px; color: #80ced6; }
+
+        .crx_tabs {
+            display: flex;
+            gap: 2px;
+            background-color: #0f1720;
+            border-radius: 8px 8px 0 0;
+            padding: 6px 6px 0;
+        }
+        .crx_tab {
+            padding: 8px 18px;
+            font-size: 13px;
+            color: #80ced6;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            background-color: transparent;
+            border: none;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .crx_tab.crx-active { background-color: #1e272e; color: #ecf0f1; font-weight: bold; }
+
+        .crx_body-box {
+            background-color: #1e272e;
+            border: 1px solid #34495e;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            padding: 16px;
+        }
+
+        .crx_code {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow: auto;
+        }
+
+        .crx_code .crx_k { color: #f8c291; }
+        .crx_code .crx_s { color: #7bed9f; }
+        .crx_code .crx_n { color: #70a1ff; }
+        .crx_code .crx_b { color: #ff6b81; }
+        .crx_code .crx_p { color: #ffa502; }
+
+        .crx_err-box {
+            padding: 14px 16px;
+            background-color: #3a1f24;
+            border: 1px solid #e74c3c;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #ffa502;
+            line-height: 1.7;
+        }
+        .crx_err-box b { color: #e74c3c; }
+        .crx_err-detail { margin-top: 8px; font-family: Consolas, monospace; font-size: 12px; color: #e74c3c; }
+
+        /* ===== 加载 ===== */
+        .crx_loading {
+            text-align: center;
+            padding: 40px;
+        }
+        .crx_spinner {
+            width: 36px; height: 36px;
+            border: 3px solid #34495e;
+            border-top-color: #e74c3c;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            animation: crx_spin 1s linear infinite;
+        }
+        @keyframes crx_spin { to { transform: rotate(360deg); } }
+
+        .crx_empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #80ced6;
+            font-size: 13px;
+            border: 2px dashed #34495e;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 720px) {
+            .crx_row-1 { grid-template-columns: 1fr; }
+            .crx_row-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-02，使用大模型：DeepSeek-V4.1-Flash，功能名称：17-4 接口测试工具（GET/POST/PUT/PATCH/DELETE + 错误诊断） -->
+
+    <header class="crx_head">
+        <h1>🛠 fetch 接口测试工具</h1>
+        <p class="crx_sub">支持 GET · POST · PUT · PATCH · DELETE · 自定义 Header · 错误诊断</p>
+    </header>
+
+    <div class="crx_wrap">
+        <!-- 请求面板 -->
+        <div class="crx_panel">
+            <div class="crx_row crx_row-1">
+                <select class="crx_method" id="crx_method">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="PATCH">PATCH</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                <input class="crx_url" id="crx_url" value="https://dummyjson.com/products/1" placeholder="输入完整 URL，例如 https://api.example.com/data">
+                <button class="crx_send" id="crx_send">发送请求</button>
+            </div>
+
+            <div class="crx_examples">
+                <span class="crx_example" data-crx-url="https://jsonplaceholder.typicode.com/posts/1" data-crx-m="GET">📄 GET 单篇文章</span>
+                <span class="crx_example" data-crx-url="https://jsonplaceholder.typicode.com/posts" data-crx-m="GET">📚 GET 文章列表</span>
+                <span class="crx_example" data-crx-url="https://jsonplaceholder.typicode.com/users" data-crx-m="GET">👥 GET 用户列表</span>
+                <span class="crx_example" data-crx-url="https://jsonplaceholder.typicode.com/posts" data-crx-m="POST">➕ POST 新建文章</span>
+                <span class="crx_example" data-crx-url="https://dummyjson.com/products?limit=5" data-crx-m="GET">🛍 DummyJSON 商品</span>
+                <span class="crx_example" data-crx-url="https://api.open-meteo.com/v1/forecast?latitude=39.9&longitude=116.4&current=temperature_2m&timezone=Asia/Shanghai" data-crx-m="GET">🌤 北京天气</span>
+            </div>
+
+            <div class="crx_row crx_row-2">
+                <div>
+                    <label class="crx_lbl">Headers（键 / 值）</label>
+                    <div class="crx_headers" id="crx_headers">
+                        <div class="crx_hdr">
+                            <input placeholder="Key（如 Content-Type）" value="">
+                            <input placeholder="Value（如 application/json）" value="">
+                            <button type="button">✕</button>
+                        </div>
+                    </div>
+                    <div class="crx_add-row">
+                        <button class="crx_btn" id="crx_add_hdr">+ 添加 Header</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="crx_lbl">Request Body（JSON 或文本）</label>
+                    <textarea class="crx_ta" id="crx_body" placeholder='POST/PUT/PATCH 请求体，例如：
+{"title": "新文章", "body": "内容", "userId": 1}'></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 响应面板 -->
+        <div class="crx_panel">
+            <div class="crx_resp-top">
+                <div class="crx_status" id="crx_status" data-c="">等待请求</div>
+                <div class="crx_time" id="crx_time">—</div>
+                <div class="crx_size" id="crx_size">—</div>
+            </div>
+
+            <div class="crx_tabs" id="crx_tabs">
+                <button class="crx_tab crx-active" data-crx-tab="body">Response Body</button>
+                <button class="crx_tab" data-crx-tab="headers">Response Headers</button>
+                <button class="crx_tab" data-crx-tab="req">Request Info</button>
+            </div>
+
+            <div class="crx_body-box" id="crx_bodybox">
+                <div class="crx_empty">👆 在上方输入 URL 并点击"发送请求"<br>POST 示例 Body: {"title":"新文章","body":"内容","userId":1}</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DOM ====================
+        var crx_methodEl = document.getElementById('crx_method');
+        var crx_urlEl = document.getElementById('crx_url');
+        var crx_bodyEl = document.getElementById('crx_body');
+        var crx_sendBtn = document.getElementById('crx_send');
+        var crx_statusEl = document.getElementById('crx_status');
+        var crx_timeEl = document.getElementById('crx_time');
+        var crx_sizeEl = document.getElementById('crx_size');
+        var crx_bodyboxEl = document.getElementById('crx_bodybox');
+        var crx_headersEl = document.getElementById('crx_headers');
+        var crx_addHdrBtn = document.getElementById('crx_add_hdr');
+
+        // 方法下拉显示颜色
+        function crx_colorMethod() {
+            var crx_m = crx_methodEl.value;
+            crx_methodEl.className = 'crx_method';
+            crx_methodEl.setAttribute('data-m', crx_m);
+        }
+        crx_methodEl.addEventListener('change', crx_colorMethod);
+        crx_colorMethod();
+
+        // Header 行管理
+        crx_addHdrBtn.addEventListener('click', function () {
+            var crx_div = document.createElement('div');
+            crx_div.className = 'crx_hdr';
+            crx_div.innerHTML =
+                '<input placeholder="Key">' +
+                '<input placeholder="Value">' +
+                '<button type="button">✕</button>';
+            crx_headersEl.appendChild(crx_div);
+        });
+
+        crx_headersEl.addEventListener('click', function (e) {
+            if (e.target.tagName === 'BUTTON' && crx_headersEl.children.length > 1) {
+                e.target.parentElement.remove();
+            }
+        });
+
+        // 示例快捷
+        document.querySelectorAll('.crx_example').forEach(function (el) {
+            el.addEventListener('click', function () {
+                crx_urlEl.value = el.getAttribute('data-crx-url');
+                crx_methodEl.value = el.getAttribute('data-crx-m');
+                crx_colorMethod();
+                if (el.getAttribute('data-crx-m') === 'POST') {
+                    crx_bodyEl.value = '{\n  "title": "新文章",\n  "body": "这是测试内容",\n  "userId": 1\n}';
+                }
+            });
+        });
+
+        // ==================== 高亮 ====================
+        function crx_hl(text) {
+            var out = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            out = out.replace(/"([^"\\]|\\.)*"/g, '<span class="crx_s">$&</span>');
+            out = out.replace(/(<span class="crx_s">)([^<]+)(<\/span>)(\s*:)/g,
+                function (m, p1, p2, p3, p4) { return '<span class="crx_k">' + p2 + '</span>' + p4; });
+            out = out.replace(/(-?\d+\.?\d*)/g, '<span class="crx_n">$1</span>');
+            out = out.replace(/\b(true|false|null)\b/g, '<span class="crx_b">$1</span>');
+            out = out.replace(/([{}\[\]])/g, '<span class="crx_p">$1</span>');
+            return out;
+        }
+
+        function crx_bytesLen(str) {
+            return new Blob([str]).size;
+        }
+
+        // ==================== fetch 请求 ====================
+        function crx_collectHeaders() {
+            var crx_obj = {};
+            var crx_rows = crx_headersEl.querySelectorAll('.crx_hdr');
+            crx_rows.forEach(function (row) {
+                var crx_inputs = row.querySelectorAll('input');
+                var crx_k = crx_inputs[0].value.trim();
+                var crx_v = crx_inputs[1].value.trim();
+                if (crx_k && crx_v) crx_obj[crx_k] = crx_v;  // key 和 value 都非空才加入
+            });
+            return crx_obj;
+        }
+
+        function crx_isJsonHeader(h) {
+            for (var k in h) {
+                if (k.toLowerCase() === 'content-type' && h[k].toLowerCase().indexOf('json') >= 0) return true;
+            }
+            return false;
+        }
+
+        function crx_setStatus(text, color) {
+            crx_statusEl.textContent = text;
+            crx_statusEl.setAttribute('data-c', color);
+        }
+
+        function crx_renderError(errMsg, hint, extra) {
+            crx_bodyboxEl.innerHTML =
+                '<div class="crx_err-box">' +
+                    '<b>💥 请求失败</b><br>' +
+                    errMsg +
+                    (hint ? '<br><b>诊断：</b>' + hint : '') +
+                    (extra ? '<div class="crx_err-detail">' + extra + '</div>' : '') +
+                '</div>';
+        }
+
+        function crx_send() {
+            var crx_url = crx_urlEl.value.trim();
+            var crx_method = crx_methodEl.value;
+            if (!crx_url) {
+                alert('请输入 URL');
+                return;
+            }
+
+            var crx_headers = crx_collectHeaders();
+            var crx_bodyText = crx_bodyEl.value.trim();
+            var crx_hasBody = (crx_method !== 'GET' && crx_method !== 'HEAD' && crx_bodyText !== '');
+
+            var crx_opts = {
+                method: crx_method,
+                headers: crx_headers
+            };
+            if (crx_hasBody) {
+                crx_opts.body = crx_bodyText;
+                if (!crx_isJsonHeader(crx_headers)) {
+                    try {
+                        JSON.parse(crx_bodyText);
+                        crx_opts.headers['Content-Type'] = 'application/json';
+                    } catch (e) { }
+                }
+            }
+
+            var crx_maxRetry = 2;       // 网络错误时最多重试 2 次（总共发 3 次）
+            var crx_timeoutMs = 8000;   // 单次超时 8 秒
+
+            crx_sendBtn.disabled = true;
+            crx_setStatus('请求中...', '');
+            crx_timeEl.textContent = '—';
+            crx_sizeEl.textContent = '—';
+            crx_bodyboxEl.innerHTML = '<div class="crx_loading"><div class="crx_spinner"></div><div>fetch 请求中（超时 ' + (crx_timeoutMs / 1000) + 's · 最多重试 ' + crx_maxRetry + ' 次）...</div></div>';
+
+            var crx_start = performance.now();
+
+            // 带超时的 fetch：Promise.race（兼容旧浏览器，不依赖 AbortController）
+            function crx_fetchWithTimeout(url, opts) {
+                var crx_race = function (crx_promise, crx_timeout) {
+                    return new Promise(function (resolve, reject) {
+                        var crx_done = false;
+                        crx_timeout.then(function (v) {
+                            if (crx_done) return;
+                            crx_done = true;
+                            var crx_err = new Error('请求超时（' + (crx_timeoutMs / 1000) + 's）');
+                            crx_err.name = 'AbortError';
+                            reject(crx_err);
+                        });
+                        crx_promise.then(function (v) { if (!crx_done) { crx_done = true; resolve(v); } });
+                        crx_promise.catch(function (e) { if (!crx_done) { crx_done = true; reject(e); } });
+                    });
+                };
+                return crx_race(
+                    fetch(url, opts),
+                    new Promise(function (_, rej) { setTimeout(rej, crx_timeoutMs); })
+                );
+            }
+
+            // 重试链
+            function crx_go(crx_retryLeft) {
+                var crx_retryNo = crx_maxRetry - crx_retryLeft + 1;
+                // 每次重建 opts 对象，避免 signal/上次状态残留
+                var crx_tryOpts = { method: crx_method, headers: crx_headers };
+                if (crx_hasBody) crx_tryOpts.body = crx_bodyText;
+
+                crx_fetchWithTimeout(crx_url, crx_tryOpts)
+                    .then(function (crx_res) {
+                        var crx_respHeaders = {};
+                        crx_res.headers.forEach(function (v, k) { crx_respHeaders[k] = v; });
+                        return crx_res.clone().text().then(function (crx_txt) {
+                            return { res: crx_res, text: crx_txt, headers: crx_respHeaders };
+                        });
+                    })
+                    .then(function (crx_pair) {
+                        var crx_res = crx_pair.res;
+                        var crx_txt = crx_pair.text;
+                        var crx_elapsed = (performance.now() - crx_start).toFixed(0);
+                        var crx_size = crx_bytesLen(crx_txt);
+
+                        crx_timeEl.textContent = '⏱ ' + crx_elapsed + ' ms' + (crx_retryNo > 1 ? '（第 ' + crx_retryNo + ' 次重试后成功）' : '');
+                        crx_sizeEl.textContent = '📦 ' + crx_size + ' B';
+
+                        if (crx_res.ok) {
+                            crx_setStatus('HTTP ' + crx_res.status + ' ' + crx_res.statusText, 'ok');
+                        } else if (crx_res.status >= 400 && crx_res.status < 500) {
+                            crx_setStatus('HTTP ' + crx_res.status + ' ' + crx_res.statusText, 'warn');
+                        } else {
+                            crx_setStatus('HTTP ' + crx_res.status + ' ' + crx_res.statusText, 'err');
+                        }
+
+                        var crx_renderBody;
+                        try {
+                            var crx_obj = JSON.parse(crx_txt);
+                            crx_renderBody = {
+                                html: crx_hl(JSON.stringify(crx_obj, null, 2)),
+                                raw: JSON.stringify(crx_obj, null, 2),
+                                parsed: true
+                            };
+                        } catch (e) {
+                            crx_renderBody = { html: crx_txt, raw: crx_txt, parsed: false };
+                        }
+
+                        window.__crx_tabs = {
+                            body: crx_renderBody,
+                            headers: crx_pair.headers,
+                            req: {
+                                method: crx_method,
+                                url: crx_url,
+                                headers: crx_headers,
+                                body: crx_hasBody ? crx_bodyText : '(无)'
+                            }
+                        };
+                        crx_switchTab('body');
+                        crx_sendBtn.disabled = false;
+                    })
+                    .catch(function (crx_err) {
+                        var crx_canRetry = (crx_err.name === 'AbortError' || crx_err.name === 'TypeError') && crx_retryLeft > 0;
+                        if (crx_canRetry) {
+                            var crx_retryAfter = crx_maxRetry - crx_retryLeft;
+                            crx_bodyboxEl.innerHTML =
+                                '<div class="crx_loading"><div class="crx_spinner"></div>' +
+                                '<div>第 ' + (crx_retryAfter + 1) + ' 次失败（' + crx_err.name + '），正在自动重试剩余 ' + crx_retryLeft + ' 次...</div></div>';
+                            setTimeout(function () { crx_go(crx_retryLeft - 1); }, 600);
+                        } else {
+                            var crx_elapsed = (performance.now() - crx_start).toFixed(0);
+                            crx_timeEl.textContent = '⏱ ' + crx_elapsed + ' ms';
+                            crx_setStatus('NETWORK ERROR', 'err');
+
+                            var crx_hint = '';
+                            if (crx_err.name === 'AbortError') {
+                                crx_hint = '请求超时（单次限制 ' + (crx_timeoutMs / 1000) + 's），服务器响应太慢或被网络拦截。可尝试更换接口。';
+                            } else if (crx_err.name === 'TypeError') {
+                                crx_hint = '浏览器拦截了请求 — 最常见原因：① CORS（跨域策略拒绝），请确认接口返回 Access-Control-Allow-Origin 响应头；② 目标域名 DNS 无法解析；③ 当前网络不稳定。';
+                            }
+
+                            crx_renderError(
+                                crx_err.name + ': ' + crx_err.message,
+                                crx_hint,
+                                crx_err.stack ? crx_err.stack.split('\n').slice(0, 3).join('\n') : ''
+                            );
+                            crx_sendBtn.disabled = false;
+                        }
+                    });
+            }
+
+            crx_go(crx_maxRetry);
+        }
+
+        function crx_switchTab(name) {
+            document.querySelectorAll('.crx_tab').forEach(function (el) {
+                el.classList.toggle('crx-active', el.getAttribute('data-crx-tab') === name);
+            });
+            if (!window.__crx_tabs) return;
+            var crx_t = window.__crx_tabs;
+            if (name === 'body') {
+                if (crx_t.body.parsed) {
+                    crx_bodyboxEl.innerHTML =
+                        '<div style="margin-bottom:10px;font-size:12px;color:#80ced6;">✅ 已自动识别为 JSON，长度 ' + crx_t.body.raw.length + ' 字符</div>' +
+                        '<pre class="crx_code">' + crx_t.body.html + '</pre>';
+                } else {
+                    crx_bodyboxEl.innerHTML =
+                        '<div style="margin-bottom:10px;font-size:12px;color:#ffa502;">⚠ 非 JSON 返回，直接显示原文</div>' +
+                        '<pre class="crx_code">' + crx_t.body.html + '</pre>';
+                }
+            } else if (name === 'headers') {
+                var crx_hs = crx_t.headers;
+                var crx_hsHtml = '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+                for (var k in crx_hs) {
+                    crx_hsHtml += '<tr><td style="padding:6px 10px;color:#f8c291;white-space:nowrap;">' + k + '</td>' +
+                        '<td style="padding:6px 10px;color:#ecf0f1;word-break:break-all;">' + crx_hs[k] + '</td></tr>';
+                }
+                crx_hsHtml += '</table>';
+                crx_bodyboxEl.innerHTML = crx_hsHtml;
+            } else if (name === 'req') {
+                var crx_r = crx_t.req;
+                crx_bodyboxEl.innerHTML =
+                    '<pre class="crx_code"><span class="crx_b">' + crx_r.method + '</span> ' +
+                    '<span class="crx_s">' + crx_r.url + '</span>\n\n' +
+                    '<span class="crx_k">Headers</span>:\n' + JSON.stringify(crx_r.headers, null, 2) + '\n\n' +
+                    '<span class="crx_k">Body</span>:\n' + crx_r.body + '</pre>';
+            }
+        }
+
+        // 事件绑定
+        crx_sendBtn.addEventListener('click', crx_send);
+        crx_urlEl.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') crx_send();
+        });
+        document.querySelectorAll('.crx_tab').forEach(function (el) {
+            el.addEventListener('click', function () {
+                crx_switchTab(el.getAttribute('data-crx-tab'));
+            });
+        });
+
+        // 页面加载自动请求一次，避免用户打开就看到空状态
+        crx_send();
+    </script>
+</body>
+</html>

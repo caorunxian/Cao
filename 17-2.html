@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-2 fetch 接口数据获取</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            padding: 32px 20px 80px;
+            background: linear-gradient(160deg, #74b9ff 0%, #0984e3 60%, #0652DD 100%);
+            color: #fff;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 24px; }
+        .crx_head h1 { font-size: 30px; letter-spacing: 1px; text-shadow: 0 2px 8px rgba(0,0,0,.15); }
+        .crx_sub { margin-top: 10px; font-size: 13px; color: rgba(255,255,255,.85); }
+
+        .crx_box {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* ===== 查询条 ===== */
+        .crx_bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+
+        .crx_select, .crx_btn {
+            height: 42px;
+            border: none;
+            border-radius: 21px;
+            padding: 0 20px;
+            font-size: 14px;
+            font-family: "Microsoft YaHei", sans-serif;
+            cursor: pointer;
+            transition: transform .15s, box-shadow .15s;
+        }
+        .crx_select {
+            min-width: 140px;
+            background-color: #fff;
+            color: #12395c;
+            padding-right: 34px;
+            appearance: none;
+            background-image:
+                linear-gradient(45deg, transparent 50%, #12395c 50%),
+                linear-gradient(135deg, #12395c 50%, transparent 50%);
+            background-position:
+                calc(100% - 14px) 18px,
+                calc(100% - 10px) 18px;
+            background-size:
+                4px 4px,
+                4px 4px;
+            background-repeat: no-repeat;
+        }
+        .crx_select:focus { outline: none; box-shadow: 0 0 0 3px rgba(255,255,255,.4); }
+
+        .crx_btn {
+            background-color: #fff;
+            color: #0984e3;
+            font-weight: bold;
+        }
+        .crx_btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+        .crx_btn:disabled { opacity: .6; cursor: not-allowed; }
+
+        /* ===== 天气主卡 ===== */
+        .crx_main {
+            background: rgba(255,255,255,.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,.25);
+            border-radius: 20px;
+            padding: 32px 36px;
+            margin-bottom: 18px;
+            box-shadow: 0 20px 50px rgba(0,0,0,.18);
+        }
+
+        .crx_city-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .crx_city { font-size: 26px; font-weight: bold; letter-spacing: 1px; }
+        .crx_city-en { font-size: 13px; color: rgba(255,255,255,.8); margin-top: 4px; }
+        .crx_time { font-size: 13px; color: rgba(255,255,255,.85); text-align: right; }
+
+        .crx_temp-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .crx_temp {
+            font-size: 92px;
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -3px;
+        }
+        .crx_temp sup { font-size: 36px; font-weight: normal; margin-left: 4px; }
+
+        .crx_weather-badge {
+            background-color: rgba(255,255,255,.2);
+            border-radius: 14px;
+            padding: 10px 16px;
+            font-size: 15px;
+        }
+
+        .crx_detail {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .crx_detail-card {
+            background-color: rgba(255,255,255,.12);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .crx_detail-label { font-size: 12px; color: rgba(255,255,255,.75); margin-bottom: 6px; }
+        .crx_detail-val { font-size: 20px; font-weight: bold; }
+        .crx_detail-unit { font-size: 13px; font-weight: normal; margin-left: 3px; color: rgba(255,255,255,.8); }
+
+        /* ===== 代码区 ===== */
+        .crx_code-card {
+            background-color: #1e272e;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        }
+        .crx_code-head {
+            padding: 10px 16px;
+            background-color: #2f3640;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #d2dae2;
+        }
+        .crx_code-head .crx_url { font-family: Consolas, monospace; color: #80ced6; font-size: 12px; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .crx_code-body {
+            padding: 14px 18px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.65;
+            color: #d2dae2;
+            max-height: 260px;
+            overflow: auto;
+            white-space: pre;
+        }
+        .crx_code-body .crx_k { color: #f8c291; }
+        .crx_code-body .crx_s { color: #7bed9f; }
+        .crx_code-body .crx_n { color: #70a1ff; }
+        .crx_code-body .crx_b { color: #ff6b81; }
+        .crx_code-body .crx_p { color: #ffa502; }
+
+        /* ===== 加载 / 错误 ===== */
+        .crx_loading, .crx_error {
+            padding: 50px;
+            text-align: center;
+            border-radius: 20px;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.2);
+        }
+        .crx_spinner {
+            width: 42px; height: 42px;
+            border: 4px solid rgba(255,255,255,.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            animation: crx_spin 1s linear infinite;
+        }
+        @keyframes crx_spin { to { transform: rotate(360deg); } }
+
+        .crx_error { background: rgba(231,76,60,.35); border-color: rgba(231,76,60,.6); }
+
+        .crx_hint {
+            margin-top: 22px;
+            padding: 14px 18px;
+            background-color: rgba(255,255,255,.12);
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: rgba(255,255,255,.9);
+        }
+        .crx_hint code {
+            background-color: rgba(0,0,0,.25);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            color: #ffeaa7;
+        }
+
+        @media (max-width: 620px) {
+            .crx_detail { grid-template-columns: repeat(2, 1fr); }
+            .crx_temp { font-size: 72px; }
+            .crx_main { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-02，使用大模型：DeepSeek-V4.1-Flash，功能名称：17-2 fetch 获取跨域接口数据并展示（Open-Meteo 实时天气） -->
+
+    <header class="crx_head">
+        <h1>fetch · 跨域接口数据获取</h1>
+        <p class="crx_sub">使用 JavaScript 原生 fetch() 调用公开 CORS 接口，实时展示天气数据</p>
+    </header>
+
+    <div class="crx_box">
+        <div class="crx_bar">
+            <select class="crx_select" id="crx_city">
+                <option value="39.9|116.4|北京|Beijing">北京</option>
+                <option value="31.2|121.5|上海|Shanghai">上海</option>
+                <option value="22.3|114.2|香港|Hong Kong">香港</option>
+                <option value="35.7|139.7|东京|Tokyo">东京</option>
+                <option value="48.9|2.35|巴黎|Paris">巴黎</option>
+                <option value="40.7|-74.0|纽约|New York">纽约</option>
+                <option value="-33.9|151.2|悉尼|Sydney">悉尼</option>
+            </select>
+            <button class="crx_btn" id="crx_btn_fetch">获取天气</button>
+        </div>
+
+        <div id="crx_content">
+            <div class="crx_loading">
+                <div class="crx_spinner"></div>
+                <div>加载中……</div>
+            </div>
+        </div>
+
+        <div class="crx_code-card">
+            <div class="crx_code-head">
+                <span>📦 fetch() 返回数据（JSON 响应）</span>
+                <span class="crx_url" id="crx_api_url">—</span>
+            </div>
+            <pre class="crx_code-body" id="crx_raw">{ "等待请求..." }</pre>
+        </div>
+
+        <div class="crx_hint">
+            <strong>📝 关键代码：</strong>
+<pre style="margin-top:8px; font-family:Consolas,monospace; font-size:12px; line-height:1.7;">
+fetch(apiUrl)
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+      // data 就是接口返回的 JS 对象
+      render(data);
+  })
+  .catch(function(err) {
+      console.error('请求失败:', err);
+  });
+</pre>
+            本页使用的接口 <code>https://api.open-meteo.com</code> 支持跨域（CORS），无需任何密钥即可访问。
+            公开 CORS 接口可在浏览器里直接 fetch，不会被同源策略拦截。
+        </div>
+    </div>
+
+    <script>
+        // ==================== 天气代码 → 中文描述 ====================
+        var crx_wmo = {
+            0: "☀️ 晴朗", 1: "🌤 大部分晴朗", 2: "⛅ 局部多云", 3: "☁️ 阴天",
+            45: "🌫 雾", 48: "🌫 冻雾",
+            51: "🌦 小毛毛雨", 53: "🌦 毛毛雨", 55: "🌦 大毛毛雨",
+            61: "🌧 小雨", 63: "🌧 中雨", 65: "🌧 大雨",
+            71: "🌨 小雪", 73: "🌨 中雪", 75: "🌨 大雪",
+            80: "🌦 阵雨", 81: "🌦 强阵雨", 82: "⛈ 暴雨",
+            95: "⛈ 雷暴", 96: "⛈ 雷暴伴小冰雹", 99: "⛈ 雷暴伴大冰雹"
+        };
+
+        // ==================== DOM ====================
+        var crx_citySel = document.getElementById('crx_city');
+        var crx_btnFetch = document.getElementById('crx_btn_fetch');
+        var crx_contentEl = document.getElementById('crx_content');
+        var crx_rawEl = document.getElementById('crx_raw');
+        var crx_apiUrlEl = document.getElementById('crx_api_url');
+
+        // ==================== 工具 ====================
+        function crx_hl(text) {
+            var out = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            out = out.replace(/"([^"\\]|\\.)*"/g, '<span class="crx_s">$&</span>');
+            out = out.replace(/(<span class="crx_s">)([^<]+)(<\/span>)(\s*:)/g,
+                function (m, p1, p2, p3, p4) {
+                    return '<span class="crx_k">' + p2 + '</span>' + p4;
+                });
+            out = out.replace(/(-?\d+\.?\d*)/g, '<span class="crx_n">$1</span>');
+            out = out.replace(/\b(true|false|null)\b/g, '<span class="crx_b">$1</span>');
+            out = out.replace(/([{}\[\]])/g, '<span class="crx_p">$1</span>');
+            return out;
+        }
+
+        // ==================== 渲染 ====================
+        function crx_showLoading() {
+            crx_contentEl.innerHTML =
+                '<div class="crx_loading"><div class="crx_spinner"></div><div>加载中……</div></div>';
+        }
+
+        function crx_showError(msg) {
+            crx_contentEl.innerHTML =
+                '<div class="crx_error"><div style="font-size:40px;margin-bottom:12px;">😵</div>' +
+                '<div style="font-size:15px;font-weight:bold;">请求失败</div>' +
+                '<div style="font-size:12px;margin-top:8px;color:rgba(255,255,255,.85);">' + msg + '</div></div>';
+        }
+
+        function crx_render(data, crx_cityName, crx_cityEn) {
+            var c = data.current;
+            var weatherText = crx_wmo[c.weather_code] || ('天气代码 ' + c.weather_code);
+
+            var crx_html =
+                '<div class="crx_main">' +
+                    '<div class="crx_city-row">' +
+                        '<div>' +
+                            '<div class="crx_city">' + crx_cityName + '</div>' +
+                            '<div class="crx_city-en">' + crx_cityEn + ' · ' + data.latitude.toFixed(2) + ', ' + data.longitude.toFixed(2) + '</div>' +
+                        '</div>' +
+                        '<div class="crx_time">更新时间<br>' + c.time + '</div>' +
+                    '</div>' +
+                    '<div class="crx_temp-row">' +
+                        '<div class="crx_temp">' + Math.round(c.temperature_2m) + '<sup>°C</sup></div>' +
+                        '<div class="crx_weather-badge">' + weatherText + '</div>' +
+                    '</div>' +
+                    '<div class="crx_detail">' +
+                        '<div class="crx_detail-card">' +
+                            '<div class="crx_detail-label">体感温度</div>' +
+                            '<div class="crx_detail-val">' + Math.round(c.apparent_temperature) + '<span class="crx_detail-unit">°C</span></div>' +
+                        '</div>' +
+                        '<div class="crx_detail-card">' +
+                            '<div class="crx_detail-label">湿度</div>' +
+                            '<div class="crx_detail-val">' + c.relative_humidity_2m + '<span class="crx_detail-unit">%</span></div>' +
+                        '</div>' +
+                        '<div class="crx_detail-card">' +
+                            '<div class="crx_detail-label">风速</div>' +
+                            '<div class="crx_detail-val">' + c.wind_speed_10m + '<span class="crx_detail-unit">km/h</span></div>' +
+                        '</div>' +
+                        '<div class="crx_detail-card">' +
+                            '<div class="crx_detail-label">海拔</div>' +
+                            '<div class="crx_detail-val">' + data.elevation + '<span class="crx_detail-unit">m</span></div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            crx_contentEl.innerHTML = crx_html;
+        }
+
+        // ==================== fetch 请求 ====================
+        function crx_fetchWeather() {
+            var crx_val = crx_citySel.value;
+            var crx_parts = crx_val.split('|');
+            var crx_lat = crx_parts[0];
+            var crx_lon = crx_parts[1];
+            var crx_cityName = crx_parts[2];
+            var crx_cityEn = crx_parts[3];
+
+            var crx_url = 'https://api.open-meteo.com/v1/forecast?' +
+                'latitude=' + crx_lat + '&longitude=' + crx_lon +
+                '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m' +
+                '&timezone=Asia%2FShanghai';
+
+            crx_apiUrlEl.textContent = crx_url;
+            crx_showLoading();
+            crx_btnFetch.disabled = true;
+
+            fetch(crx_url)
+                .then(function (crx_res) {
+                    if (!crx_res.ok) {
+                        throw new Error('HTTP ' + crx_res.status);
+                    }
+                    return crx_res.json();
+                })
+                .then(function (crx_data) {
+                    crx_render(crx_data, crx_cityName, crx_cityEn);
+                    crx_rawEl.innerHTML = crx_hl(JSON.stringify(crx_data, null, 2));
+                })
+                .catch(function (crx_err) {
+                    crx_showError(crx_err.message + '（请确认网络已连接，或该浏览器未拦截跨域请求）');
+                    crx_rawEl.textContent = '请求失败：' + crx_err.stack;
+                })
+                .then(function () {
+                    crx_btnFetch.disabled = false;
+                });
+        }
+
+        crx_btnFetch.addEventListener('click', crx_fetchWeather);
+        crx_citySel.addEventListener('change', crx_fetchWeather);
+
+        // 页面加载时自动请求
+        crx_fetchWeather();
+    </script>
+</body>
+</html>

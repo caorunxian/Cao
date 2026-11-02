@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-1 JavaScript JSON</title>
+    <link rel="stylesheet" href="font/iconfont.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 28px 20px 80px;
+            background: linear-gradient(180deg, #f3f6fb 0%, #e9eef6 100%);
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 28px; }
+        .crx_head h1 { font-size: 28px; color: #12395c; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #64707d; }
+
+        .crx_wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .crx_card {
+            background-color: #fff;
+            border: 1px solid #d7dee7;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(18, 57, 92, .08);
+            overflow: hidden;
+        }
+
+        .crx_card.full { grid-column: 1 / -1; }
+
+        .crx_card-head {
+            padding: 14px 18px;
+            background-color: #12395c;
+            color: #fff;
+            font-size: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .crx_card-head .crx_count {
+            font-size: 12px;
+            font-weight: normal;
+            color: #9fb8cf;
+            font-family: Consolas, monospace;
+        }
+
+        .crx_card-body { padding: 16px 18px; }
+
+        /* ===== 输入区 ===== */
+        .crx_toolbar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .crx_btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: "Microsoft YaHei", sans-serif;
+            transition: all .15s;
+        }
+
+        .crx_btn-primary { background-color: #12395c; color: #fff; }
+        .crx_btn-primary:hover { background-color: #0e2d49; }
+        .crx_btn { background-color: #eef2f7; color: #12395c; }
+        .crx_btn:hover { background-color: #d7dee7; }
+        .crx_btn-danger { background-color: #fde7e7; color: #c0392b; }
+        .crx_btn-danger:hover { background-color: #f5c8c8; }
+
+        .crx_textarea {
+            width: 100%;
+            min-height: 280px;
+            padding: 12px 14px;
+            border: 1px solid #d7dee7;
+            border-radius: 8px;
+            background-color: #f9fbfd;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #1f2937;
+            resize: vertical;
+        }
+
+        .crx_textarea:focus {
+            outline: none;
+            border-color: #12395c;
+            background-color: #fff;
+        }
+
+        .crx_textarea.crx_error {
+            border-color: #e74c3c;
+            background-color: #fef5f5;
+        }
+
+        .crx_status {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: Consolas, monospace;
+        }
+
+        .crx_status.ok { background-color: #e8f5e9; color: #2e7d32; }
+        .crx_status.err { background-color: #fde7e7; color: #c0392b; }
+
+        /* ===== 格式化输出 ===== */
+        .crx_output {
+            padding: 12px 14px;
+            border: 1px solid #d7dee7;
+            border-radius: 8px;
+            background-color: #f9fbfd;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            min-height: 280px;
+            overflow-x: auto;
+            white-space: pre;
+            color: #1f2937;
+        }
+
+        .crx_k { color: #8e44ad; }
+        .crx_s { color: #c0392b; }
+        .crx_n { color: #2980b9; }
+        .crx_b { color: #27ae60; }
+        .crx_nil { color: #95a5a6; }
+        .crx_p { color: #12395c; }
+
+        /* ===== 树状查看器 ===== */
+        .crx_tree { font-family: Consolas, monospace; font-size: 13px; }
+
+        .crx-node { padding-left: 0; }
+        .crx-node > .crx-row {
+            padding: 2px 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .crx-node > .crx-row:hover { background-color: #eef2f7; }
+        .crx-node > .crx-row .crx-toggle {
+            display: inline-block;
+            width: 16px;
+            color: #12395c;
+            text-align: center;
+            font-size: 11px;
+        }
+        .crx-node.crx-collapsed > .crx-children { display: none; }
+        .crx-node.crx-collapsed > .crx-row .crx-toggle::before { content: "▶"; }
+        .crx-node > .crx-row .crx-toggle::before { content: "▼"; }
+        .crx-node.crx-leaf > .crx-row .crx-toggle::before { content: "·"; }
+        .crx-children { padding-left: 22px; }
+
+        .crx-key { color: #8e44ad; }
+        .crx-colon { color: #7f8c8d; margin: 0 4px; }
+        .crx-brace { color: #12395c; font-weight: bold; }
+        .crx-summary { color: #95a5a6; font-size: 12px; margin-left: 4px; }
+
+        /* ===== parse / stringify 示例 ===== */
+        .crx_demo-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .crx_demo-box {
+            padding: 12px 14px;
+            background-color: #f9fbfd;
+            border: 1px solid #d7dee7;
+            border-radius: 8px;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .crx_arrow {
+            font-size: 22px;
+            color: #12395c;
+            text-align: center;
+        }
+
+        .crx_label {
+            font-size: 12px;
+            color: #64707d;
+            margin-bottom: 6px;
+        }
+
+        /* ===== 示例数据下拉 ===== */
+        .crx_select {
+            padding: 6px 10px;
+            border: 1px solid #d7dee7;
+            border-radius: 6px;
+            background-color: #fff;
+            font-size: 13px;
+            font-family: "Microsoft YaHei", sans-serif;
+            color: #1f2937;
+            cursor: pointer;
+        }
+        .crx_select:focus { outline: none; border-color: #12395c; }
+
+        @media (max-width: 820px) {
+            .crx_wrap { grid-template-columns: 1fr; }
+            .crx_demo-row { grid-template-columns: 1fr; }
+            .crx_arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-02，使用大模型：DeepSeek-V4.1-Flash，功能名称：17-1 JavaScript JSON（语法演示 + 编辑器 + 树状查看） -->
+
+    <header class="crx_head">
+        <h1>JavaScript 中的 JSON</h1>
+        <p class="crx_sub">JSON · JavaScript Object Notation · 数据交换的通用语言</p>
+    </header>
+
+    <div class="crx_wrap">
+        <!-- 左：输入区 -->
+        <section class="crx_card">
+            <div class="crx_card-head">
+                <span>① JSON 编辑器</span>
+                <span class="crx_count" id="crx_stat_input">{}</span>
+            </div>
+            <div class="crx_card-body">
+                <div class="crx_toolbar">
+                    <select class="crx_select" id="crx_examples">
+                        <option value="">-- 加载示例 --</option>
+                        <option value="user">用户信息</option>
+                        <option value="book">图书列表</option>
+                        <option value="weather">天气数据</option>
+                        <option value="nested">嵌套结构</option>
+                    </select>
+                    <button class="crx_btn-primary crx_btn" id="crx_btn_format">格式化</button>
+                    <button class="crx_btn" id="crx_btn_minify">压缩</button>
+                    <button class="crx_btn" id="crx_btn_copy">复制</button>
+                    <button class="crx_btn-danger crx_btn" id="crx_btn_clear">清空</button>
+                </div>
+                <textarea class="crx_textarea" id="crx_input" spellcheck="false" placeholder='在这里输入 JSON，例如：{"name":"小明","age":18}'></textarea>
+                <div class="crx_status ok" id="crx_status">✓ JSON 有效</div>
+            </div>
+        </section>
+
+        <!-- 右：格式化输出 -->
+        <section class="crx_card">
+            <div class="crx_card-head">
+                <span>② 语法高亮</span>
+                <span class="crx_count" id="crx_stat_output">—</span>
+            </div>
+            <div class="crx_card-body">
+                <div class="crx_output" id="crx_output"></div>
+            </div>
+        </section>
+
+        <!-- 下半部：parse / stringify -->
+        <section class="crx_card full">
+            <div class="crx_card-head">
+                <span>③ JSON.parse / JSON.stringify</span>
+            </div>
+            <div class="crx_card-body">
+                <div class="crx_demo-row">
+                    <div>
+                        <div class="crx_label">JSON 字符串（string）</div>
+                        <div class="crx_demo-box" id="crx_parse_in"></div>
+                    </div>
+                    <div class="crx_arrow">→ parse →</div>
+                    <div>
+                        <div class="crx_label">JavaScript 对象（object）</div>
+                        <div class="crx_demo-box" id="crx_parse_out"></div>
+                    </div>
+                </div>
+                <div class="crx_demo-row">
+                    <div>
+                        <div class="crx_label">JavaScript 对象</div>
+                        <div class="crx_demo-box" id="crx_str_out"></div>
+                    </div>
+                    <div class="crx_arrow">← stringify ←</div>
+                    <div>
+                        <div class="crx_label">JSON 字符串</div>
+                        <div class="crx_demo-box" id="crx_str_in"></div>
+                    </div>
+                </div>
+                <div style="background:#eef2f7; padding:12px 14px; border-radius:6px; font-family:Consolas,monospace; font-size:13px; color:#12395c;">
+                    <code>JSON.parse(text)</code> —— 把 JSON 字符串解析成 JS 对象 / 数组<br>
+                    <code>JSON.stringify(value, replacer?, space?)</code> —— 把 JS 对象 / 数组序列化成 JSON 字符串<br>
+                    第二参数 <code>replacer</code> 可做过滤，第三参数 <code>space</code> 控制缩进空格数（常用 2 或 4）
+                </div>
+            </div>
+        </section>
+
+        <!-- 下半部：树状查看 -->
+        <section class="crx_card full">
+            <div class="crx_card-head">
+                <span>④ 树状结构查看</span>
+                <span class="crx_count" id="crx_tree_count">点击节点展开/折叠</span>
+            </div>
+            <div class="crx_card-body">
+                <div class="crx_tree" id="crx_tree"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // ==================== 示例数据 ====================
+        var crx_examples = {
+            user: '{\n  "name": "曹润贤",\n  "age": 20,\n  "isStudent": true,\n  "hobby": ["编程", "篮球", "音乐"],\n  "address": {\n    "city": "北京",\n    "district": "海淀区",\n    "code": null\n  }\n}',
+            book: '[\n  {\n    "title": "JavaScript 高级程序设计",\n    "author": "Matt Frisbie",\n    "price": 129,\n    "inStock": true\n  },\n  {\n    "title": "你不知道的 JavaScript",\n    "author": "Kyle Simpson",\n    "price": 45,\n    "inStock": false\n  }\n]',
+            weather: '{\n  "city": "上海",\n  "date": "2026-11-02",\n  "temp": {\n    "current": 18,\n    "high": 22,\n    "low": 14\n  },\n  "condition": "多云",\n  "wind": "东南风 3 级",\n  "forecast": [\n    { "day": "明天", "temp": 20, "condition": "晴" },\n    { "day": "后天", "temp": 17, "condition": "小雨" },\n    { "day": "周四", "temp": 15, "condition": "阴" }\n  ]\n}',
+            nested: '{\n  "company": {\n    "name": "示例科技",\n    "employees": [\n      { "name": "张三", "skills": ["JS", "Node"] },\n      { "name": "李四", "skills": ["Python", "AI"] }\n    ],\n    "founded": 2020,\n    "active": true\n  },\n  "data": [1, 2, 3, null, false]\n}'
+        };
+
+        var crx_inputEl = document.getElementById('crx_input');
+        var crx_statusEl = document.getElementById('crx_status');
+        var crx_outputEl = document.getElementById('crx_output');
+        var crx_treeEl = document.getElementById('crx_tree');
+        var crx_statInputEl = document.getElementById('crx_stat_input');
+        var crx_statOutputEl = document.getElementById('crx_stat_output');
+        var crx_parseInEl = document.getElementById('crx_parse_in');
+        var crx_parseOutEl = document.getElementById('crx_parse_out');
+        var crx_strInEl = document.getElementById('crx_str_in');
+        var crx_strOutEl = document.getElementById('crx_str_out');
+
+        // ==================== 工具函数 ====================
+        function crx_tryParse(text) {
+            try {
+                return { ok: true, data: JSON.parse(text) };
+            } catch (e) {
+                return { ok: false, msg: e.message };
+            }
+        }
+
+        function crx_hl(text) {
+            var out = text
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // 字符串
+            out = out.replace(/"([^"\\]|\\.)*"|'[^'\\]*'/g,
+                function (m) { return '<span class="crx_s">' + m + '</span>'; });
+            // key
+            out = out.replace(/(<span class="crx_s">)([^<]+)(<\/span>)(\s*:)/g,
+                function (m, p1, p2, p3, p4) {
+                    return '<span class="crx_k">' + p2 + '</span>' + p4;
+                });
+            // number
+            out = out.replace(/(-?\d+\.?\d*)/g,
+                function (m) {
+                    if (crx_inSpan(m)) return m;
+                    return '<span class="crx_n">' + m + '</span>';
+                });
+            // true/false
+            out = out.replace(/\b(true|false)\b/g,
+                function (m) {
+                    if (crx_inSpan(m)) return m;
+                    return '<span class="crx_b">' + m + '</span>';
+                });
+            // null
+            out = out.replace(/\bnull\b/g,
+                function (m) {
+                    if (crx_inSpan(m)) return m;
+                    return '<span class="crx_nil">null</span>';
+                });
+            // 括号
+            out = out.replace(/([{}\[\]])/g, '<span class="crx_p">$1</span>');
+            return out;
+        }
+
+        var crx_inSpanCache = null;
+        function crx_inSpan(s) {
+            return false;
+        }
+
+        // ==================== 树状渲染 ====================
+        function crx_renderTree(value, key, parentIsArray) {
+            var isArray = Array.isArray(value);
+            var isObject = value !== null && typeof value === 'object';
+            var node = document.createElement('div');
+            node.className = 'crx-node';
+
+            var row = document.createElement('div');
+            row.className = 'crx-row';
+
+            var toggle = document.createElement('span');
+            toggle.className = 'crx-toggle';
+            row.appendChild(toggle);
+
+            var keySpan = document.createElement('span');
+            if (key !== undefined) {
+                if (parentIsArray) {
+                    keySpan.textContent = '[' + key + ']';
+                } else {
+                    keySpan.className = 'crx-key';
+                    keySpan.textContent = '"' + key + '"';
+                }
+                row.appendChild(keySpan);
+                var colon = document.createElement('span');
+                colon.className = 'crx-colon';
+                colon.textContent = ':';
+                row.appendChild(colon);
+            }
+
+            if (isObject && value !== null) {
+                node.classList.add('crx-collapsed');
+                node.classList.add('crx-node');
+
+                var brace = document.createElement('span');
+                brace.className = 'crx-brace';
+                brace.textContent = isArray ? '[' : '{';
+                row.appendChild(brace);
+
+                var sum = document.createElement('span');
+                sum.className = 'crx-summary';
+                var len = isArray ? value.length : Object.keys(value).length;
+                sum.textContent = (isArray ? len + ' 项' : len + ' 个键') + ' · 点击展开';
+                row.appendChild(sum);
+
+                var closeBrace = document.createElement('span');
+                closeBrace.className = 'crx-brace';
+                closeBrace.textContent = isArray ? ']' : '}';
+
+                node.appendChild(row);
+
+                var children = document.createElement('div');
+                children.className = 'crx-children';
+
+                var entries = isArray ? value.map(function (v, i) { return [i, v]; })
+                                      : Object.keys(value).map(function (k) { return [k, value[k]]; });
+                entries.forEach(function (entry) {
+                    children.appendChild(crx_renderTree(entry[1], entry[0], isArray));
+                });
+
+                var closeRow = document.createElement('div');
+                closeRow.style.paddingLeft = '0';
+                closeRow.style.fontWeight = 'bold';
+                closeRow.style.color = '#12395c';
+                closeRow.textContent = (key !== undefined ? '' : '') + (isArray ? ']' : '}');
+                children.appendChild(closeRow);
+
+                node.appendChild(children);
+
+                row.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    node.classList.toggle('crx-collapsed');
+                });
+            } else {
+                node.classList.add('crx-leaf');
+                var leaf = document.createElement('span');
+                if (value === null) {
+                    leaf.className = 'crx_nil';
+                    leaf.textContent = 'null';
+                } else if (typeof value === 'boolean') {
+                    leaf.className = 'crx_b';
+                    leaf.textContent = String(value);
+                } else if (typeof value === 'number') {
+                    leaf.className = 'crx_n';
+                    leaf.textContent = String(value);
+                } else {
+                    leaf.className = 'crx_s';
+                    leaf.textContent = '"' + String(value).replace(/"/g, '\\"') + '"';
+                }
+                row.appendChild(leaf);
+                node.appendChild(row);
+            }
+
+            return node;
+        }
+
+        // ==================== 主渲染 ====================
+        function crx_renderAll() {
+            var text = crx_inputEl.value;
+            crx_statInputEl.textContent = text.length + ' 字符';
+
+            var r = crx_tryParse(text);
+            if (!r.ok) {
+                crx_statusEl.className = 'crx_status err';
+                crx_statusEl.textContent = '✗ 解析失败: ' + r.msg;
+                crx_inputEl.classList.add('crx_error');
+                crx_outputEl.textContent = '';
+                crx_treeEl.innerHTML = '<div style="color:#c0392b;font-size:13px;">无法渲染：JSON 有误</div>';
+                crx_statOutputEl.textContent = '—';
+                return;
+            }
+            crx_inputEl.classList.remove('crx_error');
+            crx_statusEl.className = 'crx_status ok';
+            crx_statusEl.textContent = '✓ JSON 有效';
+
+            var formatted = JSON.stringify(r.data, null, 2);
+            crx_outputEl.innerHTML = crx_hl(formatted);
+            crx_statOutputEl.textContent = formatted.length + ' 字符';
+
+            // parse / stringify demo
+            crx_parseInEl.textContent = formatted;
+            crx_parseOutEl.textContent = '[object ' + (Array.isArray(r.data) ? 'Array' : typeof r.data) + ']\n（可展开下方树状查看）';
+            crx_strInEl.textContent = JSON.stringify(r.data);
+            crx_strOutEl.textContent = 'JS 对象 → JSON 字符串\n字符数: ' + JSON.stringify(r.data).length;
+
+            // 树
+            crx_treeEl.innerHTML = '';
+            crx_treeEl.appendChild(crx_renderTree(r.data, undefined, Array.isArray(r.data)));
+        }
+
+        // ==================== 事件绑定 ====================
+        crx_inputEl.addEventListener('input', crx_renderAll);
+
+        document.getElementById('crx_examples').addEventListener('change', function (e) {
+            var v = e.target.value;
+            if (v && crx_examples[v]) {
+                crx_inputEl.value = crx_examples[v];
+                crx_renderAll();
+            }
+            e.target.value = '';
+        });
+
+        document.getElementById('crx_btn_format').addEventListener('click', function () {
+            var r = crx_tryParse(crx_inputEl.value);
+            if (r.ok) {
+                crx_inputEl.value = JSON.stringify(r.data, null, 2);
+                crx_renderAll();
+            } else {
+                alert('JSON 有误，无法格式化: ' + r.msg);
+            }
+        });
+
+        document.getElementById('crx_btn_minify').addEventListener('click', function () {
+            var r = crx_tryParse(crx_inputEl.value);
+            if (r.ok) {
+                crx_inputEl.value = JSON.stringify(r.data);
+                crx_renderAll();
+            } else {
+                alert('JSON 有误，无法压缩: ' + r.msg);
+            }
+        });
+
+        document.getElementById('crx_btn_copy').addEventListener('click', function () {
+            var text = crx_outputEl.textContent || crx_inputEl.value;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(function () {
+                    alert('已复制到剪贴板');
+                });
+            } else {
+                crx_inputEl.select();
+                document.execCommand('copy');
+            }
+        });
+
+        document.getElementById('crx_btn_clear').addEventListener('click', function () {
+            crx_inputEl.value = '';
+            crx_renderAll();
+        });
+
+        // 初始默认数据
+        crx_inputEl.value = crx_examples.user;
+        crx_renderAll();
+    </script>
+</body>
+</html>
