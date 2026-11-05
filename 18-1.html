@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-1 Canvas 文字粒子动画</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #0b0f1a;
+            color: #d2dae2;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            min-height: 100vh;
+        }
+
+        .crx_stage {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 480px;
+            overflow: hidden;
+        }
+
+        .crx_stage canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .crx_stage-title {
+            position: absolute;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .crx_stage-title h1 { font-size: 22px; letter-spacing: 2px; color: #80ced6; }
+        .crx_stage-title p { margin-top: 6px; font-size: 12px; color: #5d6d7e; }
+
+        .crx_toolbar {
+            position: absolute;
+            left: 50%;
+            bottom: 28px;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .crx_btn {
+            border: 1px solid #34495e;
+            background-color: rgba(15, 23, 32, .8);
+            color: #80ced6;
+            font-size: 13px;
+            padding: 9px 20px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-family: "Microsoft YaHei", sans-serif;
+            transition: all .15s;
+        }
+        .crx_btn:hover { border-color: #80ced6; color: #fff; }
+
+        .crx_stat {
+            position: absolute;
+            top: 26px;
+            right: 26px;
+            z-index: 2;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            color: #5d6d7e;
+            text-align: right;
+            line-height: 1.9;
+            pointer-events: none;
+        }
+
+        .crx_tip {
+            position: absolute;
+            left: 26px;
+            bottom: 28px;
+            z-index: 2;
+            font-size: 12px;
+            color: #5d6d7e;
+            line-height: 2;
+            pointer-events: none;
+        }
+        .crx_tip b { color: #80ced6; font-weight: normal; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-05，使用大模型：GLM-5.3，功能名称：18-1 Canvas 文字粒子动画（“曹润贤”粒子聚合 + 鼠标交互） -->
+
+    <div class="crx_stage" id="crx_stage">
+        <canvas id="crx_canvas"></canvas>
+
+        <div class="crx_stage-title">
+            <h1>Canvas 文字粒子动画</h1>
+            <p>requestAnimationFrame · getImageData 采样 · 弹簧物理</p>
+        </div>
+
+        <div class="crx_stat">
+            <div id="crx_stat_p">粒子数：—</div>
+            <div id="crx_stat_fps">FPS：—</div>
+        </div>
+
+        <div class="crx_tip">
+            <b>移动鼠标</b>：推开粒子<br>
+            <b>点击画布</b>：从点击处炸开，再自动聚合
+        </div>
+
+        <div class="crx_toolbar">
+            <button class="crx_btn" id="crx_btn_boom">💥 全屏爆散</button>
+            <button class="crx_btn" id="crx_btn_color">🎨 换个颜色</button>
+            <button class="crx_btn" id="crx_btn_reset">↺ 重新聚合</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DOM ====================
+        var crx_canvas = document.getElementById('crx_canvas');
+        var crx_ctx = crx_canvas.getContext('2d');
+        var crx_statPEl = document.getElementById('crx_stat_p');
+        var crx_statFpsEl = document.getElementById('crx_stat_fps');
+
+        // ==================== 状态 ====================
+        var crx_W = 0, crx_H = 0;
+        var crx_particles = [];
+        var crx_mouse = { x: -9999, y: -9999 };
+        var crx_hueBase = 200;          // 换颜色按钮在几个色相间切换
+        var crx_hueChoices = [200, 20, 130, 280, 45];
+        var crx_hueIdx = 0;
+        var crx_frames = 0, crx_fpsTime = 0;
+
+        // ==================== 画布尺寸（含 DPR） ====================
+        function crx_resize() {
+            var crx_dpr = window.devicePixelRatio || 1;
+            var crx_rect = crx_canvas.getBoundingClientRect();
+            crx_W = crx_rect.width;
+            crx_H = crx_rect.height;
+            crx_canvas.width = crx_W * crx_dpr;
+            crx_canvas.height = crx_H * crx_dpr;
+            crx_ctx.setTransform(crx_dpr, 0, 0, crx_dpr, 0, 0);
+            crx_build();
+        }
+
+        // ==================== 采样“曹润贤”生成粒子 ====================
+        function crx_build() {
+            var crx_off = document.createElement('canvas');
+            crx_off.width = Math.round(crx_W);
+            crx_off.height = Math.round(crx_H);
+            var crx_octx = crx_off.getContext('2d');
+
+            // 三字标题，按画布宽度自适应字号
+            var crx_fs = Math.min(crx_W * 0.3, crx_H * 0.45, 210);
+            crx_octx.font = 'bold ' + crx_fs + 'px "Microsoft YaHei", sans-serif';
+            crx_octx.textAlign = 'center';
+            crx_octx.textBaseline = 'middle';
+            crx_octx.fillStyle = '#fff';
+            crx_octx.fillText('曹润贤', crx_off.width / 2, crx_off.height / 2);
+
+            var crx_data = crx_octx.getImageData(0, 0, crx_off.width, crx_off.height).data;
+            var crx_gap = Math.max(3, Math.round(crx_fs / 34));
+
+            crx_particles = [];
+            for (var y = 0; y < crx_off.height; y += crx_gap) {
+                for (var x = 0; x < crx_off.width; x += crx_gap) {
+                    if (crx_data[(y * crx_off.width + x) * 4 + 3] > 128) {
+                        crx_particles.push({
+                            tx: x, ty: y,                              // 目标点
+                            x: Math.random() * crx_W,                  // 随机出生位置
+                            y: Math.random() * crx_H,
+                            vx: 0, vy: 0,
+                            r: Math.random() * 1.4 + 0.8,             // 半径
+                            h: Math.random() * 40 - 20                 // 色相抖动
+                        });
+                    }
+                }
+            }
+            crx_statPEl.textContent = '粒子数：' + crx_particles.length;
+        }
+
+        // ==================== 交互 ====================
+        // 鼠标移动（换算成画布坐标）
+        crx_canvas.addEventListener('mousemove', function (crx_e) {
+            var crx_rect = crx_canvas.getBoundingClientRect();
+            crx_mouse.x = crx_e.clientX - crx_rect.left;
+            crx_mouse.y = crx_e.clientY - crx_rect.top;
+        });
+        crx_canvas.addEventListener('mouseleave', function () {
+            crx_mouse.x = -9999;
+            crx_mouse.y = -9999;
+        });
+
+        // 点击：从点击处炸开
+        crx_canvas.addEventListener('click', function (crx_e) {
+            var crx_rect = crx_canvas.getBoundingClientRect();
+            crx_boom(crx_e.clientX - crx_rect.left, crx_e.clientY - crx_rect.top, 14);
+        });
+
+        function crx_boom(crx_cx, crx_cy, crx_power) {
+            crx_particles.forEach(function (p) {
+                var crx_dx = p.x - crx_cx;
+                var crx_dy = p.y - crx_cy;
+                var crx_dist = Math.sqrt(crx_dx * crx_dx + crx_dy * crx_dy) || 1;
+                var crx_force = (crx_power * 90) / (crx_dist + 40);
+                p.vx += (crx_dx / crx_dist) * crx_force;
+                p.vy += (crx_dy / crx_dist) * crx_force;
+            });
+        }
+
+        document.getElementById('crx_btn_boom').addEventListener('click', function () {
+            crx_boom(crx_W / 2, crx_H / 2, 22);
+        });
+
+        document.getElementById('crx_btn_reset').addEventListener('click', function () {
+            crx_particles.forEach(function (p) {
+                p.x = Math.random() * crx_W;
+                p.y = Math.random() * crx_H;
+                p.vx = 0;
+                p.vy = 0;
+            });
+        });
+
+        document.getElementById('crx_btn_color').addEventListener('click', function () {
+            crx_hueIdx = (crx_hueIdx + 1) % crx_hueChoices.length;
+            crx_hueBase = crx_hueChoices[crx_hueIdx];
+        });
+
+        // ==================== 动画主循环 ====================
+        function crx_tick(crx_now) {
+            // 半透明覆盖形成拖尾
+            crx_ctx.fillStyle = 'rgba(11, 15, 26, 0.28)';
+            crx_ctx.fillRect(0, 0, crx_W, crx_H);
+
+            for (var i = 0; i < crx_particles.length; i++) {
+                var p = crx_particles[i];
+
+                // 1. 弹簧力：把粒子拉回文字目标点
+                p.vx += (p.tx - p.x) * 0.018;
+                p.vy += (p.ty - p.y) * 0.018;
+
+                // 2. 鼠标排斥力
+                var crx_mdx = p.x - crx_mouse.x;
+                var crx_mdy = p.y - crx_mouse.y;
+                var crx_md2 = crx_mdx * crx_mdx + crx_mdy * crx_mdy;
+                if (crx_md2 < 8100) {                        // 半径 90px 内排斥
+                    var crx_md = Math.sqrt(crx_md2) || 1;
+                    var crx_f = (90 - crx_md) / 90 * 2.4;
+                    p.vx += (crx_mdx / crx_md) * crx_f;
+                    p.vy += (crx_mdy / crx_md) * crx_f;
+                }
+
+                // 3. 阻尼 + 位移
+                p.vx *= 0.88;
+                p.vy *= 0.88;
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // 4. 绘制
+                crx_ctx.beginPath();
+                crx_ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                crx_ctx.fillStyle = 'hsla(' + (crx_hueBase + p.h) + ', 80%, 65%, 0.95)';
+                crx_ctx.fill();
+            }
+
+            // FPS 统计（每秒刷新一次）
+            crx_frames++;
+            if (crx_now - crx_fpsTime >= 1000) {
+                crx_statFpsEl.textContent = 'FPS：' + crx_frames;
+                crx_frames = 0;
+                crx_fpsTime = crx_now;
+            }
+
+            requestAnimationFrame(crx_tick);
+        }
+
+        // ==================== 启动 ====================
+        window.addEventListener('resize', crx_resize);
+        crx_resize();
+        requestAnimationFrame(crx_tick);
+    </script>
+</body>
+</html>

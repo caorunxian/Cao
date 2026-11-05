@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-8 智能客服数据大屏</title>
+    <script src="cdn/echarts.min.js"></script>
+    <script src="cdn/china-map.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body { height: 100%; }
+
+        body {
+            background-color: #050b18;
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(25, 161, 255, .16) 0%, transparent 55%),
+                linear-gradient(rgba(25, 120, 200, .06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(25, 120, 200, .06) 1px, transparent 1px);
+            background-size: 100% 100%, 46px 46px, 46px 46px;
+            color: #cfe3f7;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            overflow: hidden;
+        }
+
+        .crx_screen {
+            display: grid;
+            grid-template-rows: 74px 1fr;
+            height: 100vh;
+        }
+
+        /* ===== 顶部标题 ===== */
+        .crx_header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(35, 130, 210, .35);
+        }
+        .crx_header h1 {
+            font-size: 27px;
+            letter-spacing: 4px;
+            font-weight: bold;
+            background: linear-gradient(180deg, #ffffff 0%, #5fc0ff 92%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 26px rgba(40, 160, 255, .45);
+        }
+        .crx_header-side {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #7ba8cd;
+            letter-spacing: 1px;
+        }
+        .crx_header-side.crx_left { left: 26px; }
+        .crx_header-side.crx_right { right: 26px; }
+        .crx_clock { color: #4fb8ff; font-family: Consolas, monospace; font-size: 15px; }
+
+        /* ===== 三列主体 ===== */
+        .crx_body {
+            display: grid;
+            grid-template-columns: 360px 1fr 360px;
+            gap: 14px;
+            padding: 14px 16px 16px;
+            min-height: 0;
+        }
+
+        .crx_col {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 0;
+        }
+
+        .crx_panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: rgba(9, 24, 43, .8);
+            border: 1px solid rgba(35, 120, 200, .3);
+            border-radius: 6px;
+            box-shadow: inset 0 0 26px rgba(20, 90, 160, .16);
+        }
+        .crx_panel::before,
+        .crx_panel::after {
+            content: '';
+            position: absolute;
+            width: 12px; height: 12px;
+            border-color: #2f9bff;
+            border-style: solid;
+            pointer-events: none;
+        }
+        .crx_panel::before { left: -1px; top: -1px; border-width: 2px 0 0 2px; }
+        .crx_panel::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
+
+        .crx_panel-title {
+            height: 38px;
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 0 14px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #9fd0ff;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(35, 120, 200, .22);
+        }
+        .crx_panel-title i {
+            width: 3px; height: 14px;
+            background: linear-gradient(180deg, #4fb8ff, #1b6fbb);
+            border-radius: 2px;
+        }
+        .crx_panel-title span.crx_badge {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: normal;
+            color: #6f9cc0;
+            font-family: Consolas, monospace;
+        }
+
+        .crx_panel-body { flex: 1; min-height: 0; position: relative; }
+
+        /* ===== 指标卡 ===== */
+        .crx_metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 12px;
+            height: 100%;
+            align-content: stretch;
+        }
+        .crx_metric {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid rgba(45, 140, 220, .3);
+            border-radius: 5px;
+            background: linear-gradient(180deg, rgba(30, 110, 180, .22), rgba(10, 40, 70, .1));
+        }
+        .crx_metric-val {
+            font-family: Consolas, "Microsoft YaHei", monospace;
+            font-size: 22px;
+            font-weight: bold;
+            color: #5fd0ff;
+            text-shadow: 0 0 14px rgba(40, 170, 255, .55);
+        }
+        .crx_metric-val small { font-size: 12px; color: #7ba8cd; margin-left: 2px; }
+        .crx_metric-name { font-size: 12px; color: #82a9c9; }
+
+        /* ===== 排行榜 ===== */
+        .crx_rank {
+            padding: 10px 14px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+        .crx_rank-item { font-size: 12px; }
+        .crx_rank-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            color: #a8c7e2;
+        }
+        .crx_rank-line b { color: #5fd0ff; font-family: Consolas, monospace; }
+        .crx_rank-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(40, 100, 160, .28);
+            overflow: hidden;
+        }
+        .crx_rank-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #1b6fbb, #5fd0ff);
+            transition: width .6s;
+        }
+
+        /* ===== 实时流水 ===== */
+        .crx_feed {
+            padding: 8px 12px;
+            height: 100%;
+            overflow: hidden;
+            font-size: 12px;
+        }
+        .crx_feed-row {
+            display: flex;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px dashed rgba(45, 120, 190, .18);
+            color: #8fb4d4;
+            animation: crx_in .45s ease-out;
+        }
+        .crx_feed-row .crx_t { color: #6f9cc0; font-family: Consolas, monospace; flex: none; }
+        .crx_feed-row .crx_q { color: #cfe3f7; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .crx_feed-row .crx_ok { color: #3ddc97; flex: none; }
+        .crx_feed-row .crx_human { color: #ffb347; flex: none; }
+        @keyframes crx_in {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .crx_chart { width: 100%; height: 100%; }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1280px) {
+            body { overflow: auto; }
+            .crx_screen { height: auto; }
+            .crx_body { grid-template-columns: 1fr; }
+            .crx_col { min-height: 300px; }
+            .crx_panel { min-height: 240px; }
+            .crx_center-map { min-height: 480px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-05，使用大模型：DeepSeek-V4.1-Flash，功能名称：18-8 智能客服数据大屏（三列布局 · ECharts 地图 + 多图表） -->
+
+    <div class="crx_screen">
+        <!-- ============ 顶部 ============ -->
+        <header class="crx_header">
+            <span class="crx_header-side crx_left">SMART SERVICE · DATA CENTER</span>
+            <h1>智能客服实时运营大屏</h1>
+            <span class="crx_header-side crx_right">
+                <span class="crx_clock" id="crx_clock">00:00:00</span>
+            </span>
+        </header>
+
+        <div class="crx_body">
+            <!-- ================= 左列 ================= -->
+            <div class="crx_col">
+                <section class="crx_panel" style="flex:1.05;">
+                    <div class="crx_panel-title"><i></i>核心指标<span class="crx_badge">TODAY</span></div>
+                    <div class="crx_panel-body">
+                        <div class="crx_metrics">
+                            <div class="crx_metric">
+                                <div class="crx_metric-val" id="crx_m1">12,846</div>
+                                <div class="crx_metric-name">今日咨询量</div>
+                            </div>
+                            <div class="crx_metric">
+                                <div class="crx_metric-val" id="crx_m2">87.5<small>%</small></div>
+                                <div class="crx_metric-name">机器人解决率</div>
+                            </div>
+                            <div class="crx_metric">
+                                <div class="crx_metric-val" id="crx_m3">1.2<small>s</small></div>
+                                <div class="crx_metric-name">平均响应时长</div>
+                            </div>
+                            <div class="crx_metric">
+                                <div class="crx_metric-val" id="crx_m4">4.8<small>分</small></div>
+                                <div class="crx_metric-name">用户满意度</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="crx_panel" style="flex:1;">
+                    <div class="crx_panel-title"><i></i>咨询渠道占比<span class="crx_badge">CHANNEL</span></div>
+                    <div class="crx_panel-body">
+                        <div class="crx_chart" id="crx_chart_channel"></div>
+                    </div>
+                </section>
+
+                <section class="crx_panel" style="flex:1;">
+                    <div class="crx_panel-title"><i></i>区域咨询量 TOP6<span class="crx_badge">REGION</span></div>
+                    <div class="crx_panel-body">
+                        <div class="crx_chart" id="crx_chart_region"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= 中列 ================= -->
+            <div class="crx_col">
+                <section class="crx_panel crx_center-map" style="flex:1.85;">
+                    <div class="crx_panel-title"><i></i>全国用户分布<span class="crx_badge">GEO · 实时</span></div>
+                    <div class="crx_panel-body">
+                        <div class="crx_chart" id="crx_chart_map"></div>
+                    </div>
+                </section>
+
+                <section class="crx_panel" style="flex:1;">
+                    <div class="crx_panel-title"><i></i>近 12 小时会话趋势<span class="crx_badge">TREND</span></div>
+                    <div class="crx_panel-body">
+                        <div class="crx_chart" id="crx_chart_trend"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= 右列 ================= -->
+            <div class="crx_col">
+                <section class="crx_panel" style="flex:1;">
+                    <div class="crx_panel-title"><i></i>知识库命中排行<span class="crx_badge">RANK</span></div>
+                    <div class="crx_panel-body">
+                        <div class="crx_rank" id="crx_rank"></div>
+                    </div>
+                </section>
+
+                <section class="crx_panel" style="flex:1;">
+                    <div class="crx_panel-title"><i></i>服务满意度<span class="crx_badge">GAUGE</span></div>
+                    <div class="crx_panel-body">
+                        <div class="crx_chart" id="crx_chart_gauge"></div>
+                    </div>
+                </section>
+
+                <section class="crx_panel" style="flex:1;">
+                    <div class="crx_panel-title"><i></i>实时咨询流水<span class="crx_badge">LIVE</span></div>
+                    <div class="crx_panel-body">
+                        <div class="crx_feed" id="crx_feed"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            var crx_AXIS_COLOR = '#5b86ab';
+            var crx_SPLIT_COLOR = 'rgba(45, 110, 170, .25)';
+
+            // ==================== 顶部时钟 ====================
+            var crx_clockEl = document.getElementById('crx_clock');
+            function crx_tick() {
+                var crx_now = new Date();
+                var crx_pad = function (crx_n) { return crx_n < 10 ? '0' + crx_n : String(crx_n); };
+                crx_clockEl.textContent = crx_pad(crx_now.getHours()) + ':' +
+                    crx_pad(crx_now.getMinutes()) + ':' + crx_pad(crx_now.getSeconds());
+            }
+            crx_tick();
+            setInterval(crx_tick, 1000);
+
+            // ==================== 1. 渠道占比（环形饼图） ====================
+            var crx_chartChannel = echarts.init(document.getElementById('crx_chart_channel'));
+            crx_chartChannel.setOption({
+                tooltip: { trigger: 'item', formatter: '{b}<br/>{c} 次（{d}%）' },
+                legend: {
+                    bottom: 6,
+                    icon: 'circle',
+                    itemWidth: 8,
+                    itemHeight: 8,
+                    itemGap: 10,
+                    textStyle: { color: '#8fb4d4', fontSize: 11 }
+                },
+                series: [{
+                    name: '咨询渠道',
+                    type: 'pie',
+                    radius: ['44%', '66%'],
+                    center: ['50%', '45%'],
+                    avoidLabelOverlap: true,
+                    itemStyle: { borderColor: '#0a1a2e', borderWidth: 2 },
+                    label: { show: false },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 13,
+                            fontWeight: 'bold',
+                            color: '#fff',
+                            formatter: '{d}%'
+                        }
+                    },
+                    data: [
+                        { value: 4820, name: '网页', itemStyle: { color: '#4fb8ff' } },
+                        { value: 3980, name: 'APP', itemStyle: { color: '#3ddc97' } },
+                        { value: 2410, name: '微信', itemStyle: { color: '#ffb347' } },
+                        { value: 1020, name: '电话', itemStyle: { color: '#a78bfa' } },
+                        { value: 616, name: '其他', itemStyle: { color: '#f472b6' } }
+                    ]
+                }]
+            });
+
+            // ==================== 2. 区域咨询量（横向柱） ====================
+            var crx_chartRegion = echarts.init(document.getElementById('crx_chart_region'));
+            var crx_regionNames = ['广东省', '江苏省', '浙江省', '山东省', '北京市', '四川省'];
+            var crx_regionValues = [820, 640, 590, 480, 430, 380];
+
+            crx_chartRegion.setOption({
+                grid: { left: 62, right: 26, top: 10, bottom: 26 },
+                xAxis: {
+                    type: 'value',
+                    splitLine: { show: false },
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: { color: crx_AXIS_COLOR, fontSize: 10 }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: crx_regionNames,
+                    axisLine: { lineStyle: { color: crx_SPLIT_COLOR } },
+                    axisTick: { show: false },
+                    axisLabel: { color: '#9fc4e8', fontSize: 11 }
+                },
+                series: [{
+                    type: 'bar',
+                    barWidth: 9,
+                    showBackground: true,
+                    backgroundStyle: { color: 'rgba(40, 100, 160, .16)', borderRadius: 5 },
+                    itemStyle: {
+                        borderRadius: 5,
+                        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                            { offset: 0, color: '#1b6fbb' },
+                            { offset: 1, color: '#5fd0ff' }
+                        ])
+                    },
+                    label: { show: true, position: 'right', color: '#7ba8cd', fontSize: 10 },
+                    data: crx_regionValues
+                }]
+            });
+
+            // ==================== 3. 全国用户分布地图 ====================
+            echarts.registerMap('china', window.crx_chinaGeo);
+
+            var crx_chartMap = echarts.init(document.getElementById('crx_chart_map'));
+
+            var crx_provinceData = [
+                { name: '广东省', value: 850 },
+                { name: '江苏省', value: 640 },
+                { name: '浙江省', value: 590 },
+                { name: '山东省', value: 480 },
+                { name: '北京市', value: 430 },
+                { name: '四川省', value: 390 },
+                { name: '上海市', value: 380 },
+                { name: '河南省', value: 350 },
+                { name: '湖北省', value: 300 },
+                { name: '福建省', value: 280 },
+                { name: '湖南省', value: 260 },
+                { name: '陕西省', value: 210 },
+                { name: '辽宁省', value: 180 },
+                { name: '重庆市', value: 170 },
+                { name: '安徽省', value: 165 },
+                { name: '河北省', value: 160 },
+                { name: '江西省', value: 140 },
+                { name: '云南省', value: 120 },
+                { name: '广西壮族自治区', value: 110 },
+                { name: '山西省', value: 95 },
+                { name: '天津市', value: 90 },
+                { name: '黑龙江省', value: 80 },
+                { name: '吉林省', value: 70 },
+                { name: '贵州省', value: 66 },
+                { name: '内蒙古自治区', value: 60 },
+                { name: '新疆维吾尔自治区', value: 54 },
+                { name: '甘肃省', value: 46 },
+                { name: '海南省', value: 40 },
+                { name: '宁夏回族自治区', value: 26 },
+                { name: '青海省', value: 20 },
+                { name: '西藏自治区', value: 12 },
+                { name: '台湾省', value: 18 },
+                { name: '香港特别行政区', value: 22 },
+                { name: '澳门特别行政区', value: 8 }
+            ];
+
+            var crx_hotCities = [
+                { name: '深圳', value: [114.06, 22.55, 320] },
+                { name: '北京', value: [116.40, 39.90, 300] },
+                { name: '上海', value: [121.47, 31.23, 280] },
+                { name: '广州', value: [113.26, 23.13, 240] },
+                { name: '杭州', value: [120.15, 30.28, 200] },
+                { name: '南京', value: [118.78, 32.04, 170] },
+                { name: '成都', value: [104.07, 30.57, 160] },
+                { name: '武汉', value: [114.30, 30.59, 140] },
+                { name: '西安', value: [108.95, 34.27, 120] },
+                { name: '重庆', value: [106.55, 29.56, 110] }
+            ];
+
+            crx_chartMap.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(6, 20, 36, .92)',
+                    borderColor: 'rgba(60, 150, 230, .5)',
+                    textStyle: { color: '#d6e9ff', fontSize: 12 },
+                    formatter: function (crx_p) {
+                        if (crx_p.seriesType === 'effectScatter') {
+                            return crx_p.name + '<br/>在线用户：' + crx_p.value[2] + ' 人';
+                        }
+                        return crx_p.name + '<br/>咨询量：' + (crx_p.value || 0) + ' 次';
+                    }
+                },
+                visualMap: {
+                    min: 0,
+                    max: 850,
+                    left: 18,
+                    bottom: 18,
+                    itemWidth: 10,
+                    itemHeight: 80,
+                    text: ['高', '低'],
+                    textStyle: { color: '#7ba8cd', fontSize: 11 },
+                    inRange: { color: ['#0a3358', '#11578f', '#1f8fd0', '#5fd0ff'] },
+                    calculable: true
+                },
+                geo: {
+                    map: 'china',
+                    roam: true,
+                    zoom: 1.16,
+                    top: 18,
+                    bottom: 20,
+                    itemStyle: {
+                        areaColor: '#0a3358',
+                        borderColor: '#2f8fd0',
+                        borderWidth: 1,
+                        shadowColor: 'rgba(30, 140, 220, .5)',
+                        shadowBlur: 18
+                    },
+                    emphasis: {
+                        itemStyle: { areaColor: '#16578a' },
+                        label: { show: true, color: '#fff', fontSize: 11 }
+                    },
+                    label: { show: false }
+                },
+                series: [
+                    {
+                        name: '咨询量',
+                        type: 'map',
+                        geoIndex: 0,
+                        data: crx_provinceData
+                    },
+                    {
+                        name: '活跃城市',
+                        type: 'effectScatter',
+                        coordinateSystem: 'geo',
+                        zlevel: 2,
+                        data: crx_hotCities,
+                        symbolSize: 7,
+                        rippleEffect: { brushType: 'stroke', scale: 3.2, period: 3.5 },
+                        itemStyle: { color: '#ffd666', shadowBlur: 10, shadowColor: '#ffd666' },
+                        label: {
+                            show: true,
+                            position: 'right',
+                            formatter: '{b}',
+                            color: '#ffe9a8',
+                            fontSize: 10
+                        }
+                    }
+                ]
+            });
+
+            // ==================== 4. 近 12 小时趋势 ====================
+            var crx_chartTrend = echarts.init(document.getElementById('crx_chart_trend'));
+            var crx_hours = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00',
+                '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+            var crx_total = [486, 620, 742, 568, 512, 705, 860, 930, 880, 742, 650, 540];
+            var crx_robot = [402, 528, 646, 492, 438, 618, 762, 826, 772, 640, 556, 466];
+
+            crx_chartTrend.setOption({
+                tooltip: { trigger: 'axis' },
+                legend: {
+                    top: 6,
+                    right: 16,
+                    icon: 'roundRect',
+                    itemWidth: 12,
+                    itemHeight: 4,
+                    itemGap: 14,
+                    textStyle: { color: '#8fb4d4', fontSize: 11 },
+                    data: ['咨询总量', '机器人解决']
+                },
+                grid: { left: 42, right: 24, top: 40, bottom: 26 },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: crx_hours,
+                    axisLine: { lineStyle: { color: crx_SPLIT_COLOR } },
+                    axisTick: { show: false },
+                    axisLabel: { color: crx_AXIS_COLOR, fontSize: 10 }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: crx_SPLIT_COLOR } },
+                    axisLine: { show: false },
+                    axisLabel: { color: crx_AXIS_COLOR, fontSize: 10 }
+                },
+                series: [
+                    {
+                        name: '咨询总量',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        showSymbol: false,
+                        lineStyle: { width: 2, color: '#4fb8ff' },
+                        itemStyle: { color: '#4fb8ff' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(79, 184, 255, .38)' },
+                                { offset: 1, color: 'rgba(79, 184, 255, 0)' }
+                            ])
+                        },
+                        data: crx_total
+                    },
+                    {
+                        name: '机器人解决',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        showSymbol: false,
+                        lineStyle: { width: 2, color: '#3ddc97' },
+                        itemStyle: { color: '#3ddc97' },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(61, 220, 151, .26)' },
+                                { offset: 1, color: 'rgba(61, 220, 151, 0)' }
+                            ])
+                        },
+                        data: crx_robot
+                    }
+                ]
+            });
+
+            // ==================== 5. 满意度仪表盘 ====================
+            var crx_chartGauge = echarts.init(document.getElementById('crx_chart_gauge'));
+            crx_chartGauge.setOption({
+                series: [{
+                    type: 'gauge',
+                    startAngle: 210,
+                    endAngle: -30,
+                    min: 0,
+                    max: 5,
+                    radius: '82%',
+                    center: ['50%', '56%'],
+                    progress: {
+                        show: true,
+                        width: 10,
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                                { offset: 0, color: '#1b6fbb' },
+                                { offset: 1, color: '#5fd0ff' }
+                            ])
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: { width: 10, color: [[1, 'rgba(40, 100, 160, .3)']] }
+                    },
+                    axisTick: { show: false },
+                    splitLine: { length: 8, lineStyle: { color: 'rgba(90, 160, 220, .4)', width: 1 } },
+                    axisLabel: { color: '#6f9cc0', fontSize: 9, distance: -16 },
+                    pointer: { itemStyle: { color: '#5fd0ff' }, width: 4, length: '62%' },
+                    anchor: { show: true, size: 10, itemStyle: { color: '#5fd0ff' } },
+                    title: { show: false },
+                    detail: {
+                        valueAnimation: true,
+                        offsetCenter: [0, '62%'],
+                        fontSize: 20,
+                        fontWeight: 'bold',
+                        color: '#5fd0ff',
+                        formatter: '{value} 分'
+                    },
+                    data: [{ value: 4.8 }]
+                }]
+            });
+
+            // ==================== 6. 知识库命中排行（HTML 进度条） ====================
+            var crx_knowledge = [
+                { name: '退换货政策说明', rate: 96 },
+                { name: '物流时效与运费', rate: 91 },
+                { name: '优惠券使用规则', rate: 88 },
+                { name: '会员权益说明', rate: 84 },
+                { name: '发票开具流程', rate: 79 }
+            ];
+            var crx_rankEl = document.getElementById('crx_rank');
+            var crx_rankHtml = '';
+            crx_knowledge.forEach(function (crx_item) {
+                crx_rankHtml += '<div class="crx_rank-item">' +
+                    '<div class="crx_rank-line"><span>' + crx_item.name + '</span><b>' + crx_item.rate + '%</b></div>' +
+                    '<div class="crx_rank-bar"><div class="crx_rank-fill" style="width:' + crx_item.rate + '%;"></div></div>' +
+                    '</div>';
+            });
+            crx_rankEl.innerHTML = crx_rankHtml;
+
+            // ==================== 7. 实时咨询流水 ====================
+            var crx_feedEl = document.getElementById('crx_feed');
+            var crx_questions = [
+                '我的订单什么时候发货',
+                '优惠券可以和会员折扣叠加吗',
+                '如何申请退款',
+                '发票可以开公司抬头吗',
+                '商品支持七天无理由退换吗',
+                '快递显示签收但没收到',
+                '会员积分怎么兑换',
+                '修改收货地址怎么操作',
+                '保修期是多久',
+                '跨境商品需要报关吗'
+            ];
+            var crx_feedCount = 0;
+
+            function crx_pad2(crx_n) { return crx_n < 10 ? '0' + crx_n : String(crx_n); }
+
+            function crx_addFeed() {
+                var crx_now = new Date();
+                var crx_q = crx_questions[Math.floor(Math.random() * crx_questions.length)];
+                var crx_isRobot = Math.random() > 0.22;
+
+                var crx_row = document.createElement('div');
+                crx_row.className = 'crx_feed-row';
+                crx_row.innerHTML =
+                    '<span class="crx_t">' + crx_pad2(crx_now.getHours()) + ':' +
+                    crx_pad2(crx_now.getMinutes()) + ':' + crx_pad2(crx_now.getSeconds()) + '</span>' +
+                    '<span class="crx_q">' + crx_q + '</span>' +
+                    (crx_isRobot
+                        ? '<span class="crx_ok">机器人已答</span>'
+                        : '<span class="crx_human">转人工</span>');
+
+                crx_feedEl.insertBefore(crx_row, crx_feedEl.firstChild);
+                crx_feedCount++;
+
+                while (crx_feedEl.children.length > 6) {
+                    crx_feedEl.removeChild(crx_feedEl.lastChild);
+                }
+            }
+
+            crx_addFeed();
+            setInterval(crx_addFeed, 2200);
+
+            // ==================== 8. 指标数字跳动 ====================
+            var crx_m1 = document.getElementById('crx_m1');
+            setInterval(function () {
+                var crx_base = 12846 + Math.floor(Math.random() * 40);
+                crx_m1.textContent = crx_base.toLocaleString('en-US');
+            }, 3000);
+
+            // ==================== 9. 自适应 ====================
+            window.addEventListener('resize', function () {
+                crx_chartChannel.resize();
+                crx_chartRegion.resize();
+                crx_chartMap.resize();
+                crx_chartTrend.resize();
+                crx_chartGauge.resize();
+            });
+        })();
+    </script>
+</body>
+</html>

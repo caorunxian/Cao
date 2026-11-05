@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-3 基于知识库的智能客服系统架构图（SVG）</title>
+    <link rel="stylesheet" href="font/iconfont.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 30px 20px 60px;
+            background-color: #f5f7fa;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 18px; }
+        .crx_head h1 { font-size: 26px; color: #1a365d; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #718096; }
+
+        .crx_wrap {
+            max-width: 1280px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 28px rgba(26, 54, 93, .09);
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        /* ===== SVG 图样式 ===== */
+        .crx_svg { display: block; width: 100%; height: auto; min-width: 980px; }
+
+        .crx_band-name { font-size: 15px; font-weight: bold; text-anchor: start; }
+        .crx_band-tag { font-size: 9.5px; font-family: Consolas, monospace; fill: #a0aec0; text-anchor: start; letter-spacing: .5px; }
+
+        .crx_node rect { fill: #ffffff; stroke-width: 1.2; transition: all .15s; }
+        .crx_node:hover rect { fill: #f8fbff; stroke-width: 2.4; }
+        .crx_node text { font-size: 12.5px; fill: #243b53; text-anchor: middle; }
+        .crx_node:hover text { font-weight: bold; }
+
+        .crx_node-sub { font-size: 10px; fill: #7b8794; }
+        .crx_note { font-size: 11px; fill: #85929e; }
+        .crx_flow-label { font-size: 10.5px; fill: #2b6cb0; font-weight: bold; text-anchor: middle; }
+
+        /* ===== 图例 ===== */
+        .crx_legend {
+            max-width: 1280px;
+            margin: 14px auto 0;
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 12px;
+            color: #4a5568;
+        }
+        .crx_legend-item { display: flex; align-items: center; gap: 6px; }
+        .crx_legend-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+        /* ===== 说明 ===== */
+        .crx_desc {
+            max-width: 1280px;
+            margin: 16px auto 0;
+            font-size: 13px;
+            line-height: 2;
+            color: #4a5568;
+            background-color: #ebf4ff;
+            border-left: 3px solid #2b6cb0;
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+        }
+        .crx_desc h3 { font-size: 14px; color: #1a365d; margin-bottom: 8px; }
+        .crx_desc b { color: #2b6cb0; }
+        .crx_desc ul { padding-left: 20px; margin-top: 4px; }
+        .crx_desc li { margin-bottom: 3px; }
+        .crx_desc code {
+            font-family: Consolas, monospace;
+            background-color: #dbeafe;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1e4e8c;
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-05，使用大模型：DeepSeek-V4.1-Flash，功能名称：18-3 基于知识库的智能客服系统架构图（SVG 矢量绘制 · RAG 科研方向） -->
+
+    <header class="crx_head">
+        <h1>基于知识库的智能客服系统架构图</h1>
+        <p class="crx_sub">SVG 矢量绘制 · 六层架构 · 检索增强生成（RAG）技术路线 · 面向科研的评测与迭代闭环</p>
+    </header>
+
+    <div class="crx_wrap">
+        <svg class="crx_svg" viewBox="0 0 1240 900" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <marker id="crx_arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                        markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M0,0 L10,5 L0,10 Z" fill="#9fc0e6"/>
+                </marker>
+                <marker id="crx_arrow_teal" viewBox="0 0 10 10" refX="9" refY="5"
+                        markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M0,0 L10,5 L0,10 Z" fill="#0ca678"/>
+                </marker>
+            </defs>
+
+            <!-- ================= 标题 ================= -->
+            <text x="620" y="38" text-anchor="middle" font-size="23" font-weight="bold" fill="#1a365d">智能客服知识问答系统 · 系统架构（RAG 路线）</text>
+            <text x="620" y="62" text-anchor="middle" font-size="11.5" fill="#85929e">用户提问 → 语义理解 → 知识检索 → 大模型生成 → 答案回填，全链路可观测、可评测、可迭代</text>
+
+            <!-- ================= 第 1 层：用户交互层 ================= -->
+            <rect x="24" y="90" width="1196" height="92" rx="10" fill="#4c6ef5" fill-opacity="0.07"/>
+            <rect x="30" y="112" width="4" height="34" rx="2" fill="#4c6ef5"/>
+            <text x="42" y="128" class="crx_band-name" fill="#4c6ef5">用户交互层</text>
+            <text x="42" y="148" class="crx_band-tag">CHANNEL</text>
+
+            <g class="crx_node">
+                <rect x="200" y="118" width="189" height="46" rx="7" stroke="#4c6ef5"/>
+                <text x="294.5" y="141" dominant-baseline="middle">网页在线客服</text>
+            </g>
+            <g class="crx_node">
+                <rect x="403" y="118" width="189" height="46" rx="7" stroke="#4c6ef5"/>
+                <text x="497.5" y="141" dominant-baseline="middle">APP / 小程序</text>
+            </g>
+            <g class="crx_node">
+                <rect x="606" y="118" width="189" height="46" rx="7" stroke="#4c6ef5"/>
+                <text x="700.5" y="141" dominant-baseline="middle">微信公众号</text>
+            </g>
+            <g class="crx_node">
+                <rect x="809" y="118" width="189" height="46" rx="7" stroke="#4c6ef5"/>
+                <text x="903.5" y="141" dominant-baseline="middle">电话 / IVR 语音</text>
+            </g>
+            <g class="crx_node">
+                <rect x="1012" y="118" width="189" height="46" rx="7" stroke="#4c6ef5"/>
+                <text x="1106.5" y="141" dominant-baseline="middle">人工坐席工作台</text>
+            </g>
+
+            <!-- 箭头 1 -->
+            <line x1="620" y1="184" x2="620" y2="196" stroke="#9fc0e6" stroke-width="1.6" marker-end="url(#crx_arrow)"/>
+
+            <!-- ================= 第 2 层：接入与会话层 ================= -->
+            <rect x="24" y="200" width="1196" height="92" rx="10" fill="#7048e8" fill-opacity="0.07"/>
+            <rect x="30" y="222" width="4" height="34" rx="2" fill="#7048e8"/>
+            <text x="42" y="238" class="crx_band-name" fill="#7048e8">接入与会话层</text>
+            <text x="42" y="258" class="crx_band-tag">GATEWAY</text>
+
+            <g class="crx_node">
+                <rect x="200" y="228" width="324" height="46" rx="7" stroke="#7048e8"/>
+                <text x="362" y="251" dominant-baseline="middle">API 网关 · 协议适配 · 鉴权</text>
+            </g>
+            <g class="crx_node">
+                <rect x="540" y="228" width="324" height="46" rx="7" stroke="#7048e8"/>
+                <text x="702" y="251" dominant-baseline="middle">限流熔断 · 灰度路由</text>
+            </g>
+            <g class="crx_node">
+                <rect x="880" y="228" width="324" height="46" rx="7" stroke="#7048e8"/>
+                <text x="1042" y="251" dominant-baseline="middle">会话上下文管理 · 长连接</text>
+            </g>
+
+            <line x1="620" y1="294" x2="620" y2="306" stroke="#9fc0e6" stroke-width="1.6" marker-end="url(#crx_arrow)"/>
+
+            <!-- ================= 第 3 层：对话理解层 ================= -->
+            <rect x="24" y="310" width="1196" height="92" rx="10" fill="#e8590c" fill-opacity="0.07"/>
+            <rect x="30" y="332" width="4" height="34" rx="2" fill="#e8590c"/>
+            <text x="42" y="348" class="crx_band-name" fill="#e8590c">对话理解层</text>
+            <text x="42" y="368" class="crx_band-tag">NLU / DM</text>
+
+            <g class="crx_node">
+                <rect x="200" y="338" width="239" height="46" rx="7" stroke="#e8590c"/>
+                <text x="319.5" y="361" dominant-baseline="middle">意图识别 NLU</text>
+            </g>
+            <g class="crx_node">
+                <rect x="455" y="338" width="239" height="46" rx="7" stroke="#e8590c"/>
+                <text x="574.5" y="361" dominant-baseline="middle">实体抽取 NER</text>
+            </g>
+            <g class="crx_node">
+                <rect x="710" y="338" width="239" height="46" rx="7" stroke="#e8590c"/>
+                <text x="829.5" y="361" dominant-baseline="middle">多轮对话管理 DST</text>
+            </g>
+            <g class="crx_node">
+                <rect x="965" y="338" width="239" height="46" rx="7" stroke="#e8590c"/>
+                <text x="1084.5" y="361" dominant-baseline="middle">情绪识别 · 转人工</text>
+            </g>
+
+            <line x1="620" y1="404" x2="620" y2="416" stroke="#9fc0e6" stroke-width="1.6" marker-end="url(#crx_arrow)"/>
+
+            <!-- ================= 第 4 层：知识库与检索层（核心） ================= -->
+            <rect x="24" y="420" width="1196" height="150" rx="10" fill="#0ca678" fill-opacity="0.09"/>
+            <rect x="30" y="446" width="4" height="46" rx="2" fill="#0ca678"/>
+            <text x="42" y="462" class="crx_band-name" fill="#0ca678">知识库与检索层</text>
+            <text x="42" y="482" class="crx_band-tag">RETRIEVAL</text>
+            <text x="42" y="502" class="crx_note">（核心）</text>
+
+            <g class="crx_node">
+                <rect x="200" y="446" width="239" height="44" rx="7" stroke="#0ca678"/>
+                <text x="319.5" y="468" dominant-baseline="middle">文档解析与清洗</text>
+            </g>
+            <g class="crx_node">
+                <rect x="455" y="446" width="239" height="44" rx="7" stroke="#0ca678"/>
+                <text x="574.5" y="468" dominant-baseline="middle">语义分块 Chunking</text>
+            </g>
+            <g class="crx_node">
+                <rect x="710" y="446" width="239" height="44" rx="7" stroke="#0ca678"/>
+                <text x="829.5" y="468" dominant-baseline="middle">向量化 Embedding</text>
+            </g>
+            <g class="crx_node">
+                <rect x="965" y="446" width="239" height="44" rx="7" stroke="#0ca678"/>
+                <text x="1084.5" y="468" dominant-baseline="middle">向量库 Milvus / FAISS</text>
+            </g>
+
+            <g class="crx_node">
+                <rect x="200" y="506" width="239" height="44" rx="7" stroke="#0ca678"/>
+                <text x="319.5" y="528" dominant-baseline="middle">混合检索 BM25 + Dense</text>
+            </g>
+            <g class="crx_node">
+                <rect x="455" y="506" width="239" height="44" rx="7" stroke="#0ca678"/>
+                <text x="574.5" y="528" dominant-baseline="middle">重排序 Rerank</text>
+            </g>
+            <g class="crx_node">
+                <rect x="710" y="506" width="239" height="44" rx="7" stroke="#0ca678"/>
+                <text x="829.5" y="528" dominant-baseline="middle">知识图谱增强 KG</text>
+            </g>
+            <g class="crx_node">
+                <rect x="965" y="506" width="239" height="44" rx="7" stroke="#0ca678"/>
+                <text x="1084.5" y="528" dominant-baseline="middle">知识版本 · 权限隔离</text>
+            </g>
+
+            <line x1="620" y1="572" x2="620" y2="584" stroke="#0ca678" stroke-width="2" marker-end="url(#crx_arrow_teal)"/>
+
+            <!-- ================= 第 5 层：大模型生成层 ================= -->
+            <rect x="24" y="588" width="1196" height="92" rx="10" fill="#d6336c" fill-opacity="0.07"/>
+            <rect x="30" y="610" width="4" height="34" rx="2" fill="#d6336c"/>
+            <text x="42" y="626" class="crx_band-name" fill="#d6336c">大模型生成层</text>
+            <text x="42" y="646" class="crx_band-tag">LLM / RAG</text>
+
+            <g class="crx_node">
+                <rect x="200" y="616" width="239" height="46" rx="7" stroke="#d6336c"/>
+                <text x="319.5" y="639" dominant-baseline="middle">Prompt 编排与模板</text>
+            </g>
+            <g class="crx_node">
+                <rect x="455" y="616" width="239" height="46" rx="7" stroke="#d6336c"/>
+                <text x="574.5" y="639" dominant-baseline="middle">上下文融合 RAG</text>
+            </g>
+            <g class="crx_node">
+                <rect x="710" y="616" width="239" height="46" rx="7" stroke="#d6336c"/>
+                <text x="829.5" y="639" dominant-baseline="middle">LLM 答案生成</text>
+            </g>
+            <g class="crx_node">
+                <rect x="965" y="616" width="239" height="46" rx="7" stroke="#d6336c"/>
+                <text x="1084.5" y="639" dominant-baseline="middle">幻觉抑制 · 答案校验</text>
+            </g>
+
+            <line x1="620" y1="682" x2="620" y2="694" stroke="#9fc0e6" stroke-width="1.6" marker-end="url(#crx_arrow)"/>
+
+            <!-- ================= 第 6 层：支撑与评测层 ================= -->
+            <rect x="24" y="698" width="1196" height="92" rx="10" fill="#495057" fill-opacity="0.07"/>
+            <rect x="30" y="720" width="4" height="34" rx="2" fill="#495057"/>
+            <text x="42" y="736" class="crx_band-name" fill="#495057">支撑与评测层</text>
+            <text x="42" y="756" class="crx_band-tag">EVAL / MLOPS</text>
+
+            <g class="crx_node">
+                <rect x="200" y="726" width="189" height="46" rx="7" stroke="#495057"/>
+                <text x="294.5" y="749" dominant-baseline="middle">检索评测 Recall@k</text>
+            </g>
+            <g class="crx_node">
+                <rect x="403" y="726" width="189" height="46" rx="7" stroke="#495057"/>
+                <text x="497.5" y="749" dominant-baseline="middle">生成评测 EM / F1</text>
+            </g>
+            <g class="crx_node">
+                <rect x="606" y="726" width="189" height="46" rx="7" stroke="#495057"/>
+                <text x="700.5" y="749" dominant-baseline="middle">数据标注闭环</text>
+            </g>
+            <g class="crx_node">
+                <rect x="809" y="726" width="189" height="46" rx="7" stroke="#495057"/>
+                <text x="903.5" y="749" dominant-baseline="middle">监控 · 链路追踪</text>
+            </g>
+            <g class="crx_node">
+                <rect x="1012" y="726" width="189" height="46" rx="7" stroke="#495057"/>
+                <text x="1106.5" y="749" dominant-baseline="middle">A/B 实验 · 模型迭代</text>
+            </g>
+
+            <!-- ================= 反馈回路 ================= -->
+            <path d="M 1206 618 C 1219 618 1219 746 1206 746" fill="none" stroke="#d6336c" stroke-width="1.4" stroke-dasharray="5 4"/>
+            <text x="1200" y="695" text-anchor="end" font-size="10" fill="#d6336c">↺ 评测反馈驱动迭代</text>
+
+            <!-- ================= 底部说明文字 ================= -->
+            <text x="620" y="820" text-anchor="middle" class="crx_note">离线知识构建：原始文档 → 解析清洗 → 语义分块 → 向量化 → 入库（增量更新）　|　在线问答：提问 → 检索 → 重排 → 生成 → 校验 → 回复</text>
+            <text x="620" y="842" text-anchor="middle" class="crx_note">核心指标：检索侧 Recall@k / MRR / nDCG　·　生成侧 EM / F1 / BLEU / 人工偏好评分　·　业务侧 问题解决率 / 转人工率 / 平均响应时延</text>
+        </svg>
+    </div>
+
+    <div class="crx_legend">
+        <span class="crx_legend-item"><i class="crx_legend-dot" style="background:#4c6ef5;"></i>用户交互层</span>
+        <span class="crx_legend-item"><i class="crx_legend-dot" style="background:#7048e8;"></i>接入与会话层</span>
+        <span class="crx_legend-item"><i class="crx_legend-dot" style="background:#e8590c;"></i>对话理解层</span>
+        <span class="crx_legend-item"><i class="crx_legend-dot" style="background:#0ca678;"></i>知识库与检索层</span>
+        <span class="crx_legend-item"><i class="crx_legend-dot" style="background:#d6336c;"></i>大模型生成层</span>
+        <span class="crx_legend-item"><i class="crx_legend-dot" style="background:#495057;"></i>支撑与评测层</span>
+        <span class="crx_legend-item" style="margin-left:auto;color:#718096;">
+            <i class="crx_legend-dot" style="background:#9fc0e6;"></i>主数据流
+            <i class="crx_legend-dot" style="background:#d6336c;margin-left:10px;"></i>评测反馈回路
+        </span>
+    </div>
+
+    <div class="crx_desc">
+        <h3>架构说明（科研方向）</h3>
+        <b>1. 在线链路（RAG 三阶段）</b>
+        <ul>
+            <li><b>检索（Retrieval）</b>：用户提问经 NLU 解析后改写为检索查询，走 <b>混合检索</b>（BM25 稀疏 + Dense 稠密向量），召回 Top-k 文档片段；</li>
+            <li><b>增强（Augmentation）</b>：经 <b>Rerank 交叉编码器</b>重排后筛选高相关片段，与对话历史一同组装进 Prompt 上下文；</li>
+            <li><b>生成（Generation）</b>：LLM 基于证据片段生成答案，输出侧做 <b>事实一致性校验与引用溯源</b>，抑制幻觉。</li>
+        </ul>
+        <b>2. 离线知识构建</b>
+        <ul>
+            <li>文档解析（PDF / Word / HTML）→ 文本清洗去噪 → <b>语义分块</b>（按语义边界 + 滑动窗口）→ Embedding 向量化 → 写入向量库并建立元数据索引；</li>
+            <li>支持增量索引与知识版本管理，保障答案可追溯、可审计。</li>
+        </ul>
+        <b>3. 可研究的评测方向</b>
+        <ul>
+            <li>检索侧：<code>Recall@k</code>、<code>MRR</code>、<code>nDCG</code>，分块策略与检索器组合的消融实验；</li>
+            <li>生成侧：<code>EM</code>、<code>F1</code>、<code>BLEU</code>、忠实度（Faithfulness）与人工偏好评分；</li>
+            <li>闭环迭代：线上日志 → 数据标注 → 微调 / SFT / RLHF → A/B 实验验证，形成 <b>数据—模型—评测</b> 的科研闭环。</li>
+        </ul>
+    </div>
+</body>
+</html>

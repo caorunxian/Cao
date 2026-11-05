@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-2 Canvas 电商系统架构图</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 30px 20px 70px;
+            background-color: #f4f6f9;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 20px; }
+        .crx_head h1 { font-size: 26px; color: #12395c; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #64707d; }
+
+        .crx-wrap {
+            max-width: 1240px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(18, 57, 92, .1);
+            padding: 10px;
+            overflow: hidden;
+        }
+        .crx-wrap canvas { display: block; width: 100%; height: auto; cursor: pointer; }
+
+        .crx-toolbar {
+            max-width: 1240px;
+            margin: 14px auto 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .crx-btn {
+            border: 1px solid #12395c;
+            background-color: #fff;
+            color: #12395c;
+            font-size: 13px;
+            padding: 8px 18px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: "Microsoft YaHei", sans-serif;
+            transition: all .15s;
+        }
+        .crx-btn:hover { background-color: #12395c; color: #fff; }
+
+        .crx-legend {
+            margin-left: auto;
+            font-size: 12px;
+            color: #64707d;
+        }
+        .crx-legend i {
+            display: inline-block;
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            margin: 0 4px 0 12px;
+            vertical-align: middle;
+        }
+
+        .crx-desc {
+            max-width: 1240px;
+            margin: 16px auto 0;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #64707d;
+            background-color: #eef5fb;
+            border-left: 3px solid #12395c;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 16px;
+        }
+        .crx-desc b { color: #12395c; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-05，使用大模型：GLM-5.3，功能名称：18-2 Canvas 绘制电商全站系统架构图（分层架构 + 数据流动画 + 悬停说明） -->
+
+    <header class="crx_head">
+        <h1>🛒 电商平台全站系统架构图</h1>
+        <p class="crx_sub">纯 Canvas 2D 绘制 · 六层架构 · 悬停模块查看职责说明 · 圆点动画模拟数据流</p>
+    </header>
+
+    <div class="crx-wrap">
+        <canvas id="crx_canvas"></canvas>
+    </div>
+
+    <div class="crx-toolbar">
+        <button class="crx-btn" id="crx_btn_flow">⏸ 暂停数据流</button>
+        <button class="crx-btn" id="crx_btn_redraw">↺ 重绘架构图</button>
+        <div class="crx-legend">
+            <i style="background:#4a90d9;"></i>接入
+            <i style="background:#e67e22;"></i>业务服务
+            <i style="background:#16a085;"></i>中间件
+            <i style="background:#c0392b;"></i>数据
+            <i style="background:#1abc9c;"></i>数据流向
+        </div>
+    </div>
+
+    <div class="crx-desc">
+        <b>架构说明：</b>用户端请求统一经过 <b>CDN / 负载均衡 / API 网关</b> 进入业务服务层；
+        网关完成鉴权、限流与路由后，请求分发给各微服务。
+        <b>订单服务</b>通过 <b>MQ</b> 异步通知库存/物流（削峰填谷），核心数据落 <b>MySQL 主从</b>，
+        商品搜索走 <b>Elasticsearch</b>，热点数据缓存在 <b>Redis</b>。
+        整套服务跑在 <b>Docker + K8s</b> 上，配合 CI/CD 与监控告警实现持续交付。
+        把鼠标悬停到任意模块上可查看职责说明。
+    </div>
+
+    <script>
+        // ==================== DOM ====================
+        var crx_canvas = document.getElementById('crx_canvas');
+        var crx_ctx = crx_canvas.getContext('2d');
+
+        // 逻辑画布尺寸（内部坐标系，CSS 宽度 100% 缩放显示）
+        var crx_LW = 1220, crx_LH = 700;
+
+        // ==================== 架构数据（六层） ====================
+        var crx_layers = [
+            {
+                name: '用户接入层', tag: 'CLIENT', color: '#4a90d9',
+                boxes: [
+                    { name: 'PC 商城', desc: 'PC 端 Web 站点，商品浏览与下单主入口' },
+                    { name: 'H5 商城', desc: '移动端网页，适配微信内打开与分享' },
+                    { name: '原生 APP', desc: 'iOS / Android 客户端，推送与支付能力强' },
+                    { name: '小程序', desc: '微信 / 支付宝小程序，社交裂变入口' },
+                    { name: '开放平台', desc: '第三方开发者接入的 OpenAPI' }
+                ]
+            },
+            {
+                name: '接入网关层', tag: 'GATEWAY', color: '#8e44ad',
+                boxes: [
+                    { name: 'CDN / WAF', desc: '静态资源加速分发，拦截 SQL 注入等 Web 攻击' },
+                    { name: '负载均衡 SLB', desc: '将流量分发到多台后端服务器，健康检查自动摘除故障节点' },
+                    { name: 'API 网关', desc: '统一入口：登录鉴权、接口限流、动态路由、灰度发布' }
+                ]
+            },
+            {
+                name: '业务服务层', tag: 'SERVICE', color: '#e67e22',
+                boxes: [
+                    { name: '商品服务', desc: 'SKU、类目、价格、上下架管理' },
+                    { name: '搜索服务', desc: '商品全文检索与筛选排序，底层为 Elasticsearch' },
+                    { name: '购物车', desc: '加购、跨端合并、优惠试算' },
+                    { name: '订单服务', desc: '下单、拆单、订单状态机流转、超时关单' },
+                    { name: '支付服务', desc: '对接微信支付 / 支付宝 / 银联，对账退款' },
+                    { name: '库存服务', desc: '库存预占与扣减，防超卖' },
+                    { name: '营销服务', desc: '优惠券、秒杀、满减、拼团活动' },
+                    { name: '用户服务', desc: '注册登录、会员等级、积分体系' },
+                    { name: '物流服务', desc: '运费模板计算、快递轨迹跟踪' }
+                ]
+            },
+            {
+                name: '中间件层', tag: 'MIDDLEWARE', color: '#16a085',
+                boxes: [
+                    { name: '消息队列 MQ', desc: '服务间异步解耦，大促削峰填谷' },
+                    { name: 'Redis 缓存', desc: '热点商品缓存、Session、秒杀库存预减' },
+                    { name: '分布式任务', desc: '定时调度：对账、超时关单、数据同步' },
+                    { name: '注册配置中心', desc: '服务注册发现 + 配置动态下发' }
+                ]
+            },
+            {
+                name: '数据存储层', tag: 'DATA', color: '#c0392b',
+                boxes: [
+                    { name: 'MySQL 主从', desc: '核心交易数据，读写分离保证性能' },
+                    { name: 'Elasticsearch', desc: '商品索引、订单检索、日志分析' },
+                    { name: 'OSS 对象存储', desc: '商品图片、页面静态资源存放' },
+                    { name: '分库分表', desc: '订单大表按用户 ID 水平拆分，支撑亿级数据' }
+                ]
+            },
+            {
+                name: '基础设施层', tag: 'INFRA', color: '#7f8c8d',
+                boxes: [
+                    { name: 'Docker / K8s', desc: '容器化部署，HPA 弹性伸缩应对大促' },
+                    { name: 'CI / CD', desc: '自动化构建、测试、发布流水线' },
+                    { name: '监控告警', desc: 'Prometheus 指标采集，异常钉钉/短信告警' },
+                    { name: '日志中心', desc: 'ELK 集中收集全链路日志，问题排查' }
+                ]
+            }
+        ];
+
+        // 数据流连线：[层索引, 框索引] → [层索引, 框索引]
+        var crx_links = [
+            [0, 0, 1, 2], [0, 1, 1, 2], [0, 2, 1, 2], [0, 3, 1, 2], [0, 4, 1, 2],   // 五端 → API 网关
+            [1, 2, 2, 3],                                                             // 网关 → 订单
+            [2, 0, 3, 1], [2, 1, 4, 1],                                               // 商品→Redis  搜索→ES
+            [2, 3, 3, 0], [2, 3, 4, 0],                                               // 订单→MQ  订单→MySQL
+            [2, 5, 3, 0],                                                             // 库存→MQ（异步）
+            [2, 4, 4, 0]                                                             // 支付→MySQL
+        ];
+
+        // ==================== 布局计算 ====================
+        var crx_layout = [];       // 每层 { y, h, boxes: [{x, y, w, h}] }
+        var crx_boxList = [];      // 全部框（含层信息），便于命中检测
+        var crx_hover = null;
+        var crx_flowOn = true;
+
+        function crx_calcLayout() {
+            var crx_left = 128;                 // 左侧层名宽度
+            var crx_right = 24;
+            var crx_top = 70;
+            var crx_bandH = 76;
+            var crx_gapY = 30;
+            var crx_boxH = 50;
+            crx_layout = [];
+            crx_boxList = [];
+
+            crx_layers.forEach(function (layer, li) {
+                var crx_y = crx_top + li * (crx_bandH + crx_gapY);
+                var crx_count = layer.boxes.length;
+                var crx_areaW = crx_LW - crx_left - crx_right;
+                var crx_boxW = crx_count <= 5
+                    ? Math.min(170, (crx_areaW - (crx_count - 1) * 14) / crx_count)
+                    : (crx_areaW - (crx_count - 1) * 10) / crx_count;
+                var crx_row = [];
+                layer.boxes.forEach(function (box, bi) {
+                    var crx_bx = crx_left + bi * (crx_boxW + (crx_count <= 5 ? 14 : 10));
+                    var crx_by = crx_y + 13;
+                    crx_row.push({ x: crx_bx, y: crx_by, w: crx_boxW, h: crx_boxH });
+                    crx_boxList.push({
+                        x: crx_bx, y: crx_by, w: crx_boxW, h: crx_boxH,
+                        layer: li, idx: bi, box: box, color: layer.color
+                    });
+                });
+                crx_layout.push({ y: crx_y, h: crx_bandH, boxes: crx_row });
+            });
+        }
+
+        function crx_boxCenter(li, bi) {
+            var b = crx_layout[li].boxes[bi];
+            return { x: b.x + b.w / 2, yTop: b.y, yBottom: b.y + b.h };
+        }
+
+        // ==================== 绘制 ====================
+        function crx_draw(crx_now) {
+            // 白底
+            crx_ctx.clearRect(0, 0, crx_LW, crx_LH);
+            crx_ctx.fillStyle = '#ffffff';
+            crx_ctx.fillRect(0, 0, crx_LW, crx_LH);
+
+            // 标题
+            crx_ctx.fillStyle = '#12395c';
+            crx_ctx.font = 'bold 24px "Microsoft YaHei", sans-serif';
+            crx_ctx.textAlign = 'center';
+            crx_ctx.textBaseline = 'middle';
+            crx_ctx.fillText('电商平台全站系统架构图', crx_LW / 2, 30);
+            crx_ctx.font = '12px "Microsoft YaHei", sans-serif';
+            crx_ctx.fillStyle = '#8494a5';
+            crx_ctx.fillText('Canvas 2D 绘制 · 悬停查看模块职责 · 圆点为数据流向', crx_LW / 2, 54);
+
+            // 层带 + 框
+            crx_layers.forEach(function (layer, li) {
+                var crx_l = crx_layout[li];
+
+                // 层背景带
+                crx_ctx.fillStyle = layer.color + '14';           // 约 8% 透明度
+                crx_roundRect(14, crx_l.y, crx_LW - 38, crx_l.h, 10);
+                crx_ctx.fill();
+
+                // 左侧层名 + 色条
+                crx_ctx.fillStyle = layer.color;
+                crx_roundRect(28, crx_l.y + 22, 5, 34, 3);
+                crx_ctx.fill();
+                crx_ctx.textAlign = 'left';
+                crx_ctx.fillStyle = layer.color;
+                crx_ctx.font = 'bold 15px "Microsoft YaHei", sans-serif';
+                crx_ctx.fillText(layer.name, 44, crx_l.y + 30);
+                crx_ctx.font = '10px Consolas, monospace';
+                crx_ctx.fillStyle = '#98a6b5';
+                crx_ctx.fillText(layer.tag, 44, crx_l.y + 50);
+
+                // 模块框
+                layer.boxes.forEach(function (box, bi) {
+                    var b = crx_l.boxes[bi];
+                    var crx_isHover = crx_hover
+                        && crx_hover.layer === li && crx_hover.idx === bi;
+
+                    // 框体
+                    crx_ctx.fillStyle = crx_isHover ? layer.color : '#ffffff';
+                    crx_roundRect(b.x, b.y, b.w, b.h, 8);
+                    crx_ctx.fill();
+                    crx_ctx.strokeStyle = crx_isHover ? layer.color : layer.color + '88';
+                    crx_ctx.lineWidth = crx_isHover ? 2.5 : 1.2;
+                    crx_ctx.stroke();
+
+                    // 顶部小色块
+                    crx_ctx.fillStyle = layer.color;
+                    crx_roundRect(b.x, b.y, b.w, 5, 3);
+                    crx_ctx.fill();
+
+                    // 文字（两行截断处理：名字较长则缩小字号）
+                    crx_ctx.textAlign = 'center';
+                    crx_ctx.fillStyle = crx_isHover ? '#ffffff' : '#243447';
+                    var crx_fs = box.name.length > 5 ? 12 : 13.5;
+                    crx_ctx.font = 'bold ' + crx_fs + 'px "Microsoft YaHei", sans-serif';
+                    crx_ctx.fillText(box.name, b.x + b.w / 2, b.y + 15 + 9);
+                });
+            });
+
+            // 连线 + 数据流动画
+            crx_links.forEach(function (crx_lk, crx_i) {
+                var crx_s = crx_boxCenter(crx_lk[0], crx_lk[1]);
+                var crx_e = crx_boxCenter(crx_lk[2], crx_lk[3]);
+
+                // 垂直连线（起点框底 → 终点框顶）
+                crx_ctx.strokeStyle = '#c3d0dd';
+                crx_ctx.lineWidth = 1.4;
+                crx_ctx.beginPath();
+                crx_ctx.moveTo(crx_s.x, crx_s.yBottom);
+                crx_ctx.lineTo(crx_e.x, crx_e.yTop);
+                crx_ctx.stroke();
+
+                // 终点小箭头
+                crx_ctx.fillStyle = '#c3d0dd';
+                crx_ctx.beginPath();
+                crx_ctx.moveTo(crx_e.x - 4, crx_e.yTop - 6);
+                crx_ctx.lineTo(crx_e.x + 4, crx_e.yTop - 6);
+                crx_ctx.lineTo(crx_e.x, crx_e.yTop);
+                crx_ctx.closePath();
+                crx_ctx.fill();
+
+                // 流动圆点
+                if (crx_flowOn) {
+                    var crx_t = ((crx_now / 1400) + crx_i * 0.13) % 1;
+                    var crx_py = crx_s.yBottom + (crx_e.yTop - crx_s.yBottom) * crx_t;
+                    var crx_px = crx_s.x + (crx_e.x - crx_s.x) * crx_t;
+                    crx_ctx.beginPath();
+                    crx_ctx.arc(crx_px, crx_py, 3.4, 0, Math.PI * 2);
+                    crx_ctx.fillStyle = '#1abc9c';
+                    crx_ctx.fill();
+                }
+            });
+
+            // 悬停提示
+            if (crx_hover) {
+                crx_drawTip(crx_hover);
+            }
+        }
+
+        function crx_drawTip(h) {
+            var b = crx_layout[h.layer].boxes[h.idx];
+            var box = h.box;
+            var crx_pad = 10;
+            crx_ctx.font = '12px "Microsoft YaHei", sans-serif';
+            var crx_tw = Math.min(300, crx_ctx.measureText(box.desc).width) + crx_pad * 2;
+
+            // 先量出换行后的行数（简单按 300px 截断换行）
+            var crx_lines = crx_wrapText(box.desc, 300);
+            var crx_th = crx_lines.length * 18 + crx_pad * 2 + 4;
+
+            // 提示框位置：模块上方，越界则翻到下方
+            var crx_tx = Math.max(8, Math.min(crx_LW - crx_tw - 8, b.x + b.w / 2 - crx_tw / 2));
+            var crx_ty = b.y - crx_th - 8;
+            if (crx_ty < 8) crx_ty = b.y + b.h + 8;
+
+            // 半透明底 + 边框
+            crx_ctx.fillStyle = 'rgba(18, 57, 92, 0.96)';
+            crx_roundRect(crx_tx, crx_ty, crx_tw, crx_th, 8);
+            crx_ctx.fill();
+
+            // 标题行
+            crx_ctx.textAlign = 'left';
+            crx_ctx.fillStyle = '#7fd8e8';
+            crx_ctx.font = 'bold 12px "Microsoft YaHei", sans-serif';
+            crx_ctx.fillText('● ' + box.name, crx_tx + crx_pad, crx_ty + crx_pad + 8);
+
+            // 正文
+            crx_ctx.fillStyle = '#eef4fa';
+            crx_ctx.font = '12px "Microsoft YaHei", sans-serif';
+            crx_lines.forEach(function (line, i) {
+                crx_ctx.fillText(line, crx_tx + crx_pad, crx_ty + crx_pad + 28 + i * 18);
+            });
+        }
+
+        // 简单中文按像素宽度换行
+        function crx_wrapText(text, maxW) {
+            var crx_lines = [];
+            var crx_line = '';
+            for (var i = 0; i < text.length; i++) {
+                crx_line += text[i];
+                if (crx_ctx.measureText(crx_line).width > maxW - 4) {
+                    crx_lines.push(crx_line);
+                    crx_line = '';
+                }
+            }
+            if (crx_line) crx_lines.push(crx_line);
+            return crx_lines;
+        }
+
+        function crx_roundRect(x, y, w, h, r) {
+            r = Math.min(r, w / 2, h / 2);
+            crx_ctx.beginPath();
+            crx_ctx.moveTo(x + r, y);
+            crx_ctx.arcTo(x + w, y, x + w, y + h, r);
+            crx_ctx.arcTo(x + w, y + h, x, y + h, r);
+            crx_ctx.arcTo(x, y + h, x, y, r);
+            crx_ctx.arcTo(x, y, x + w, y, r);
+            crx_ctx.closePath();
+        }
+
+        // ==================== 命中检测（悬停） ====================
+        function crx_hitTest(crx_cx, crx_cy) {
+            for (var i = 0; i < crx_boxList.length; i++) {
+                var b = crx_boxList[i];
+                if (crx_cx >= b.x && crx_cx <= b.x + b.w
+                    && crx_cy >= b.y && crx_cy <= b.y + b.h) {
+                    return { layer: b.layer, idx: b.idx, box: b.box };
+                }
+            }
+            return null;
+        }
+
+        // 画布坐标换算（CSS 缩放显示）
+        function crx_toCanvas(crx_e) {
+            var crx_rect = crx_canvas.getBoundingClientRect();
+            return {
+                x: (crx_e.clientX - crx_rect.left) * (crx_LW / crx_rect.width),
+                y: (crx_e.clientY - crx_rect.top) * (crx_LH / crx_rect.height)
+            };
+        }
+
+        crx_canvas.addEventListener('mousemove', function (crx_e) {
+            var p = crx_toCanvas(crx_e);
+            crx_hover = crx_hitTest(p.x, p.y);
+            crx_canvas.style.cursor = crx_hover ? 'help' : 'default';
+        });
+        crx_canvas.addEventListener('mouseleave', function () { crx_hover = null; });
+
+        // ==================== 按钮 ====================
+        document.getElementById('crx_btn_flow').addEventListener('click', function () {
+            crx_flowOn = !crx_flowOn;
+            this.textContent = crx_flowOn ? '⏸ 暂停数据流' : '▶ 开启数据流';
+        });
+        document.getElementById('crx_btn_redraw').addEventListener('click', function () {
+            crx_hover = null;
+            crx_calcLayout();
+        });
+
+        // ==================== 初始化 ====================
+        function crx_init() {
+            var crx_dpr = window.devicePixelRatio || 1;
+            crx_canvas.width = crx_LW * crx_dpr;
+            crx_canvas.height = crx_LH * crx_dpr;
+            // 内部分辨率 = 逻辑尺寸 × DPR，CSS 宽度 100% 自动缩放显示
+            crx_ctx.setTransform(crx_dpr, 0, 0, crx_dpr, 0, 0);
+            crx_canvas.style.height = (crx_canvas.clientWidth * crx_LH / crx_LW) + 'px';
+            crx_calcLayout();
+        }
+
+        function crx_loop(crx_now) {
+            crx_draw(crx_now);
+            requestAnimationFrame(crx_loop);
+        }
+
+        window.addEventListener('resize', crx_init);
+        crx_init();
+        requestAnimationFrame(crx_loop);
+    </script>
+</body>
+</html>

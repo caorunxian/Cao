@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-4 ECharts 图表：南丁格尔玫瑰图 + AQI 雷达图</title>
+    <script src="cdn/echarts.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 28px 20px 60px;
+            background-color: #f5f7fa;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 22px; }
+        .crx_head h1 { font-size: 26px; color: #1a365d; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #718096; }
+
+        .crx_wrap { max-width: 1080px; margin: 0 auto; }
+
+        .crx_card {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 8px 26px rgba(26, 54, 93, .08);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .crx_card-head {
+            padding: 16px 22px 0;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .crx_card-head h2 { font-size: 17px; color: #1a365d; }
+        .crx_card-tag {
+            font-size: 11px;
+            font-family: Consolas, monospace;
+            color: #fff;
+            background-color: #4c6ef5;
+            padding: 2px 9px;
+            border-radius: 9px;
+        }
+        .crx_card-head p { font-size: 12px; color: #85929e; margin-top: 4px; width: 100%; }
+
+        .crx_chart { width: 100%; }
+        #crx_rose { height: 560px; }
+        #crx_radar { height: 520px; }
+
+        .crx_note {
+            font-size: 12px;
+            line-height: 1.9;
+            color: #64748b;
+            background-color: #eef4ff;
+            border-left: 3px solid #4c6ef5;
+            border-radius: 0 8px 8px 0;
+            padding: 10px 16px;
+            margin-top: -8px;
+            margin-bottom: 20px;
+        }
+        .crx_note b { color: #2b4c9c; }
+
+        @media (max-width: 700px) {
+            #crx_rose { height: 430px; }
+            #crx_radar { height: 430px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-05，使用大模型：DeepSeek-V4.1-Flash，功能名称：18-4 ECharts 图表展示（南丁格尔玫瑰图 + 城市 AQI 雷达图） -->
+
+    <header class="crx_head">
+        <h1>ECharts 图表展示</h1>
+        <p class="crx_sub">本地引入 echarts.min.js（cdn 目录）· 南丁格尔玫瑰图 · 城市空气质量雷达图</p>
+    </header>
+
+    <div class="crx_wrap">
+        <!-- ============ 图表一：南丁格尔玫瑰图 ============ -->
+        <section class="crx_card">
+            <div class="crx_card-head">
+                <h2>南丁格尔玫瑰图</h2>
+                <span class="crx_card-tag">type: 'pie' · roseType: 'area'</span>
+                <p>扇形半径随数值变化，角度均分——用于对比同类指标的相对大小</p>
+            </div>
+            <div class="crx_chart" id="crx_rose"></div>
+        </section>
+
+        <div class="crx_note">
+            <b>说明：</b>玫瑰图（Nightingale Rose Chart）本质是饼图的一种变体。<code>roseType: 'area'</code> 让所有扇形角度相同、半径按数值比率变化；
+            右上角工具箱支持<b>保存为图片</b>、<b>数据视图</b>（可编辑）与<b>还原</b>。
+        </div>
+
+        <!-- ============ 图表二：AQI 雷达图 ============ -->
+        <section class="crx_card">
+            <div class="crx_card-head">
+                <h2>城市空气质量（AQI）雷达图</h2>
+                <span class="crx_card-tag">type: 'radar'</span>
+                <p>北京 / 上海 / 广州，指标含 AQI、PM2.5、PM10、CO、NO2、SO2（图例单选切换）</p>
+            </div>
+            <div class="crx_chart" id="crx_radar"></div>
+        </section>
+
+        <div class="crx_note">
+            <b>说明：</b>六个指标共用一个圆形雷达坐标系，<code>splitNumber: 5</code> 划出五层网格；
+            图例设置了 <code>selectedMode: 'single'</code>，点击图例可在三座城市之间切换对比；
+            数据为 1–31 日的逐日监测值，取当日 AQI、PM2.5、PM10、CO、NO2、SO2 六个维度。
+        </div>
+    </div>
+
+    <script>
+        /* ==================== 数据 ==================== */
+        // Schema: [AQI, PM2.5, PM10, CO, NO2, SO2, 日期]
+        var crx_dataBJ = [
+            [55, 9, 56, 0.46, 18, 6, 1],
+            [25, 11, 21, 0.65, 34, 9, 2],
+            [56, 7, 63, 0.3, 14, 5, 3],
+            [33, 7, 29, 0.33, 16, 6, 4],
+            [42, 24, 44, 0.76, 40, 16, 5],
+            [82, 58, 90, 1.77, 68, 33, 6],
+            [74, 49, 77, 1.46, 48, 27, 7],
+            [78, 55, 80, 1.29, 59, 29, 8],
+            [267, 216, 280, 4.8, 108, 64, 9],
+            [185, 127, 216, 2.52, 61, 27, 10],
+            [39, 19, 38, 0.57, 31, 15, 11],
+            [41, 11, 40, 0.43, 21, 7, 12],
+            [64, 38, 74, 1.04, 46, 22, 13],
+            [108, 79, 120, 1.7, 75, 41, 14],
+            [108, 63, 116, 1.48, 44, 26, 15],
+            [33, 6, 29, 0.34, 13, 5, 16],
+            [94, 66, 110, 1.54, 62, 31, 17],
+            [186, 142, 192, 3.88, 93, 79, 18],
+            [57, 31, 54, 0.96, 32, 14, 19],
+            [22, 8, 17, 0.48, 23, 10, 20],
+            [39, 15, 36, 0.61, 29, 13, 21],
+            [94, 69, 114, 2.08, 73, 39, 22],
+            [99, 73, 110, 2.43, 76, 48, 23],
+            [31, 12, 30, 0.5, 32, 16, 24],
+            [42, 27, 43, 1, 53, 22, 25],
+            [154, 117, 157, 3.05, 92, 58, 26],
+            [234, 185, 230, 4.09, 123, 69, 27],
+            [160, 120, 186, 2.77, 91, 50, 28],
+            [134, 96, 165, 2.76, 83, 41, 29],
+            [52, 24, 60, 1.03, 50, 21, 30],
+            [46, 5, 49, 0.28, 10, 6, 31]
+        ];
+        var crx_dataGZ = [
+            [26, 37, 27, 1.163, 27, 13, 1],
+            [85, 62, 71, 1.195, 60, 8, 2],
+            [78, 38, 74, 1.363, 37, 7, 3],
+            [21, 21, 36, 0.634, 40, 9, 4],
+            [41, 42, 46, 0.915, 81, 13, 5],
+            [56, 52, 69, 1.067, 92, 16, 6],
+            [64, 30, 28, 0.924, 51, 2, 7],
+            [55, 48, 74, 1.236, 75, 26, 8],
+            [76, 85, 113, 1.237, 114, 27, 9],
+            [91, 81, 104, 1.041, 56, 40, 10],
+            [84, 39, 60, 0.964, 25, 11, 11],
+            [64, 51, 101, 0.862, 58, 23, 12],
+            [70, 69, 120, 1.198, 65, 36, 13],
+            [77, 105, 178, 2.549, 64, 16, 14],
+            [109, 68, 87, 0.996, 74, 29, 15],
+            [73, 68, 97, 0.905, 51, 34, 16],
+            [54, 27, 47, 0.592, 53, 12, 17],
+            [51, 61, 97, 0.811, 65, 19, 18],
+            [91, 71, 121, 1.374, 43, 18, 19],
+            [73, 102, 182, 2.787, 44, 19, 20],
+            [73, 50, 76, 0.717, 31, 20, 21],
+            [84, 94, 140, 2.238, 68, 18, 22],
+            [93, 77, 104, 1.165, 53, 7, 23],
+            [99, 130, 227, 3.97, 55, 15, 24],
+            [146, 84, 139, 1.094, 40, 17, 25],
+            [113, 108, 137, 1.481, 48, 15, 26],
+            [81, 48, 62, 1.619, 26, 3, 27],
+            [56, 48, 68, 1.336, 37, 9, 28],
+            [82, 92, 174, 3.29, 0, 13, 29],
+            [106, 116, 188, 3.628, 101, 16, 30],
+            [118, 50, 0, 1.383, 76, 11, 31]
+        ];
+        var crx_dataSH = [
+            [91, 45, 125, 0.82, 34, 23, 1],
+            [65, 27, 78, 0.86, 45, 29, 2],
+            [83, 60, 84, 1.09, 73, 27, 3],
+            [109, 81, 121, 1.28, 68, 51, 4],
+            [106, 77, 114, 1.07, 55, 51, 5],
+            [109, 81, 121, 1.28, 68, 51, 6],
+            [106, 77, 114, 1.07, 55, 51, 7],
+            [89, 65, 78, 0.86, 51, 26, 8],
+            [53, 33, 47, 0.64, 50, 17, 9],
+            [80, 55, 80, 1.01, 75, 24, 10],
+            [117, 81, 124, 1.03, 45, 24, 11],
+            [99, 71, 142, 1.1, 62, 42, 12],
+            [95, 69, 130, 1.28, 74, 50, 13],
+            [116, 87, 131, 1.47, 84, 40, 14],
+            [108, 80, 121, 1.3, 85, 37, 15],
+            [134, 83, 167, 1.16, 57, 43, 16],
+            [79, 43, 107, 1.05, 59, 37, 17],
+            [71, 46, 89, 0.86, 64, 25, 18],
+            [97, 71, 113, 1.17, 88, 31, 19],
+            [84, 57, 91, 0.85, 55, 31, 20],
+            [87, 63, 101, 0.9, 56, 41, 21],
+            [104, 77, 119, 1.09, 73, 48, 22],
+            [87, 62, 100, 1, 72, 28, 23],
+            [168, 128, 172, 1.49, 97, 56, 24],
+            [65, 45, 51, 0.74, 39, 17, 25],
+            [39, 24, 38, 0.61, 47, 17, 26],
+            [39, 24, 39, 0.59, 50, 19, 27],
+            [93, 68, 96, 1.05, 79, 29, 28],
+            [188, 143, 197, 1.66, 99, 51, 29],
+            [174, 131, 174, 1.55, 108, 50, 30],
+            [187, 143, 201, 1.39, 89, 53, 31]
+        ];
+
+        /* ==================== 图表一：南丁格尔玫瑰图 ==================== */
+        var crx_roseEl = document.getElementById('crx_rose');
+        var crx_chartRose = echarts.init(crx_roseEl);
+
+        var crx_optionRose = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}<br/>数值：{c}（占 {d}%）'
+            },
+            legend: {
+                top: 'bottom'
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: { show: true },
+                    dataView: { show: true, readOnly: false },
+                    restore: { show: true },
+                    saveAsImage: { show: true, name: '南丁格尔玫瑰图' }
+                }
+            },
+            series: [
+                {
+                    name: 'Nightingale Chart',
+                    type: 'pie',
+                    radius: [50, 250],
+                    center: ['50%', '50%'],
+                    roseType: 'area',
+                    itemStyle: {
+                        borderRadius: 8
+                    },
+                    data: [
+                        { value: 40, name: 'rose 1' },
+                        { value: 38, name: 'rose 2' },
+                        { value: 32, name: 'rose 3' },
+                        { value: 30, name: 'rose 4' },
+                        { value: 28, name: 'rose 5' },
+                        { value: 26, name: 'rose 6' },
+                        { value: 22, name: 'rose 7' },
+                        { value: 18, name: 'rose 8' }
+                    ]
+                }
+            ]
+        };
+        crx_chartRose.setOption(crx_optionRose);
+
+        /* ==================== 图表二：AQI 雷达图 ==================== */
+        var crx_radarEl = document.getElementById('crx_radar');
+        var crx_chartRadar = echarts.init(crx_radarEl);
+
+        var crx_lineStyle = {
+            width: 1,
+            opacity: 0.5
+        };
+
+        var crx_optionRadar = {
+            backgroundColor: '#161627',
+            title: {
+                text: 'AQI - Radar',
+                left: 'center',
+                textStyle: {
+                    color: '#eee'
+                }
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                bottom: 5,
+                data: ['Beijing', 'Shanghai', 'Guangzhou'],
+                itemGap: 20,
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 14
+                },
+                selectedMode: 'single'
+            },
+            radar: {
+                indicator: [
+                    { name: 'AQI', max: 300 },
+                    { name: 'PM2.5', max: 250 },
+                    { name: 'PM10', max: 300 },
+                    { name: 'CO', max: 5 },
+                    { name: 'NO2', max: 200 },
+                    { name: 'SO2', max: 100 }
+                ],
+                shape: 'circle',
+                splitNumber: 5,
+                axisName: {
+                    color: 'rgb(238, 197, 102)'
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: [
+                            'rgba(238, 197, 102, 0.1)',
+                            'rgba(238, 197, 102, 0.2)',
+                            'rgba(238, 197, 102, 0.4)',
+                            'rgba(238, 197, 102, 0.6)',
+                            'rgba(238, 197, 102, 0.8)',
+                            'rgba(238, 197, 102, 1)'
+                        ].reverse()
+                    }
+                },
+                splitArea: {
+                    show: false
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: 'rgba(238, 197, 102, 0.5)'
+                    }
+                }
+            },
+            series: [
+                {
+                    name: 'Beijing',
+                    type: 'radar',
+                    lineStyle: crx_lineStyle,
+                    data: crx_dataBJ,
+                    symbol: 'none',
+                    itemStyle: {
+                        color: '#F9713C'
+                    },
+                    areaStyle: {
+                        opacity: 0.1
+                    }
+                },
+                {
+                    name: 'Shanghai',
+                    type: 'radar',
+                    lineStyle: crx_lineStyle,
+                    data: crx_dataSH,
+                    symbol: 'none',
+                    itemStyle: {
+                        color: '#B3E4A1'
+                    },
+                    areaStyle: {
+                        opacity: 0.05
+                    }
+                },
+                {
+                    name: 'Guangzhou',
+                    type: 'radar',
+                    lineStyle: crx_lineStyle,
+                    data: crx_dataGZ,
+                    symbol: 'none',
+                    itemStyle: {
+                        color: 'rgb(238, 197, 102)'
+                    },
+                    areaStyle: {
+                        opacity: 0.05
+                    }
+                }
+            ]
+        };
+        crx_chartRadar.setOption(crx_optionRadar);
+
+        /* ==================== 自适应 ==================== */
+        window.addEventListener('resize', function () {
+            crx_chartRose.resize();
+            crx_chartRadar.resize();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-6 Mermaid 智能客服系统流程图与 ER 图</title>
+    <script src="cdn/mermaid.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 28px 20px 60px;
+            background-color: #f5f7fa;
+            color: #1f2937;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 22px; }
+        .crx_head h1 { font-size: 26px; color: #1a365d; letter-spacing: 1px; }
+        .crx_sub { margin-top: 8px; font-size: 13px; color: #718096; }
+
+        .crx_wrap { max-width: 1160px; margin: 0 auto; }
+
+        .crx_card {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 8px 26px rgba(26, 54, 93, .08);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .crx_card-head {
+            padding: 16px 22px 14px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .crx_card-head h2 { font-size: 17px; color: #1a365d; }
+        .crx_card-head p { font-size: 12px; color: #85929e; margin-top: 5px; }
+
+        .crx_diagram {
+            padding: 20px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .crx_note {
+            font-size: 12px;
+            line-height: 1.9;
+            color: #64748b;
+            background-color: #eef4ff;
+            border-left: 3px solid #4c6ef5;
+            border-radius: 0 8px 8px 0;
+            padding: 10px 16px;
+            margin: -8px 0 20px;
+        }
+        .crx_note b { color: #2b4c9c; }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-05，使用大模型：DeepSeek-V4.1-Flash，功能名称：18-6 基于 Mermaid 的智能客服系统流程图与 ER 图 -->
+
+    <header class="crx_head">
+        <h1>Mermaid 智能客服系统图</h1>
+        <p class="crx_sub">本地引入 mermaid.min.js（cdn 目录）· 在线问答流程图 · 会话数据 ER 图</p>
+    </header>
+
+    <div class="crx_wrap">
+        <!-- ============ 流程图 ============ -->
+        <section class="crx_card">
+            <div class="crx_card-head">
+                <h2>智能客服问答流程图</h2>
+                <p>flowchart TD · 意图理解 → 知识检索 → RAG 生成 → 校验回复，未命中转人工并回流数据</p>
+            </div>
+            <div class="crx_diagram">
+<pre class="mermaid">
+flowchart TD
+    A["用户发起咨询<br/>网页 / APP / 微信 / 电话"] --> B["接入网关<br/>鉴权 · 限流 · 建会话"]
+    B --> C["NLU 语义理解<br/>意图识别 + 实体抽取"]
+
+    C --> D{"意图是否明确"}
+    D -->|"模糊 / 缺槽位"| E["澄清追问<br/>补全关键信息"]
+    E --> C
+
+    D -->|"明确"| F["知识检索<br/>BM25 + 向量混合召回"]
+
+    KB["离线知识构建<br/>解析 → 分块 → 向量化 → 入库"] -.->|"提供索引"| F
+
+    F --> G{"检索是否命中"}
+    G -->|"未命中 / 低置信"| H["转人工坐席<br/>自动生成工单"]
+    G -->|"命中 Top-k"| I["RAG 上下文组装<br/>Rerank + Prompt 编排"]
+
+    I --> J["大模型生成答案"]
+    J --> K{"事实一致性校验"}
+
+    K -->|"不通过"| H
+    K -->|"通过"| L["回复用户<br/>附知识来源引用"]
+
+    H --> M["坐席人工回复"]
+    M --> L
+
+    L --> N["满意度评价<br/>会话归档"]
+    N --> O["日志回流<br/>数据标注 · 模型迭代"]
+    O -.->|"更新知识"| KB
+</pre>
+            </div>
+        </section>
+
+        <div class="crx_note">
+            <b>说明：</b>实线为在线问答主链路，虚线为知识回流与索引更新；菱形为判定节点，两条失败路径都收敛到<b>转人工</b>，
+            人工回复后同样进入会话归档与数据回流，形成「问答—评测—迭代」闭环。
+        </div>
+
+        <!-- ============ ER 图 ============ -->
+        <section class="crx_card">
+            <div class="crx_card-head">
+                <h2>智能客服会话数据 ER 图</h2>
+                <p>erDiagram · 用户 / 会话 / 消息 / 意图 / 知识条目 / 坐席 / 工单 实体关系</p>
+            </div>
+            <div class="crx_diagram">
+<pre class="mermaid">
+erDiagram
+    USER ||--o{ SESSION : "发起"
+    SESSION ||--o{ MESSAGE : "包含"
+    MESSAGE ||--o{ INTENT : "命中"
+    KNOWLEDGE ||--o{ CHUNK : "切分为"
+    CHUNK }o--o{ INTENT : "被召回"
+    SESSION ||--o| TICKET : "转人工生成"
+    AGENT ||--o{ TICKET : "受理"
+    AGENT ||--o{ MESSAGE : "回复"
+
+    USER {
+        bigint user_id PK
+        varchar nickname "昵称"
+        varchar channel "接入渠道"
+        datetime created_at "注册时间"
+    }
+
+    SESSION {
+        bigint session_id PK
+        bigint user_id FK
+        varchar status "会话状态"
+        datetime started_at "开始时间"
+        datetime ended_at "结束时间"
+    }
+
+    MESSAGE {
+        bigint message_id PK
+        bigint session_id FK
+        varchar role "用户 / 机器人 / 坐席"
+        text content "消息内容"
+        datetime created_at "发送时间"
+    }
+
+    INTENT {
+        bigint intent_id PK
+        varchar name "意图名称"
+        decimal confidence "置信度"
+    }
+
+    KNOWLEDGE {
+        bigint kb_id PK
+        varchar title "知识标题"
+        varchar category "分类"
+        varchar version "版本号"
+        datetime updated_at "更新时间"
+    }
+
+    CHUNK {
+        bigint chunk_id PK
+        bigint kb_id FK
+        text content "文本片段"
+        vector embedding "向量表示"
+        int token_count "片段长度"
+    }
+
+    AGENT {
+        bigint agent_id PK
+        varchar name "坐席姓名"
+        varchar skill_group "技能组"
+        varchar work_status "在线状态"
+    }
+
+    TICKET {
+        bigint ticket_id PK
+        bigint session_id FK
+        bigint agent_id FK
+        varchar priority "优先级"
+        varchar status "工单状态"
+    }
+</pre>
+            </div>
+        </section>
+
+        <div class="crx_note">
+            <b>说明：</b><code>||--o{</code> 表示一对多、<code>||--o|</code> 表示一对零或一、<code>}o--o{</code> 表示多对多；
+            知识条目按语义切分为多个片段（CHUNK），片段与意图之间是多对多召回关系，便于统计「哪条知识解决了哪些问题」。
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                curve: 'basis',
+                htmlLabels: true,
+                useMaxWidth: false,
+                padding: 12
+            },
+            er: {
+                useMaxWidth: true,
+                entityPadding: 14
+            }
+        });
+    </script>
+</body>
+</html>

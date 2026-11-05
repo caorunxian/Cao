@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>18-7 Three.js 3D 图表：柱状图 + 环形图</title>
+    <script src="cdn/three.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            padding: 28px 20px 60px;
+            background: radial-gradient(circle at 50% 0%, #16233b 0%, #0b1220 55%, #070b14 100%);
+            color: #e6ecf5;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            min-height: 100vh;
+        }
+
+        .crx_head { text-align: center; margin-bottom: 26px; }
+        .crx_head h1 { font-size: 27px; letter-spacing: 2px; color: #eaf2ff; }
+        .crx_head h1 span { color: #4f8cff; }
+        .crx_sub { margin-top: 10px; font-size: 13px; color: #7d8fa8; }
+
+        .crx_wrap { max-width: 1120px; margin: 0 auto; }
+
+        .crx_card {
+            position: relative;
+            background: rgba(22, 33, 52, .55);
+            border: 1px solid rgba(90, 130, 200, .22);
+            border-radius: 16px;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+            margin-bottom: 26px;
+            overflow: hidden;
+            backdrop-filter: blur(6px);
+        }
+
+        .crx_card-head {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 18px 24px 6px;
+        }
+        .crx_card-head h2 { font-size: 17px; color: #dce9ff; }
+        .crx_tag {
+            font-size: 11px;
+            font-family: Consolas, monospace;
+            color: #8fc3ff;
+            border: 1px solid rgba(79, 140, 255, .45);
+            background-color: rgba(79, 140, 255, .12);
+            padding: 2px 9px;
+            border-radius: 10px;
+        }
+        .crx_card-head .crx_hint { font-size: 12px; color: #7d8fa8; }
+
+        .crx_stage {
+            width: 100%;
+            height: 430px;
+            cursor: grab;
+            position: relative;
+        }
+        .crx_stage:active { cursor: grabbing; }
+
+        .crx_tools {
+            position: absolute;
+            right: 18px;
+            top: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 3;
+        }
+        .crx_btn {
+            height: 32px;
+            padding: 0 14px;
+            border: 1px solid rgba(79, 140, 255, .5);
+            border-radius: 16px;
+            background-color: rgba(79, 140, 255, .16);
+            color: #a8ccff;
+            font-size: 12px;
+            font-family: "Microsoft YaHei", sans-serif;
+            cursor: pointer;
+            transition: background-color .15s, color .15s;
+        }
+        .crx_btn:hover { background-color: rgba(79, 140, 255, .34); color: #fff; }
+
+        .crx_legend {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 4px 24px 18px;
+            font-size: 12px;
+            color: #8fa3bd;
+        }
+        .crx_legend-item { display: flex; align-items: center; gap: 7px; }
+        .crx_legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+        .crx_note {
+            max-width: 1120px;
+            margin: -10px auto 22px;
+            font-size: 12px;
+            line-height: 1.9;
+            color: #8fa3bd;
+            background: rgba(79, 140, 255, .08);
+            border-left: 3px solid #4f8cff;
+            border-radius: 0 8px 8px 0;
+            padding: 10px 16px;
+        }
+        .crx_note b { color: #a8ccff; }
+
+        @media (max-width: 640px) {
+            .crx_stage { height: 320px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 姓名：曹润贤，建立时间：2026-11-05，使用大模型：DeepSeek-V4.1-Flash，功能名称：18-7 基于 Three.js 的 3D 图表（立体柱状图 + 环形图） -->
+
+    <header class="crx_head">
+        <h1>Three.js <span>3D 数据可视化</span></h1>
+        <p class="crx_sub">本地引入 three.min.js（cdn 目录）· 可拖拽旋转 · 自动旋转 · 滚轮缩放</p>
+    </header>
+
+    <div class="crx_wrap">
+        <!-- ========== 图表一：3D 柱状图 ========== -->
+        <section class="crx_card">
+            <div class="crx_card-head">
+                <h2>月度销售额立体柱状图</h2>
+                <span class="crx_tag">BoxGeometry · MeshStandardMaterial</span>
+                <span class="crx_hint">拖拽旋转视角，滚轮缩放</span>
+            </div>
+            <div class="crx_stage" id="crx_stage_bar">
+                <div class="crx_tools">
+                    <button class="crx_btn" id="crx_btn_bar_auto">暂停旋转</button>
+                    <button class="crx_btn" id="crx_btn_bar_reset">重置视角</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="crx_note">
+            <b>说明：</b>每根柱子是一个 <b>BoxGeometry</b> 立方体，高度按销售额比例缩放，颜色沿蓝→青渐变；
+            柱子顶部用 <b>CanvasTexture</b> 生成的 Sprite 显示数值，入场时按 EaseOut 缓动逐根升起。
+        </div>
+
+        <!-- ========== 图表二：3D 环形图 ========== -->
+        <section class="crx_card">
+            <div class="crx_card-head">
+                <h2>品类占比环形图</h2>
+                <span class="crx_tag">Shape · ExtrudeGeometry</span>
+                <span class="crx_hint">拖拽旋转视角，滚轮缩放</span>
+            </div>
+            <div class="crx_stage" id="crx_stage_ring">
+                <div class="crx_tools">
+                    <button class="crx_btn" id="crx_btn_ring_auto">暂停旋转</button>
+                    <button class="crx_btn" id="crx_btn_ring_reset">重置视角</button>
+                </div>
+            </div>
+            <div class="crx_legend" id="crx_ring_legend"></div>
+        </section>
+
+        <div class="crx_note">
+            <b>说明：</b>每个扇区用 <b>THREE.Shape</b> 描绘内外两段圆弧（形成环扇形），再经 <b>ExtrudeGeometry</b> 挤出厚度；
+            扇区角度按占比换算，颜色区分品类，拖动可 360° 观察立体厚度。
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ==================== 通用工具 ====================
+            // 用 canvas 生成文字贴图（Sprite 始终面向相机，便于标注）
+            function crx_makeTextSprite(crx_text, crx_color, crx_fontSize) {
+                var crx_canvas = document.createElement('canvas');
+                crx_canvas.width = 256;
+                crx_canvas.height = 128;
+
+                var crx_ctx = crx_canvas.getContext('2d');
+                crx_ctx.clearRect(0, 0, 256, 128);
+                crx_ctx.font = 'bold ' + (crx_fontSize || 46) + 'px "Microsoft YaHei", sans-serif';
+                crx_ctx.fillStyle = crx_color || '#ffffff';
+                crx_ctx.textAlign = 'center';
+                crx_ctx.textBaseline = 'middle';
+                crx_ctx.fillText(crx_text, 128, 66);
+
+                var crx_texture = new THREE.CanvasTexture(crx_canvas);
+                crx_texture.minFilter = THREE.LinearFilter;
+
+                var crx_material = new THREE.SpriteMaterial({
+                    map: crx_texture,
+                    transparent: true,
+                    depthTest: false
+                });
+
+                var crx_sprite = new THREE.Sprite(crx_material);
+                crx_sprite.scale.set(1.5, 0.75, 1);
+                return crx_sprite;
+            }
+
+            // 创建一个可交互的三维场景（返回上下文对象）
+            function crx_createView(crx_stageEl, crx_opts) {
+                var crx_width = crx_stageEl.clientWidth;
+                var crx_height = crx_stageEl.clientHeight;
+
+                var crx_scene = new THREE.Scene();
+                crx_scene.fog = new THREE.FogExp2(0x0b1220, 0.028);
+
+                var crx_camera = new THREE.PerspectiveCamera(45, crx_width / crx_height, 0.1, 200);
+                crx_camera.position.set(0, crx_opts.camY, crx_opts.camZ);
+                crx_camera.lookAt(0, crx_opts.lookY, 0);
+
+                var crx_renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                crx_renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                crx_renderer.setSize(crx_width, crx_height);
+                crx_renderer.domElement.style.display = 'block';
+                crx_stageEl.insertBefore(crx_renderer.domElement, crx_stageEl.firstChild);
+
+                // 光照
+                var crx_hemi = new THREE.HemisphereLight(0xdfeaff, 0x141c2e, 1.05);
+                crx_scene.add(crx_hemi);
+
+                var crx_dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+                crx_dirLight.position.set(6, 10, 7);
+                crx_scene.add(crx_dirLight);
+
+                var crx_fillLight = new THREE.DirectionalLight(0x6fa8ff, 0.7);
+                crx_fillLight.position.set(-7, 4, -6);
+                crx_scene.add(crx_fillLight);
+
+                // 水平网格地面
+                var crx_grid = new THREE.GridHelper(16, 16, 0x3b5480, 0x1c2a42);
+                crx_grid.position.y = crx_opts.gridY;
+                crx_grid.material.transparent = true;
+                crx_grid.material.opacity = 0.75;
+                crx_scene.add(crx_grid);
+
+                // 可旋转的内容容器
+                var crx_group = new THREE.Group();
+                crx_scene.add(crx_group);
+
+                // --------- 交互：拖拽旋转 + 滚轮缩放 ---------
+                var crx_state = {
+                    auto: true,
+                    dragging: false,
+                    lastX: 0,
+                    lastY: 0,
+                    camDist: crx_opts.camZ,
+                    targetRotX: crx_opts.rotX || 0
+                };
+
+                crx_stageEl.addEventListener('pointerdown', function (crx_e) {
+                    if (crx_e.target.tagName === 'BUTTON') return;
+                    crx_state.dragging = true;
+                    crx_state.lastX = crx_e.clientX;
+                    crx_state.lastY = crx_e.clientY;
+                    crx_stageEl.setPointerCapture(crx_e.pointerId);
+                });
+
+                crx_stageEl.addEventListener('pointermove', function (crx_e) {
+                    if (!crx_state.dragging) return;
+                    var crx_dx = crx_e.clientX - crx_state.lastX;
+                    var crx_dy = crx_e.clientY - crx_state.lastY;
+                    crx_state.lastX = crx_e.clientX;
+                    crx_state.lastY = crx_e.clientY;
+
+                    crx_group.rotation.y += crx_dx * 0.008;
+                    crx_group.rotation.x = Math.max(-0.6, Math.min(0.9,
+                        crx_group.rotation.x + crx_dy * 0.006));
+                });
+
+                function crx_endDrag(crx_e) {
+                    crx_state.dragging = false;
+                    try { crx_stageEl.releasePointerCapture(crx_e.pointerId); } catch (crx_err) {}
+                }
+                crx_stageEl.addEventListener('pointerup', crx_endDrag);
+                crx_stageEl.addEventListener('pointercancel', crx_endDrag);
+
+                crx_stageEl.addEventListener('wheel', function (crx_e) {
+                    crx_e.preventDefault();
+                    crx_state.camDist = Math.max(6, Math.min(20, crx_state.camDist + crx_e.deltaY * 0.012));
+                    crx_camera.position.z = crx_state.camDist;
+                }, { passive: false });
+
+                // 窗口尺寸变化
+                window.addEventListener('resize', function () {
+                    var crx_w = crx_stageEl.clientWidth;
+                    var crx_h = crx_stageEl.clientHeight;
+                    crx_camera.aspect = crx_w / crx_h;
+                    crx_camera.updateProjectionMatrix();
+                    crx_renderer.setSize(crx_w, crx_h);
+                });
+
+                return {
+                    scene: crx_scene,
+                    camera: crx_camera,
+                    renderer: crx_renderer,
+                    group: crx_group,
+                    state: crx_state,
+                    stageEl: crx_stageEl
+                };
+            }
+
+            // ==================== 图表一：3D 柱状图 ====================
+            var crx_barData = [
+                { name: '1月', value: 128 },
+                { name: '2月', value: 156 },
+                { name: '3月', value: 142 },
+                { name: '4月', value: 198 },
+                { name: '5月', value: 226 },
+                { name: '6月', value: 254 }
+            ];
+
+            var crx_viewBar = crx_createView(document.getElementById('crx_stage_bar'), {
+                camY: 7,
+                camZ: 12,
+                lookY: 2,
+                gridY: 0
+            });
+
+            var crx_maxValue = 0;
+            crx_barData.forEach(function (crx_d) {
+                if (crx_d.value > crx_maxValue) crx_maxValue = crx_d.value;
+            });
+
+            var crx_columnMeshes = [];
+            var crx_barStep = 1.75;
+            var crx_barStartX = -((crx_barData.length - 1) * crx_barStep) / 2;
+
+            crx_barData.forEach(function (crx_d, crx_i) {
+                var crx_barHeight = (crx_d.value / crx_maxValue) * 4.4;
+
+                // 柱体
+                var crx_geo = new THREE.BoxGeometry(1.1, 1, 1.1);
+                var crx_color = new THREE.Color().setHSL(
+                    0.58 - (crx_i / crx_barData.length) * 0.16, 0.85, 0.56
+                );
+                var crx_mat = new THREE.MeshStandardMaterial({
+                    color: crx_color,
+                    metalness: 0.25,
+                    roughness: 0.42,
+                    emissive: crx_color.clone().multiplyScalar(0.12)
+                });
+
+                var crx_mesh = new THREE.Mesh(crx_geo, crx_mat);
+                crx_mesh.scale.y = 0.001;
+                crx_mesh.position.set(
+                    crx_barStartX + crx_i * crx_barStep,
+                    crx_barHeight / 2,
+                    0
+                );
+                crx_viewBar.group.add(crx_mesh);
+
+                crx_columnMeshes.push({
+                    mesh: crx_mesh,
+                    height: crx_barHeight,
+                    delay: crx_i * 0.16
+                });
+
+                // 数值标签（贴在柱顶）
+                var crx_numSprite = crx_makeTextSprite(String(crx_d.value), '#cfe6ff', 46);
+                crx_numSprite.position.set(
+                    crx_barStartX + crx_i * crx_barStep,
+                    crx_barHeight + 0.55,
+                    0
+                );
+                crx_numSprite.scale.set(1.25, 0.62, 1);
+                crx_viewBar.group.add(crx_numSprite);
+
+                // 月份标签（贴在地面）
+                var crx_nameSprite = crx_makeTextSprite(crx_d.name, '#8fa3bd', 40);
+                crx_nameSprite.position.set(
+                    crx_barStartX + crx_i * crx_barStep,
+                    -0.55,
+                    0
+                );
+                crx_nameSprite.scale.set(1.1, 0.55, 1);
+                crx_viewBar.group.add(crx_nameSprite);
+            });
+
+            // 底座（薄板，增强立体感）
+            var crx_plate = new THREE.Mesh(
+                new THREE.BoxGeometry(11.6, 0.18, 3.4),
+                new THREE.MeshStandardMaterial({
+                    color: 0x1a2740,
+                    metalness: 0.55,
+                    roughness: 0.35
+                })
+            );
+            crx_plate.position.y = -0.09;
+            crx_viewBar.group.add(crx_plate);
+
+            // ==================== 图表二：3D 环形图 ====================
+            var crx_ringData = [
+                { name: '新品首发', value: 30, color: 0x4f8cff, hex: '#4f8cff' },
+                { name: '限时促销', value: 25, color: 0x22d3ee, hex: '#22d3ee' },
+                { name: '会员专享', value: 20, color: 0x34d399, hex: '#34d399' },
+                { name: '跨境商品', value: 15, color: 0xfbbf24, hex: '#fbbf24' },
+                { name: '其他品类', value: 10, color: 0xf472b6, hex: '#f472b6' }
+            ];
+
+            var crx_viewRing = crx_createView(document.getElementById('crx_stage_ring'), {
+                camY: 8.5,
+                camZ: 9,
+                lookY: 0,
+                gridY: -0.9,
+                rotX: 0
+            });
+
+            var crx_ringOuter = 3.0;
+            var crx_ringInner = 1.45;
+            var crx_ringDepth = 0.55;
+            var crx_angleCursor = Math.PI / 2; // 从正上方开始
+
+            crx_ringData.forEach(function (crx_d) {
+                var crx_sweep = (crx_d.value / 100) * Math.PI * 2;
+                var crx_start = crx_angleCursor;
+                var crx_end = crx_angleCursor - crx_sweep; // 顺时针
+                crx_angleCursor = crx_end;
+
+                // 用 Shape 描绘环扇形（外弧正向 + 内弧反向，闭合）
+                var crx_shape = new THREE.Shape();
+                crx_shape.absarc(0, 0, crx_ringOuter, crx_start, crx_end, true);
+                crx_shape.absarc(0, 0, crx_ringInner, crx_end, crx_start, false);
+
+                var crx_extrude = new THREE.ExtrudeGeometry(crx_shape, {
+                    depth: crx_ringDepth,
+                    bevelEnabled: true,
+                    bevelThickness: 0.06,
+                    bevelSize: 0.06,
+                    bevelSegments: 3,
+                    curveSegments: 40
+                });
+                crx_extrude.translate(0, 0, -crx_ringDepth / 2);
+
+                var crx_mat = new THREE.MeshStandardMaterial({
+                    color: crx_d.color,
+                    metalness: 0.3,
+                    roughness: 0.38,
+                    emissive: new THREE.Color(crx_d.color).multiplyScalar(0.1)
+                });
+
+                var crx_mesh = new THREE.Mesh(crx_extrude, crx_mat);
+                crx_mesh.rotation.x = -Math.PI / 2; // 平放到 XZ 平面
+                crx_viewRing.group.add(crx_mesh);
+
+                // 扇区标签（放在环外侧，避免相邻扇区标签互相遮盖）
+                var crx_midAngle = (crx_start + crx_end) / 2;
+                var crx_labelRadius = crx_ringOuter + 0.75;
+                var crx_label = crx_makeTextSprite(crx_d.name + ' ' + crx_d.value + '%', '#ffffff', 34);
+                crx_label.position.set(
+                    Math.cos(crx_midAngle) * crx_labelRadius,
+                    0.55,
+                    -Math.sin(crx_midAngle) * crx_labelRadius
+                );
+                crx_label.scale.set(1.7, 0.78, 1);
+                crx_viewRing.group.add(crx_label);
+            });
+
+            // 中心圆盘 + 总量文字
+            var crx_centerDisc = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.1, 1.1, 0.22, 48),
+                new THREE.MeshStandardMaterial({
+                    color: 0x223252,
+                    metalness: 0.7,
+                    roughness: 0.3
+                })
+            );
+            crx_centerDisc.position.y = 0.12;
+            crx_viewRing.group.add(crx_centerDisc);
+
+            var crx_centerText = crx_makeTextSprite('总计 100%', '#a8ccff', 34);
+            crx_centerText.position.set(0, 0.62, 0);
+            crx_centerText.scale.set(1.7, 0.8, 1);
+            crx_viewRing.group.add(crx_centerText);
+
+            // 图例（HTML 侧）
+            var crx_legendEl = document.getElementById('crx_ring_legend');
+            var crx_legendHtml = '';
+            crx_ringData.forEach(function (crx_d) {
+                crx_legendHtml += '<span class="crx_legend-item">' +
+                    '<i class="crx_legend-dot" style="background:' + crx_d.hex + ';"></i>' +
+                    crx_d.name + ' ' + crx_d.value + '%</span>';
+            });
+            crx_legendEl.innerHTML = crx_legendHtml;
+
+            // ==================== 按钮 ====================
+            var crx_btnBarAuto = document.getElementById('crx_btn_bar_auto');
+            var crx_btnBarReset = document.getElementById('crx_btn_bar_reset');
+            var crx_btnRingAuto = document.getElementById('crx_btn_ring_auto');
+            var crx_btnRingReset = document.getElementById('crx_btn_ring_reset');
+
+            crx_btnBarAuto.addEventListener('click', function () {
+                crx_viewBar.state.auto = !crx_viewBar.state.auto;
+                crx_btnBarAuto.textContent = crx_viewBar.state.auto ? '暂停旋转' : '继续旋转';
+            });
+            crx_btnRingAuto.addEventListener('click', function () {
+                crx_viewRing.state.auto = !crx_viewRing.state.auto;
+                crx_btnRingAuto.textContent = crx_viewRing.state.auto ? '暂停旋转' : '继续旋转';
+            });
+
+            crx_btnBarReset.addEventListener('click', function () {
+                crx_viewBar.group.rotation.set(0, 0, 0);
+                crx_viewBar.state.camDist = 12;
+                crx_viewBar.camera.position.set(0, 7, 12);
+                crx_viewBar.camera.lookAt(0, 2, 0);
+            });
+            crx_btnRingReset.addEventListener('click', function () {
+                crx_viewRing.group.rotation.set(0, 0, 0);
+                crx_viewRing.state.camDist = 9;
+                crx_viewRing.camera.position.set(0, 8.5, 9);
+                crx_viewRing.camera.lookAt(0, 0, 0);
+            });
+
+            // ==================== 动画循环 ====================
+            var crx_clock = new THREE.Clock();
+
+            function crx_animate() {
+                requestAnimationFrame(crx_animate);
+
+                var crx_t = crx_clock.getElapsedTime();
+
+                // ---- 柱状图：逐根升起 + 自动旋转 ----
+                crx_columnMeshes.forEach(function (crx_item) {
+                    var crx_progress = Math.max(0, Math.min(1, (crx_t - crx_item.delay) / 1.3));
+                    var crx_eased = 1 - Math.pow(1 - crx_progress, 3); // easeOutCubic
+                    crx_item.mesh.scale.y = Math.max(0.001, crx_eased * crx_item.height);
+                    crx_item.mesh.position.y = (crx_item.height * crx_eased) / 2;
+                });
+
+                if (crx_viewBar.state.auto && !crx_viewBar.state.dragging) {
+                    crx_viewBar.group.rotation.y += 0.0035;
+                }
+                crx_viewBar.renderer.render(crx_viewBar.scene, crx_viewBar.camera);
+
+                // ---- 环形图：整体缓慢自转 + 上下浮动 ----
+                if (crx_viewRing.state.auto && !crx_viewRing.state.dragging) {
+                    crx_viewRing.group.rotation.y += 0.0045;
+                }
+                crx_viewRing.group.position.y = Math.sin(crx_t * 0.9) * 0.06;
+                crx_viewRing.renderer.render(crx_viewRing.scene, crx_viewRing.camera);
+            }
+
+            crx_animate();
+        })();
+    </script>
+</body>
+</html>
